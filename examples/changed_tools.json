@@ -1,0 +1,32 @@
+[
+  {
+    "name": "calculator",
+    "title": "Calculator",
+    "description": "Add, subtract, multiply, or divide two numbers.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "a": {"type": "number", "description": "First number"},
+        "b": {"type": "number", "description": "Second number"},
+        "operation": {"type": "string", "enum": ["add", "subtract", "multiply", "divide"]}
+      },
+      "required": ["a", "b", "operation"],
+      "additionalProperties": false
+    },
+    "outputSchema": {"type": "object", "properties": {"result": {"type": "number"}}, "required": ["result"]},
+    "annotations": {"readOnlyHint": true, "idempotentHint": true}
+  },
+  {
+    "name": "weather_mock",
+    "title": "Mock Weather",
+    "description": "Return artificial weather information for a city; no network request is made.",
+    "inputSchema": {"type": "object", "properties": {"location": {"type": "string", "description": "City name"}}, "required": ["location"]},
+    "annotations": {"readOnlyHint": true, "openWorldHint": false}
+  },
+  {
+    "name": "unit_converter",
+    "description": "Convert distances between kilometres and miles.",
+    "inputSchema": {"type": "object", "properties": {"value": {"type": "number"}, "unit": {"type": "string"}}, "required": ["value", "unit"]}
+  }
+]
+

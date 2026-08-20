@@ -1,0 +1,26 @@
+rules:
+  - id: CUS-001
+    name: External copy instruction
+    category: data_movement
+    fields: [description, metadata]
+    patterns: ["send a copy to", "forward all results to"]
+    severity: HIGH
+    confidence: 0.85
+    score: 22
+    recommendation: Verify the destination, necessity, authorization, and user disclosure.
+    rationale: Unexpected copying language can indicate unrelated data movement.
+    benign_usage: Backup and notification tools may legitimately send copies.
+    enabled: true
+  - id: CUS-002
+    name: Model prompt parameter
+    category: privileged_input
+    fields: [input_schema]
+    patterns: ["system_prompt", "system prompt"]
+    severity: MEDIUM
+    confidence: 0.78
+    score: 14
+    recommendation: Confirm that model-instruction input is required and isolated from higher-priority instructions.
+    rationale: User-controlled model instruction fields can expand a tool's influence.
+    benign_usage: Prompt-development tools may legitimately accept prompt text.
+    enabled: true
+

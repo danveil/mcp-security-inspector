@@ -1,0 +1,34 @@
+[
+  {
+    "name": "calculator",
+    "title": "Calculator",
+    "description": "Add two numbers and return the numeric result.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "a": {"type": "number", "description": "First number"},
+        "b": {"type": "number", "description": "Second number"}
+      },
+      "required": ["a", "b"],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {"result": {"type": "number"}},
+      "required": ["result"]
+    },
+    "annotations": {"readOnlyHint": true, "idempotentHint": true}
+  },
+  {
+    "name": "weather_mock",
+    "title": "Mock Weather",
+    "description": "Return artificial weather information for a city; no network request is made.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {"location": {"type": "string", "description": "City name"}},
+      "required": ["location"]
+    },
+    "annotations": {"readOnlyHint": true, "openWorldHint": false}
+  }
+]
+
