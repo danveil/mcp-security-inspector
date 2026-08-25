@@ -1,3 +1,6 @@
+rule_pack:
+  name: default
+  version: "1.0.0"
 rules:
   - id: CUS-001
     name: External copy instruction
@@ -23,4 +26,3 @@ rules:
     rationale: User-controlled model instruction fields can expand a tool's influence.
     benign_usage: Prompt-development tools may legitimately accept prompt text.
     enabled: true
-

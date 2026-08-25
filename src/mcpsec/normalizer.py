@@ -3,18 +3,26 @@ from __future__ import annotations
 import unicodedata
 from typing import Any
 
-from mcpsec.constants import KNOWN_FIELDS, MAX_TEXT_LENGTH
+from mcpsec.constants import KNOWN_FIELDS, MAX_NESTING_DEPTH, MAX_TEXT_LENGTH
 from mcpsec.exceptions import InputError
 from mcpsec.models import ToolDefinition
 
 
-def _normalize(value: Any) -> Any:
+def _normalize(value: Any, depth: int = 0) -> Any:
+    if depth > MAX_NESTING_DEPTH:
+        raise InputError(f"Metadata nesting exceeds {MAX_NESTING_DEPTH} levels")
     if isinstance(value, str):
         return unicodedata.normalize("NFC", value[:MAX_TEXT_LENGTH])
     if isinstance(value, dict):
-        return {str(key): _normalize(item) for key, item in value.items()}
+        normalized: dict[str, Any] = {}
+        for key, item in value.items():
+            normalized_key = unicodedata.normalize("NFC", str(key)[:MAX_TEXT_LENGTH])
+            if normalized_key in normalized:
+                raise InputError("Metadata contains duplicate keys after normalization")
+            normalized[normalized_key] = _normalize(item, depth + 1)
+        return normalized
     if isinstance(value, list):
-        return [_normalize(item) for item in value]
+        return [_normalize(item, depth + 1) for item in value]
     return value
 
 

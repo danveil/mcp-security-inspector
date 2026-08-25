@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from enum import StrEnum
+from io import StringIO
 from pathlib import Path
 from typing import Annotated
 
@@ -12,16 +13,20 @@ from rich.table import Table
 from mcpsec import __version__
 from mcpsec.baseline import create_baseline, load_baseline, write_baseline
 from mcpsec.compare import compare_baseline
-from mcpsec.constants import APP_NAME
-from mcpsec.detectors import BUILTIN_DETECTORS
+from mcpsec.constants import BUILTIN_RULE_PACK_NAME, BUILTIN_RULE_PACK_VERSION
+from mcpsec.evaluation.evaluator import evaluate_corpus
+from mcpsec.evaluation.reporter import render_terminal as render_evaluation_terminal
+from mcpsec.evaluation.reporter import serialize as serialize_evaluation
 from mcpsec.exceptions import McpsecError
 from mcpsec.fingerprint import fingerprint_tool
 from mcpsec.loader import load_tools
-from mcpsec.models import SEVERITY_RANK, ScanReport, Severity, ToolDefinition, ToolScanResult
+from mcpsec.models import SEVERITY_RANK, ScanReport, Severity, ToolDefinition
 from mcpsec.normalizer import normalize_tools
 from mcpsec.reporter import render_terminal, serialize
-from mcpsec.risk import calculate_risk
-from mcpsec.rules import RULE_EXPLANATIONS, CustomRuleDetector, load_rules
+from mcpsec.retrieval import DEFAULT_MAX_TOOLS, DEFAULT_TIMEOUT_SECONDS, fetch_local_catalog
+from mcpsec.rules import RULE_EXPLANATIONS, load_rule_pack, load_rules
+from mcpsec.scanner import analyze_file
+from mcpsec.suppressions import load_suppressions
 
 console = Console()
 app = typer.Typer(name="mcpsec", help="Defensive static analysis for MCP tool definitions.", no_args_is_help=True)
@@ -40,6 +45,12 @@ class FailSeverity(StrEnum):
     medium = "medium"
     high = "high"
     critical = "critical"
+
+
+class EvaluationFormat(StrEnum):
+    terminal = "terminal"
+    json = "json"
+    csv = "csv"
 
 
 def _version(value: bool) -> None:
@@ -62,17 +73,16 @@ def _tools(path: Path) -> list[ToolDefinition]:
     return normalize_tools(load_tools(path), str(path))
 
 
-def analyze(path: Path, rules_path: Path | None = None, redact: bool = False) -> ScanReport:
-    tools = _tools(path)
-    detectors = list(BUILTIN_DETECTORS)
-    if rules_path:
-        detectors.append(CustomRuleDetector(load_rules(rules_path)))
-    results: list[ToolScanResult] = []
-    for tool in tools:
-        findings = [item for detector in detectors for item in detector.detect(tool, redact)]
-        score, severity = calculate_risk(findings)
-        results.append(ToolScanResult(tool=tool, findings=findings, risk_score=score, severity=severity))
-    return ScanReport(application=APP_NAME, version=__version__, source=str(path), tools=results)
+def analyze(
+    path: Path,
+    rules_path: Path | None = None,
+    redact: bool = False,
+    suppressions_path: Path | None = None,
+) -> ScanReport:
+    custom_rules = load_rules(rules_path) if rules_path else []
+    known_rule_ids = set(RULE_EXPLANATIONS) | {rule.id for rule in custom_rules}
+    suppressions = load_suppressions(suppressions_path, known_rule_ids) if suppressions_path else []
+    return analyze_file(path, rules=custom_rules, suppressions=suppressions, redact=redact)
 
 
 def _handle_error(exc: Exception) -> None:
@@ -88,13 +98,17 @@ def scan(
     file: Annotated[Path, typer.Argument(exists=True, dir_okay=False, readable=True)],
     format: Annotated[ReportFormat, typer.Option("--format")] = ReportFormat.table,
     rules: Annotated[Path | None, typer.Option("--rules", exists=True, dir_okay=False)] = None,
+    suppressions: Annotated[
+        Path | None,
+        typer.Option("--suppressions", exists=True, dir_okay=False, help="Apply justified data-only suppressions."),
+    ] = None,
     redact: Annotated[bool, typer.Option("--redact", help="Redact evidence excerpts.")] = False,
     fail_on: Annotated[FailSeverity | None, typer.Option("--fail-on")] = None,
     output: Annotated[Path | None, typer.Option("--output", help="Write a structured report.")] = None,
 ) -> None:
     """Scan static JSON; no tool is invoked and no metadata URL is fetched."""
     try:
-        report = analyze(file, rules, redact)
+        report = analyze(file, rules, redact, suppressions)
         if format == ReportFormat.table:
             render_terminal(report, console)
         else:
@@ -185,8 +199,8 @@ def validate_rules(
 ) -> None:
     """Strictly validate a data-only YAML rule file."""
     try:
-        validated = load_rules(file)
-        console.print(f"Valid: {len(validated)} rules")
+        validated = load_rule_pack(file)
+        console.print(f"Valid: {len(validated.rules)} rules ({validated.rule_pack.name} {validated.rule_pack.version})")
     except Exception as exc:
         _handle_error(exc)
 
@@ -210,3 +224,75 @@ def demo() -> None:
     """Scan the bundled mixed demonstration catalog."""
     demo_path = Path(__file__).parents[2] / "examples" / "mixed_tools.json"
     scan(demo_path)
+
+
+@app.command()
+def fetch(
+    url: Annotated[str, typer.Argument(help="Explicit localhost MCP Streamable HTTP endpoint.")],
+    output: Annotated[Path, typer.Option("--output", help="Static JSON catalog destination.")],
+    timeout: Annotated[float, typer.Option("--timeout", help="Overall tools/list timeout in seconds.")] = (
+        DEFAULT_TIMEOUT_SECONDS
+    ),
+    max_tools: Annotated[int, typer.Option("--max-tools", help="Maximum accepted catalog size.")] = DEFAULT_MAX_TOOLS,
+) -> None:
+    """Opt in to a bounded localhost tools/list request; discovered tools are never invoked."""
+    try:
+        tools = fetch_local_catalog(url, timeout_seconds=timeout, max_tools=max_tools)
+        output.write_text(json.dumps({"tools": tools}, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        console.print(f"Wrote {len(tools)} tools to {output}; no tools were invoked.")
+    except Exception as exc:
+        _handle_error(exc)
+
+
+@app.command("evaluate")
+def evaluate_command(
+    manifest: Annotated[Path, typer.Argument(exists=True, dir_okay=False, readable=True)],
+    format: Annotated[EvaluationFormat, typer.Option("--format")] = EvaluationFormat.terminal,
+    output: Annotated[Path | None, typer.Option("--output", help="Write the evaluation report.")] = None,
+    rules: Annotated[Path | None, typer.Option("--rules", exists=True, dir_okay=False)] = None,
+    suppressions: Annotated[
+        Path | None,
+        typer.Option(
+            "--suppressions",
+            exists=True,
+            dir_okay=False,
+            help="Explicitly apply suppressions; disabled by default for research evaluation.",
+        ),
+    ] = None,
+) -> None:
+    """Evaluate detectors against a versioned, labeled static corpus."""
+    try:
+        custom_rules = []
+        pack_name = BUILTIN_RULE_PACK_NAME
+        pack_version = BUILTIN_RULE_PACK_VERSION
+        if rules:
+            pack = load_rule_pack(rules)
+            custom_rules = pack.rules
+            pack_name = f"{BUILTIN_RULE_PACK_NAME}+{pack.rule_pack.name}"
+            pack_version = f"{BUILTIN_RULE_PACK_VERSION}+{pack.rule_pack.version}"
+        known_rule_ids = set(RULE_EXPLANATIONS) | {rule.id for rule in custom_rules}
+        active_suppressions = load_suppressions(suppressions, known_rule_ids) if suppressions else []
+        report = evaluate_corpus(
+            manifest,
+            rules=custom_rules,
+            rule_pack_name=pack_name,
+            rule_pack_version=pack_version,
+            suppressions=active_suppressions,
+        )
+        if format == EvaluationFormat.terminal:
+            if output:
+                buffer = StringIO()
+                render_evaluation_terminal(report, Console(file=buffer, color_system=None, width=120))
+                output.write_text(buffer.getvalue(), encoding="utf-8")
+                console.print(f"Wrote terminal evaluation report to {output}")
+            else:
+                render_evaluation_terminal(report, console)
+        else:
+            content = serialize_evaluation(report, format.value)
+            if output:
+                output.write_text(content + ("" if content.endswith("\n") else "\n"), encoding="utf-8")
+                console.print(f"Wrote {format.value} evaluation report to {output}")
+            else:
+                typer.echo(content)
+    except Exception as exc:
+        _handle_error(exc)

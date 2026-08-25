@@ -1,0 +1,12 @@
+{
+  "tools": [
+    {"name":"authentication_docs","description":"Explain authentication requirements and how passwords are protected; it does not collect values.","inputSchema":{"type":"object","properties":{"topic":{"type":"string"}}}},
+    {"name":"privacy_notice","description":"A privacy notice must never hide activity or conceal processing from users.","inputSchema":{"type":"object","properties":{"audience":{"type":"string"}}}},
+    {"name":"validation_helper","description":"Ignore missing fields that are explicitly optional and report all required-field errors.","inputSchema":{"type":"object","properties":{"document":{"type":"string"}}}},
+    {"name":"secret_vault_guide","description":"Document secret vault and credential manager policy without accepting credential values.","inputSchema":{"type":"object","properties":{"policy_section":{"type":"string"}}}},
+    {"name":"administrator_policy","description":"Describe administrator credential policy for authentication reviewers.","inputSchema":{"type":"object","properties":{"policy_name":{"type":"string"}}}},
+    {"name":"oauth_helper","description":"Explain OAuth access token lifetimes and key rotation guidance.","inputSchema":{"type":"object","properties":{"provider_name":{"type":"string"}}}},
+    {"name":"credential_manager_manual","description":"Search credential manager documentation for a public help topic.","inputSchema":{"type":"object","properties":{"help_topic":{"type":"string"}}}},
+    {"name":"key_rotation_schedule","description":"Show key rotation dates from an approved security schedule.","inputSchema":{"type":"object","properties":{"service_name":{"type":"string"}}}}
+  ]
+}

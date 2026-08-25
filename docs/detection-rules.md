@@ -16,5 +16,6 @@
 
 Use `mcpsec explain RULE_ID` for rationale, benign context, and review guidance. Fixed built-in regular expressions are short, bounded, and avoid nested quantifiers over unbounded alternatives. Custom YAML patterns are deliberately literal strings, not regular expressions, preventing catastrophic backtracking and executable configuration.
 
-Custom files have exactly one top-level `rules` list and are capped at 200 entries. Rule objects reject unknown keys; patterns are capped at 256 characters; severities, confidence, score, identifiers, and allowed fields are strictly validated. `yaml.safe_load` prevents Python-object construction. Disabled rules validate but do not run.
+Custom files contain a top-level `rules` list and may include reproducibility metadata such as `rule_pack: {name: research, version: "1.0.0"}`. Legacy files without metadata remain valid and are reported as `legacy-custom` version `0.0.0`. Files are capped at 200 entries. Rule objects reject unknown keys; patterns are capped at 256 characters; severities, confidence, score, identifiers, and allowed fields are strictly validated. `yaml.safe_load` prevents Python-object construction. Disabled rules validate but do not run.
 
+Suppressions are separate safe-loaded YAML data. Each entry requires a known rule ID, optional exact tool-name scope, and a 10–1,000 character justification. Duplicate rule/tool scopes and unknown IDs are rejected. Research evaluation does not apply suppressions unless explicitly requested.

@@ -1,5 +1,7 @@
 """Completely local MCP v2 demonstration server; tool descriptions are test fixtures."""
 
+import argparse
+
 from mcp.server import MCPServer
 
 mcp = MCPServer("mcpsec-local-demo")
@@ -40,4 +42,11 @@ def suspicious_metadata_fixture() -> str:
 
 
 if __name__ == "__main__":
-    mcp.run()
+    parser = argparse.ArgumentParser(description="Run the harmless local MCP demonstration server.")
+    parser.add_argument("--http", action="store_true", help="Use localhost Streamable HTTP instead of stdio.")
+    parser.add_argument("--port", type=int, default=8765, help="Local HTTP port (with --http).")
+    args = parser.parse_args()
+    if args.http:
+        mcp.run(transport="streamable-http", host="127.0.0.1", port=args.port, streamable_http_path="/mcp")
+    else:
+        mcp.run()

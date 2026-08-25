@@ -84,6 +84,7 @@ class BaselineTool(BaseModel):
 
 
 class BaselineFile(BaseModel):
+    format_version: str = "1.0"
     application_version: str
     created_at: str
     source: str
@@ -112,3 +113,22 @@ class RuleDefinition(BaseModel):
     enabled: bool = True
     rationale: str = ""
     benign_usage: str = ""
+
+
+class RulePackMetadata(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    name: str = Field(min_length=1, max_length=64, pattern=r"^[a-zA-Z0-9][a-zA-Z0-9_.-]*$")
+    version: str = Field(pattern=r"^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$")
+
+
+class RulePack(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    rule_pack: RulePackMetadata
+    rules: list[RuleDefinition]
+
+
+class SuppressionDefinition(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    rule_id: str = Field(pattern=r"^[A-Z][A-Z0-9_-]{2,31}$")
+    tool: str | None = Field(default=None, min_length=1, max_length=256)
+    justification: str = Field(min_length=10, max_length=1_000)

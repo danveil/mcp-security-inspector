@@ -1,7 +1,7 @@
 import pytest
 from conftest import make_tool
 
-from mcpsec.constants import MAX_TEXT_LENGTH
+from mcpsec.constants import MAX_NESTING_DEPTH, MAX_TEXT_LENGTH
 from mcpsec.exceptions import InputError
 from mcpsec.normalizer import normalize_tool, normalize_tools
 
@@ -61,3 +61,19 @@ def test_duplicate_names() -> None:
 def test_description_is_bounded() -> None:
     tool = normalize_tool(make_tool(description="x" * (MAX_TEXT_LENGTH + 5)))
     assert len(tool.description) == MAX_TEXT_LENGTH
+
+
+def test_deeply_nested_metadata_is_rejected() -> None:
+    nested: dict[str, object] = {}
+    current = nested
+    for _ in range(MAX_NESTING_DEPTH + 1):
+        child: dict[str, object] = {}
+        current["child"] = child
+        current = child
+    with pytest.raises(InputError, match="nesting"):
+        normalize_tool(make_tool(_meta=nested))
+
+
+def test_duplicate_keys_after_normalization_are_rejected() -> None:
+    with pytest.raises(InputError, match="duplicate keys"):
+        normalize_tool(make_tool(_meta={"Café": 1, "Cafe\u0301": 2}))

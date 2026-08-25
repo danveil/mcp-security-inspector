@@ -29,6 +29,19 @@ def test_category_cap() -> None:
     assert calculate_risk([item(score=35), item(score=35)])[0] == 35
 
 
+def test_exact_duplicate_rule_does_not_inflate_score() -> None:
+    assert calculate_risk([item(score=20), item(score=20)])[0] == 20
+
+
+def test_strongest_duplicate_rule_contribution_wins() -> None:
+    assert calculate_risk([item(score=10), item(score=20)])[0] == 20
+
+
+def test_finding_order_does_not_change_score() -> None:
+    findings = [item("PI-001", "a", 20), item("HID-001", "b", 15), item("SEC-001", "c", 10)]
+    assert calculate_risk(findings) == calculate_risk(list(reversed(findings)))
+
+
 def test_multiple_categories_combine_without_simple_sum() -> None:
     assert calculate_risk([item(category="a"), item(category="b")])[0] == 36
 

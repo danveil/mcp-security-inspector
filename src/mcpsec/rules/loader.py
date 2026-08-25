@@ -7,19 +7,21 @@ from pydantic import TypeAdapter, ValidationError
 
 from mcpsec.detectors.base import Detector, all_text_fields, finding
 from mcpsec.exceptions import RuleValidationError
-from mcpsec.models import Finding, RuleDefinition, ToolDefinition
+from mcpsec.models import Finding, RuleDefinition, RulePack, RulePackMetadata, ToolDefinition
 
 MAX_RULES = 200
 MAX_PATTERN_LENGTH = 256
 
 
-def load_rules(path: Path) -> list[RuleDefinition]:
+def load_rule_pack(path: Path) -> RulePack:
     try:
         raw = yaml.safe_load(path.read_text(encoding="utf-8"))
     except (OSError, UnicodeError, yaml.YAMLError) as exc:
         raise RuleValidationError(f"Cannot load rules: {exc}") from exc
-    if not isinstance(raw, dict) or set(raw) != {"rules"} or not isinstance(raw["rules"], list):
-        raise RuleValidationError("Rules file must contain only a top-level 'rules' list")
+    if not isinstance(raw, dict) or set(raw) not in ({"rules"}, {"rule_pack", "rules"}):
+        raise RuleValidationError("Rules file must contain 'rules' and optional 'rule_pack' metadata")
+    if not isinstance(raw["rules"], list):
+        raise RuleValidationError("Rules file 'rules' value must be a list")
     if len(raw["rules"]) > MAX_RULES:
         raise RuleValidationError(f"Rules file exceeds {MAX_RULES} rules")
     try:
@@ -43,7 +45,17 @@ def load_rules(path: Path) -> list[RuleDefinition]:
     }
     if any(not set(rule.fields) <= allowed for rule in rules):
         raise RuleValidationError("Rule fields contain an unsupported field name")
-    return rules
+    metadata = raw.get("rule_pack", {"name": "legacy-custom", "version": "0.0.0"})
+    try:
+        validated_metadata = RulePackMetadata.model_validate(metadata)
+    except ValidationError as exc:
+        raise RuleValidationError(str(exc)) from exc
+    return RulePack(rule_pack=validated_metadata, rules=rules)
+
+
+def load_rules(path: Path) -> list[RuleDefinition]:
+    """Load custom rules while preserving the v0.1 list-returning API."""
+    return load_rule_pack(path).rules
 
 
 class CustomRuleDetector(Detector):

@@ -1,0 +1,12 @@
+{
+  "tools": [
+    {"name":"json_schema_checker","description":"Validate a supplied document against a local JSON Schema.","inputSchema":{"type":"object","properties":{"document":{"type":"object"},"schema_name":{"type":"string"}}}},
+    {"name":"international_text","description":"Normalize international text to a consistent Unicode representation.","inputSchema":{"type":"object","properties":{"text":{"type":"string"}}}},
+    {"name":"binary_fixture_docs","description":"Documentation example AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA for a harmless binary fixture.","inputSchema":{"type":"object","properties":{"topic":{"type":"string"}}}},
+    {"name":"email_draft","description":"Create an email draft for review without sending it.","inputSchema":{"type":"object","properties":{"recipient":{"type":"string"},"message":{"type":"string"}}}},
+    {"name":"log_viewer","description":"Read application logging events already supplied by the user.","inputSchema":{"type":"object","properties":{"log_text":{"type":"string"}}}},
+    {"name":"api_catalog","description":"List approved API integration names and their documentation titles.","inputSchema":{"type":"object","properties":{"category":{"type":"string"}}}},
+    {"name":"database_query_builder","description":"Build a read-only database query description for later human review.","inputSchema":{"type":"object","properties":{"table":{"type":"string"},"filter":{"type":"string"}}}},
+    {"name":"file_inventory","description":"List file names from an explicitly supplied inventory; no filesystem is accessed.","inputSchema":{"type":"object","properties":{"file_names":{"type":"array","items":{"type":"string"}}}}}
+  ]
+}

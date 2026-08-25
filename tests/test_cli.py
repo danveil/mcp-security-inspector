@@ -1,8 +1,10 @@
 import json
 from pathlib import Path
 
+import pytest
 from typer.testing import CliRunner
 
+import mcpsec.cli as cli_module
 from mcpsec.cli import app
 
 runner = CliRunner()
@@ -22,7 +24,41 @@ def test_help() -> None:
 def test_version() -> None:
     result = invoke("--version")
     assert result.exit_code == 0
-    assert "0.1.0" in result.stdout
+    assert "0.2.0" in result.stdout
+
+
+def test_evaluate_json() -> None:
+    result = invoke("evaluate", str(ROOT / "evaluation" / "corpus" / "manifest.json"), "--format", "json")
+    assert result.exit_code == 0
+    payload = json.loads(result.stdout)
+    assert payload["metadata"]["sample_count"] == 80
+    assert payload["confusion_matrix"] == {"tp": 37, "tn": 35, "fp": 5, "fn": 3}
+
+
+def test_evaluate_output(tmp_path: Path) -> None:
+    output = tmp_path / "evaluation.csv"
+    result = invoke(
+        "evaluate",
+        str(ROOT / "evaluation" / "corpus" / "manifest.json"),
+        "--format",
+        "csv",
+        "--output",
+        str(output),
+    )
+    assert result.exit_code == 0
+    assert output.read_text(encoding="utf-8").startswith("sample_id,expected,predicted")
+
+
+def test_fetch_writes_static_catalog(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        cli_module,
+        "fetch_local_catalog",
+        lambda url, timeout_seconds, max_tools: [{"name": "safe", "inputSchema": {"type": "object"}}],
+    )
+    output = tmp_path / "catalog.json"
+    result = invoke("fetch", "http://localhost:8765/mcp", "--output", str(output))
+    assert result.exit_code == 0
+    assert json.loads(output.read_text(encoding="utf-8"))["tools"][0]["name"] == "safe"
 
 
 def test_clean_scan_table() -> None:

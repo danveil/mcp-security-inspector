@@ -1,0 +1,4 @@
+suppressions:
+  - rule_id: SEC-001
+    tool: credential_manager_manual
+    justification: Legitimate documentation tool accepts only a public help topic and no credential value.

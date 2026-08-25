@@ -33,16 +33,20 @@ Tool metadata can influence both human approval and model tool selection. A mali
 - Instruction override, concealment, sensitive data, schema, mismatch, obfuscation, and capability detectors
 - Strict data-only YAML rules using safe loading and bounded literal matching
 - Explainable, capped risk scores from 0–100
+- Versioned 80-sample synthetic corpus with binary/category metrics, confusion matrices, timing, and FP/FN evidence
+- Versioned data-only rule packs and justified, scoped suppressions
+- Opt-in, localhost-only, bounded MCP SDK `tools/list` retrieval
 - Rich terminal, JSON, CSV, and SARIF 2.1.0 output
 - Evidence redaction and spreadsheet formula-injection mitigation
 - CI severity thresholds with documented exit codes
-- No telemetry, tool calls, icon downloads, URL fetching, or metadata execution
+- No telemetry, tool calls, icon downloads, metadata URL following, arbitrary command spawning, or metadata execution
 
 ## Architecture
 
 ```mermaid
 flowchart LR
   A["Hostile JSON catalog"] --> B["Bounded loader"]
+  I["Opt-in localhost tools/list"] --> B
   B --> C["Normalizer"]
   C --> D["Canonicalizer + SHA-256"]
   C --> E["Detectors + data-only rules"]
@@ -50,6 +54,7 @@ flowchart LR
   D --> G["Baseline comparator"]
   F --> H["Terminal / JSON / CSV / SARIF"]
   G --> H
+  H --> J["Corpus evaluation + metrics"]
 ```
 
 The implementation never sends catalog content to a model and never executes scanned values. See [architecture](docs/architecture.md).
@@ -91,9 +96,33 @@ mcpsec fingerprint examples/clean_tools.json
 
 The changed fixture modifies calculator description and input schema and adds `unit_converter`. Baselines store hashes and structural summaries, not full descriptions, defaults, or example secrets. See [schema drift](docs/schema-drift.md).
 
+## Evaluation
+
+```bash
+mcpsec evaluate evaluation/corpus/manifest.json
+mcpsec evaluate evaluation/corpus/manifest.json --format json --output evaluation-result.json
+mcpsec evaluate evaluation/corpus/manifest.json --format csv --output evaluation-samples.csv
+```
+
+The bundled corpus contains 40 benign and 40 suspicious harmless static definitions, including realistic borderline language. The default experiment applies built-in rules, no suppressions, and a medium binary threshold. JSON output records application, rule-pack, corpus, and Python versions plus UTC time and sample count; it does not record a username, hostname, or absolute corpus path.
+
+**Results on bundled synthetic evaluation corpus 1.0.0 — not real-world detection accuracy:** TP 37, TN 35, FP 5, FN 3; accuracy 90.00%, precision 88.10%, recall 92.50%, F1 90.24%, false-positive rate 12.50%, false-negative rate 7.50%, and specificity 87.50%.
+
+| Category | Precision | Recall | F1 |
+|---|---:|---:|---:|
+| capability | 36.36% | 66.67% | 47.06% |
+| concealment | 80.00% | 100.00% | 88.89% |
+| instruction override | 88.89% | 100.00% | 94.12% |
+| mismatch | 70.00% | 100.00% | 82.35% |
+| obfuscation | 80.00% | 100.00% | 88.89% |
+| schema | 100.00% | 81.82% | 90.00% |
+| sensitive data | 58.33% | 100.00% | 73.68% |
+
+See the [evaluation methodology](docs/evaluation-methodology.md) and [false-positive analysis](docs/false-positive-analysis.md). The corpus is versioned separately; label changes must be recorded in `evaluation/CHANGELOG.md`.
+
 ## Risk scoring
 
-Each finding's configured contribution is multiplied by confidence. Contributions are grouped and capped at 35 per category; category risks are combined using `100 × (1 − Π(1 − category/100))`. Two documented correlations add bounded synergy: instruction override + concealment adds 10, and concealment + sensitive-data language adds 7. The final value is rounded and capped at 100.
+Each finding's configured contribution is multiplied by confidence. Equivalent `(category, rule ID)` contributions are deduplicated using the strongest instance. Contributions are grouped and capped at 35 per category; category risks are combined using `100 × (1 − Π(1 − category/100))`. Two documented correlations add bounded synergy: instruction override + concealment adds 10, and concealment + sensitive-data language adds 7. The final value is rounded and capped at 100. See [risk scoring](docs/risk-scoring.md).
 
 Bands: 0–19 informational, 20–39 low, 40–59 medium, 60–79 high, 80–100 critical. A score prioritizes review; it is not a probability or verdict.
 
@@ -103,9 +132,21 @@ Bands: 0–19 informational, 20–39 low, 40–59 medium, 60–79 high, 80–100
 mcpsec rules list
 mcpsec rules validate rules/default_rules.yml
 mcpsec explain SEC-001
+mcpsec scan catalog.json --suppressions rules/suppressions.example.yml
 ```
 
-Custom rules allow ID, name, category, fields, literal patterns, severity, confidence, score, recommendation, rationale, benign usage, and enabled state. They cannot contain Python expressions, shell commands, imports, templates, or executable regex. See [detection rules](docs/detection-rules.md).
+Custom rules allow ID, name, category, fields, literal patterns, severity, confidence, score, recommendation, rationale, benign usage, and enabled state. Rule-pack name/version metadata makes experiments reproducible. Separate suppressions require a known rule ID, optional exact tool scope, and written justification. They cannot contain Python expressions, shell commands, imports, templates, or executable regex. See [detection rules](docs/detection-rules.md).
+
+## Opt-in local MCP retrieval
+
+Static files remain the safest default. To retrieve only an explicitly supplied local server's tool catalog:
+
+```bash
+mcpsec fetch http://127.0.0.1:8765/mcp --output local-tools.json
+mcpsec scan local-tools.json
+```
+
+The command uses the official MCP SDK and `tools/list` only. It permits localhost/loopback HTTP(S), starts no process, invokes no tool, follows no metadata URL, downloads no icon, and enforces an overall timeout, maximum 500 tools by default, the existing 10 MiB limit, string bounds, schema normalization, and duplicate-name rejection. It uses the endpoint's configured transport and no inspector-managed authentication. See the [local sample server guide](sample_mcp_server/README.md).
 
 ## Output formats
 
@@ -119,7 +160,7 @@ Exit codes are `0` for no configured threshold exceeded, `1` for a completed sca
 mcpsec scan catalog.json --fail-on medium
 ```
 
-The included GitHub Actions workflow installs Python, runs Ruff lint/format checks, mypy, and pytest with coverage. It requires no secrets, does not connect to servers, and does not publish.
+The included GitHub Actions workflow installs Python, runs Ruff lint/format checks, mypy, pytest with coverage, and the offline bundled-corpus evaluation. It requires no secrets, does not connect to servers, and does not publish.
 
 ## Testing
 
@@ -132,7 +173,7 @@ python -m pytest --cov=mcpsec --cov-report=term-missing --cov-report=html
 
 On Windows, `scripts\test.ps1 -q` runs the correct virtual-environment interpreter even when the environment is not activated. Use `scripts\dev-inspector.ps1` for the local demonstration server; see [the sample-server guide](sample_mcp_server/README.md). The `/sandbox` address printed by Inspector is an internal iframe endpoint, not the main user interface.
 
-Tests cover input shapes, Unicode, canonicalization, hashes, baselines, drift, detectors, risk caps, rule validation, safe YAML, structured reports, CSV neutralization, and CLI exit codes.
+Tests cover input shapes, Unicode, canonicalization, hashes, baselines, drift, detectors, risk caps/deduplication/order invariance, rule packs, suppressions, corpus validation, explicit metric formulas, structured evaluation, retrieval boundaries, safe YAML, structured reports, CSV neutralization, and CLI exit codes.
 
 ## Security model and false positives
 
@@ -146,11 +187,11 @@ A clean scan does not establish trust; a suspicious scan does not prove maliciou
 
 ## Roadmap
 
-- v0.2: opt-in, allowlisted local catalog retrieval using SDK `tools/list` only
+- Independently reviewed and held-out real-world-derived metadata corpus
 - Richer MCP 2026-07-28 `x-mcp-header` validation
-- Signed baseline envelopes and baseline policy profiles
-- Rule-pack versioning, suppressions with justification, and delta SARIF
-- Additional language-aware heuristics and corpus-driven false-positive measurement
+- Experimental signed baseline envelopes and baseline policy profiles
+- Delta SARIF and explicit detection-policy profiles
+- Additional language-aware, quotation-aware, and privacy-context heuristics
 
 ## Contributing and license
 

@@ -30,4 +30,19 @@ To run only the server over stdio without the web Inspector:
 .\.venv\Scripts\mcp.exe run sample_mcp_server\server.py
 ```
 
+To demonstrate v0.2's opt-in localhost-only catalog retrieval, run the harmless server in one terminal:
+
+```powershell
+.\.venv\Scripts\python.exe sample_mcp_server\server.py --http --port 8765
+```
+
+Then, in another terminal, retrieve only `tools/list` and scan the saved static catalog:
+
+```powershell
+mcpsec fetch http://127.0.0.1:8765/mcp --output local-tools.json
+mcpsec scan local-tools.json
+```
+
+`fetch` does not start a process and never invokes a discovered tool. It rejects non-loopback endpoints and enforces timeout, tool-count, metadata-size, normalization, and duplicate-name limits. The local demo uses no authentication; do not expose it on a public interface.
+
 Only connect with an MCP client you control. The application's primary workflow is static JSON inspection.

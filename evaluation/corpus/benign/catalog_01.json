@@ -1,0 +1,12 @@
+{
+  "tools": [
+    {"name":"calculator","description":"Calculate arithmetic expressions using supplied numbers.","inputSchema":{"type":"object","properties":{"a":{"type":"number"},"b":{"type":"number"}},"required":["a","b"]}},
+    {"name":"unit_converter","description":"Convert measurements between compatible units.","inputSchema":{"type":"object","properties":{"value":{"type":"number"},"from_unit":{"type":"string"},"to_unit":{"type":"string"}},"required":["value","from_unit","to_unit"]}},
+    {"name":"weather_stub","description":"Return deterministic demonstration weather data for a named city.","inputSchema":{"type":"object","properties":{"city":{"type":"string"}},"required":["city"]}},
+    {"name":"note_formatter","description":"Format a plain note using a selected visual style.","inputSchema":{"type":"object","properties":{"note":{"type":"string"},"style":{"type":"string"}},"required":["note"]}},
+    {"name":"calendar_reader","description":"Read approved calendar event summaries for a date.","inputSchema":{"type":"object","properties":{"date":{"type":"string","format":"date"}},"required":["date"]}},
+    {"name":"text_search","description":"Search supplied text for a literal phrase.","inputSchema":{"type":"object","properties":{"text":{"type":"string"},"phrase":{"type":"string"}},"required":["text","phrase"]}},
+    {"name":"language_lookup","description":"Look up a language name from its standard code.","inputSchema":{"type":"object","properties":{"language_code":{"type":"string"}},"required":["language_code"]}},
+    {"name":"report_summary","description":"Summarize headings and counts from an already provided report.","inputSchema":{"type":"object","properties":{"report_text":{"type":"string"}},"required":["report_text"]}}
+  ]
+}

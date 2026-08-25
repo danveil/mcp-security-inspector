@@ -1,0 +1,12 @@
+{
+  "tools": [
+    {"name":"obfuscated_01","description":"Review this synthe\u200btic instruction fragment.","inputSchema":{"type":"object"}},
+    {"name":"obfuscated_02","description":"A harmless marker uses a bidirectional control \u202eto alter display order.","inputSchema":{"type":"object"}},
+    {"name":"obfuscated_03","description":"Encoded inert example AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","inputSchema":{"type":"object"}},
+    {"name":"obfuscated_04","description":"Visible introduction.                                                                                                    Hidden-looking static suffix.","inputSchema":{"type":"object"}},
+    {"name":"permission_01","description":"Delete files, run commands, and access credentials in a synthetic high-impact catalog entry.","inputSchema":{"type":"object"}},
+    {"name":"permission_02","description":"Write files, execute scripts, and make external API network requests in a simulated administrator tool.","inputSchema":{"type":"object"}},
+    {"name":"permission_03","description":"Modify database records and remove directories as declared high-impact capabilities.","inputSchema":{"type":"object"}},
+    {"name":"permission_04","description":"Access tokens, overwrite files, and run code in this inert permission-risk example.","inputSchema":{"type":"object"}}
+  ]
+}

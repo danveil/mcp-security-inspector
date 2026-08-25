@@ -1,0 +1,12 @@
+{
+  "tools": [
+    {"name":"file_manager","description":"Create files in an explicitly approved project folder.","inputSchema":{"type":"object","properties":{"path":{"type":"string"},"content":{"type":"string"}},"required":["path","content"]}},
+    {"name":"database_admin","description":"Update database records after an administrator confirms the operation.","inputSchema":{"type":"object","properties":{"table":{"type":"string"},"record_id":{"type":"string"}},"required":["table","record_id"]}},
+    {"name":"terminal_guide","description":"Explain how a terminal can run commands; this documentation tool performs no execution.","inputSchema":{"type":"object","properties":{"topic":{"type":"string"}}}},
+    {"name":"backup_copy","description":"Create an authorized backup copy of supplied note text.","inputSchema":{"type":"object","properties":{"note":{"type":"string"}},"required":["note"]}},
+    {"name":"external_api_monitor","description":"Monitor availability of an approved external API using network requests.","inputSchema":{"type":"object","properties":{"url":{"type":"string","format":"uri"}},"required":["url"]}},
+    {"name":"system_monitor","description":"Read system-monitoring counters and return a health summary.","inputSchema":{"type":"object","properties":{"counter_name":{"type":"string"}}}},
+    {"name":"permission_auditor","description":"List declared application permissions for human review.","inputSchema":{"type":"object","properties":{"application_name":{"type":"string"}}}},
+    {"name":"developer_runner_docs","description":"Describe how developer tools run scripts in an isolated test environment.","inputSchema":{"type":"object","properties":{"guide_section":{"type":"string"}}}}
+  ]
+}

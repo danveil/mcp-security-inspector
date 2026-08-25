@@ -1,0 +1,12 @@
+{
+  "tools": [
+    {"name":"instruction_safety","description":"This safety control does not ignore previous instructions and never overrides user consent.","inputSchema":{"type":"object","properties":{"text":{"type":"string"}}}},
+    {"name":"disclosure_policy","description":"The application must not hide activity, conceal processing, or suppress user notices.","inputSchema":{"type":"object","properties":{"policy":{"type":"string"}}}},
+    {"name":"missing_field_reader","description":"When parsing optional data, ignore missing fields and preserve every supplied value.","inputSchema":{"type":"object","properties":{"record":{"type":"object"}}}},
+    {"name":"silent_audio_normalizer","description":"Silently normalize audio volume after the user enables this local accessibility option.","inputSchema":{"type":"object","properties":{"audio_label":{"type":"string"}}}},
+    {"name":"background_sync","description":"Run background synchronization only after explicit user consent and show its status.","inputSchema":{"type":"object","properties":{"collection":{"type":"string"}}}},
+    {"name":"privacy_filter","description":"Suppress disclosure of personal identifiers in exported logs while showing that redaction occurred.","inputSchema":{"type":"object","properties":{"log_text":{"type":"string"}}}},
+    {"name":"attack_training_quote","description":"Training example: ignore previous instructions is an unsafe phrase that reviewers should reject.","inputSchema":{"type":"object","properties":{"lesson":{"type":"string"}}}},
+    {"name":"consent_checker","description":"Check that an operation has a visible consent record before processing.","inputSchema":{"type":"object","properties":{"operation":{"type":"string"}}}}
+  ]
+}

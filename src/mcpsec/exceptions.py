@@ -8,3 +8,11 @@ class InputError(McpsecError):
 
 class RuleValidationError(McpsecError):
     """Invalid data-only rule configuration."""
+
+
+class CorpusValidationError(McpsecError):
+    """Invalid evaluation corpus or ground truth."""
+
+
+class RetrievalError(McpsecError):
+    """Safe MCP catalog retrieval failed."""

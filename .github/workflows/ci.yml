@@ -22,6 +22,7 @@ jobs:
       - run: ruff format --check .
       - run: mypy src
       - run: pytest --cov=mcpsec --cov-report=term-missing --cov-report=xml
+      - name: Validate bundled synthetic evaluation corpus
+        run: mcpsec evaluate evaluation/corpus/manifest.json --format json --output evaluation-result.json
       - name: Offline clean-catalog policy example
         run: mcpsec scan examples/clean_tools.json --fail-on high
-
