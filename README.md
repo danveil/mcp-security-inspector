@@ -3,6 +3,7 @@
 > Explainable, deterministic static analysis for Model Context Protocol tool metadata.
 
 [![CI](https://img.shields.io/badge/CI-Ruff%20%7C%20mypy%20%7C%20pytest-blue)](#ci-use) [![Python](https://img.shields.io/badge/Python-3.12%2B-3776AB)](https://www.python.org/) [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+[![M8ven Score](https://m8ven.ai/badge/mcp/danveil-mcp-security-inspector-9btdio)](https://m8ven.ai/mcp/danveil-mcp-security-inspector-9btdio)
 
 **Security disclaimer:** The MCP Tool Security Inspector is a defensive analysis tool. It identifies indicators that may warrant review but does not establish whether an MCP tool or server is definitively malicious or safe.
 
