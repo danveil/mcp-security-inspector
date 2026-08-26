@@ -54,3 +54,25 @@ def test_scanner_applies_scoped_suppression() -> None:
     suppressed = analyze_tools([tool], source="test", suppressions=[suppression])
     assert [item.rule_id for item in unsuppressed.tools[0].findings] == ["SEC-001"]
     assert suppressed.tools[0].findings == []
+
+
+def test_suppression_file_size_is_bounded(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr("mcpsec.suppressions.MAX_SUPPRESSION_FILE_BYTES", 20)
+    with pytest.raises(RuleValidationError, match="byte limit"):
+        load_suppressions(
+            write(tmp_path, "suppressions:\n  - rule_id: SEC-001\n    justification: Legitimate context.\n"),
+            {"SEC-001"},
+        )
+
+
+def test_suppression_count_is_bounded(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr("mcpsec.suppressions.MAX_SUPPRESSIONS", 1)
+    payload = (
+        "suppressions:\n"
+        "  - rule_id: SEC-001\n"
+        "    justification: First legitimate reviewed context.\n"
+        "  - rule_id: HID-001\n"
+        "    justification: Second legitimate reviewed context.\n"
+    )
+    with pytest.raises(RuleValidationError, match="exceeds 1 entries"):
+        load_suppressions(write(tmp_path, payload), {"SEC-001", "HID-001"})

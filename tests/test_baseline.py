@@ -43,3 +43,11 @@ def test_invalid_baseline(tmp_path: Path) -> None:
 
 def test_timestamp_generated() -> None:
     assert "+00:00" in create_baseline([], "fixture").created_at
+
+
+def test_baseline_file_size_is_bounded(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    path = tmp_path / "large.json"
+    path.write_text('{"data":"more than twenty bytes"}', encoding="utf-8")
+    monkeypatch.setattr("mcpsec.baseline.MAX_BASELINE_BYTES", 20)
+    with pytest.raises(InputError, match="byte limit"):
+        load_baseline(path)

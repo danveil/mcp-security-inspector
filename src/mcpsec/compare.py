@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from collections import defaultdict
+
 from mcpsec.baseline import _summary
 from mcpsec.fingerprint import fingerprint_tool
 from mcpsec.models import BaselineFile, BaselineTool, Drift, Fingerprints, ToolDefinition
@@ -12,6 +14,19 @@ HASH_FIELDS = {
     "execution_sha256": "execution",
     "metadata_sha256": "other_metadata",
 }
+
+RenameSignature = tuple[str, str, str | None, str, str, str]
+
+
+def _rename_signature(value: Fingerprints) -> RenameSignature:
+    return (
+        value.description_sha256,
+        value.input_schema_sha256,
+        value.output_schema_sha256,
+        value.annotations_sha256,
+        value.execution_sha256,
+        value.metadata_sha256,
+    )
 
 
 def _changed(old: Fingerprints, new: Fingerprints) -> list[str]:
@@ -45,22 +60,27 @@ def _detail(old: BaselineTool, tool: ToolDefinition, fields: list[str], verbose:
 def compare_baseline(tools: list[ToolDefinition], baseline: BaselineFile, verbose: bool = False) -> list[Drift]:
     current = {tool.name: tool for tool in tools}
     previous = {tool.name: tool for tool in baseline.tools}
+    current_fingerprints = {name: fingerprint_tool(tool) for name, tool in current.items()}
     drifts: list[Drift] = []
     removed = set(previous) - set(current)
     added = set(current) - set(previous)
 
-    # Conservative rename inference: exactly one removed/new pair with identical components except full hash/name.
+    # Conservative rename inference: each component signature must identify exactly one old and one new tool.
+    removed_by_signature: dict[RenameSignature, list[str]] = defaultdict(list)
+    added_by_signature: dict[RenameSignature, list[str]] = defaultdict(list)
+    for old_name in removed:
+        removed_by_signature[_rename_signature(previous[old_name].fingerprints)].append(old_name)
+    for new_name in added:
+        added_by_signature[_rename_signature(current_fingerprints[new_name])].append(new_name)
+
     paired_added: set[str] = set()
     paired_removed: set[str] = set()
     for old_name in sorted(removed):
-        old_fp = previous[old_name].fingerprints
-        candidates = []
-        for new_name in sorted(added):
-            new_fp = fingerprint_tool(current[new_name])
-            if all(getattr(old_fp, attr) == getattr(new_fp, attr) for attr in HASH_FIELDS):
-                candidates.append(new_name)
-        if len(candidates) == 1:
-            new_name = candidates[0]
+        signature = _rename_signature(previous[old_name].fingerprints)
+        old_candidates = removed_by_signature[signature]
+        new_candidates = added_by_signature.get(signature, [])
+        if len(old_candidates) == 1 and len(new_candidates) == 1:
+            new_name = new_candidates[0]
             paired_removed.add(old_name)
             paired_added.add(new_name)
             drifts.append(Drift(kind="tool_renamed", tool_name=new_name, previous_name=old_name, fields=["name"]))
@@ -70,7 +90,7 @@ def compare_baseline(tools: list[ToolDefinition], baseline: BaselineFile, verbos
     for name in sorted(added - paired_added):
         drifts.append(Drift(kind="tool_added", tool_name=name))
     for name in sorted(set(current) & set(previous)):
-        new_fp = fingerprint_tool(current[name])
+        new_fp = current_fingerprints[name]
         old = previous[name]
         if old.fingerprints.full_sha256 != new_fp.full_sha256:
             fields = _changed(old.fingerprints, new_fp)

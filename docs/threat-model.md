@@ -16,7 +16,7 @@
 
 ## Threats
 
-The scanner focuses on tool-description poisoning, model instruction injection, concealment, sensitive-data collection indicators, schema drift, capability expansion, misleading tool naming, and metadata obfuscation. Reports are also a boundary: hostile strings could target terminals or spreadsheets, so evidence is bounded, escape bytes are neutralized, CSV formula prefixes are escaped, and `--redact` suppresses excerpts.
+The scanner focuses on tool-metadata poisoning across descriptions, schemas, annotations, execution data, metadata, and unknown textual fields, as well as model instruction injection, concealment, sensitive-data collection indicators, schema drift, capability expansion, misleading tool naming, and metadata obfuscation. Reports are also a boundary: hostile strings could target terminals or spreadsheets, so evidence is bounded, escape bytes are neutralized, CSV formula prefixes are escaped, and `--redact` suppresses excerpts.
 
 ## Out of scope
 
@@ -27,4 +27,3 @@ The scanner focuses on tool-description poisoning, model instruction injection, 
 - Automatically deciding whether a server is safe or malicious
 
 Human review, server authentication, least privilege, confirmation UI, runtime isolation, and audit logging remain separate controls.
-

@@ -7,14 +7,18 @@ from pydantic import TypeAdapter, ValidationError
 
 from mcpsec.exceptions import RuleValidationError
 from mcpsec.models import SuppressionDefinition
-
-MAX_SUPPRESSIONS = 500
+from mcpsec.resource_policy import (
+    MAX_SUPPRESSION_FILE_BYTES,
+    MAX_SUPPRESSIONS,
+    ResourcePolicyError,
+    load_bounded_yaml,
+)
 
 
 def load_suppressions(path: Path, known_rule_ids: set[str]) -> list[SuppressionDefinition]:
     try:
-        raw = yaml.safe_load(path.read_text(encoding="utf-8"))
-    except (OSError, UnicodeError, yaml.YAMLError) as exc:
+        raw = load_bounded_yaml(path, max_bytes=MAX_SUPPRESSION_FILE_BYTES, label="Suppressions file")
+    except (OSError, UnicodeError, yaml.YAMLError, ResourcePolicyError) as exc:
         raise RuleValidationError(f"Cannot load suppressions: {exc}") from exc
     if not isinstance(raw, dict) or set(raw) != {"suppressions"} or not isinstance(raw["suppressions"], list):
         raise RuleValidationError("Suppressions file must contain only a top-level 'suppressions' list")

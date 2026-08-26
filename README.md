@@ -28,7 +28,7 @@ Tool metadata can influence both human approval and model tool selection. A mali
 ## Features
 
 - Single-tool, array, direct `tools` object, and JSON-RPC `tools/list` response loading
-- Unknown-field preservation and Unicode NFC normalization
+- Unknown-field preservation, Unicode NFC normalization, conflicting-alias rejection, and explicit oversized-text rejection
 - Stable UTF-8 canonical JSON and SHA-256 full/component fingerprints
 - Privacy-conscious baselines and field-level drift classification
 - Instruction override, concealment, sensitive data, schema, mismatch, obfuscation, and capability detectors
@@ -107,13 +107,13 @@ mcpsec evaluate evaluation/corpus/manifest.json --format csv --output evaluation
 
 The bundled corpus contains 40 benign and 40 suspicious harmless static definitions, including realistic borderline language. The default experiment applies built-in rules, no suppressions, and a medium binary threshold. JSON output records application, rule-pack, corpus, and Python versions plus UTC time and sample count; it does not record a username, hostname, or absolute corpus path.
 
-**Results on bundled synthetic evaluation corpus 1.0.0 — not real-world detection accuracy:** TP 37, TN 35, FP 5, FN 3; accuracy 90.00%, precision 88.10%, recall 92.50%, F1 90.24%, false-positive rate 12.50%, false-negative rate 7.50%, and specificity 87.50%.
+**Results on bundled synthetic evaluation corpus 1.0.0 — not real-world detection accuracy:** TP 37, TN 36, FP 4, FN 3; accuracy 91.25%, precision 90.24%, recall 92.50%, F1 91.36%, false-positive rate 10.00%, false-negative rate 7.50%, and specificity 90.00%.
 
 | Category | Precision | Recall | F1 |
 |---|---:|---:|---:|
 | capability | 36.36% | 66.67% | 47.06% |
 | concealment | 80.00% | 100.00% | 88.89% |
-| instruction override | 88.89% | 100.00% | 94.12% |
+| instruction override | 100.00% | 100.00% | 100.00% |
 | mismatch | 70.00% | 100.00% | 82.35% |
 | obfuscation | 80.00% | 100.00% | 88.89% |
 | schema | 100.00% | 81.82% | 90.00% |
@@ -147,7 +147,7 @@ mcpsec fetch http://127.0.0.1:8765/mcp --output local-tools.json
 mcpsec scan local-tools.json
 ```
 
-The command uses the official MCP SDK and `tools/list` only. It permits localhost/loopback HTTP(S), starts no process, invokes no tool, follows no metadata URL, downloads no icon, and enforces an overall timeout, maximum 500 tools by default, the existing 10 MiB limit, string bounds, schema normalization, and duplicate-name rejection. It uses the endpoint's configured transport and no inspector-managed authentication. See the [local sample server guide](sample_mcp_server/README.md).
+The command uses the official MCP SDK and `tools/list` only. Its dedicated transport revalidates every request as loopback, pins verified `localhost` resolution to the selected loopback IP for the actual connection, preserves HTTPS SNI, rejects redirects, ignores proxy environment variables, and applies a cumulative 10 MiB response budget. It starts no process, invokes no tool, follows no metadata URL, downloads no icon, and also enforces an overall timeout, maximum 500 tools by default, a 100-page limit, schema normalization, oversized-string rejection, and duplicate-name rejection. It uses no inspector-managed authentication. See the [local sample server guide](sample_mcp_server/README.md).
 
 ## Output formats
 
@@ -178,7 +178,7 @@ Tests cover input shapes, Unicode, canonicalization, hashes, baselines, drift, d
 
 ## Security model and false positives
 
-All input is untrusted data. Files are size-bounded; strings are length-bounded; YAML uses `safe_load`; schema content is validated but never evaluated; custom matching is literal and bounded; terminal escape bytes are neutralized; reporters do not render HTML. A finding says “suspicious” or “requires review,” never asserts compromise. Every built-in rule documents its rationale, benign triggers, and guidance through `mcpsec explain`.
+All input is untrusted data. Files, structures, tool counts, pages, YAML aliases/nodes, rule fields, and pattern counts are bounded. Strings longer than 100,000 characters are rejected rather than truncated. Conflicting camelCase/snake_case aliases are rejected. YAML uses `SafeLoader`; schema content is validated but never evaluated; custom matching is literal and bounded; terminal escape bytes are neutralized; reporters do not render HTML. A finding says “suspicious” or “requires review,” never asserts compromise. Every built-in rule documents its rationale, benign triggers, and guidance through `mcpsec explain`.
 
 See [SECURITY.md](SECURITY.md), [detection rules](docs/detection-rules.md), and [limitations](docs/limitations.md).
 

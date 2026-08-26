@@ -8,6 +8,11 @@ from mcpsec import __version__
 from mcpsec.exceptions import InputError
 from mcpsec.fingerprint import fingerprint_tool
 from mcpsec.models import BaselineFile, BaselineTool, ToolDefinition
+from mcpsec.resource_policy import (
+    MAX_BASELINE_BYTES,
+    read_bounded_text,
+    validate_structure,
+)
 
 
 def _summary(tool: ToolDefinition) -> dict[str, object]:
@@ -42,6 +47,8 @@ def write_baseline(baseline: BaselineFile, path: Path) -> None:
 
 def load_baseline(path: Path) -> BaselineFile:
     try:
-        return BaselineFile.model_validate_json(path.read_text(encoding="utf-8"))
-    except (OSError, ValueError) as exc:
+        raw = json.loads(read_bounded_text(path, max_bytes=MAX_BASELINE_BYTES, label="Baseline"))
+        validate_structure(raw, label="Baseline")
+        return BaselineFile.model_validate(raw)
+    except (OSError, UnicodeError, ValueError) as exc:
         raise InputError(f"Invalid baseline: {exc}") from exc

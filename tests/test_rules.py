@@ -90,3 +90,33 @@ def test_unsafe_python_yaml_is_rejected(tmp_path: Path) -> None:
     payload = "rules: !!python/object/apply:os.system ['echo unsafe']"
     with pytest.raises(RuleValidationError):
         load_rules(write(tmp_path, payload))
+
+
+def test_rule_file_size_is_bounded(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr("mcpsec.rules.loader.MAX_RULE_FILE_BYTES", 20)
+    with pytest.raises(RuleValidationError, match="byte limit"):
+        load_rules(write(tmp_path, VALID))
+
+
+def test_rule_pattern_count_is_bounded(tmp_path: Path) -> None:
+    patterns = ", ".join(f"pattern-{index}" for index in range(33))
+    with pytest.raises(RuleValidationError, match="patterns"):
+        load_rules(write(tmp_path, VALID.replace("send a copy", patterns)))
+
+
+def test_rule_field_count_is_bounded(tmp_path: Path) -> None:
+    fields = ", ".join("description" for _ in range(10))
+    with pytest.raises(RuleValidationError, match="fields"):
+        load_rules(write(tmp_path, VALID.replace("fields: [description]", f"fields: [{fields}]")))
+
+
+def test_yaml_alias_count_is_bounded(tmp_path: Path) -> None:
+    aliases = ", ".join("*item" for _ in range(51))
+    payload = f"item: &item value\nitems: [{aliases}]\n"
+    with pytest.raises(RuleValidationError, match="alias limit"):
+        load_rules(write(tmp_path, payload))
+
+
+def test_yaml_recursive_alias_is_rejected(tmp_path: Path) -> None:
+    with pytest.raises(RuleValidationError, match="recursive YAML alias"):
+        load_rules(write(tmp_path, "rules: &rules [*rules]\n"))

@@ -8,15 +8,19 @@ from pydantic import TypeAdapter, ValidationError
 from mcpsec.detectors.base import Detector, all_text_fields, finding
 from mcpsec.exceptions import RuleValidationError
 from mcpsec.models import Finding, RuleDefinition, RulePack, RulePackMetadata, ToolDefinition
-
-MAX_RULES = 200
-MAX_PATTERN_LENGTH = 256
+from mcpsec.resource_policy import (
+    MAX_PATTERN_LENGTH,
+    MAX_RULE_FILE_BYTES,
+    MAX_RULES,
+    ResourcePolicyError,
+    load_bounded_yaml,
+)
 
 
 def load_rule_pack(path: Path) -> RulePack:
     try:
-        raw = yaml.safe_load(path.read_text(encoding="utf-8"))
-    except (OSError, UnicodeError, yaml.YAMLError) as exc:
+        raw = load_bounded_yaml(path, max_bytes=MAX_RULE_FILE_BYTES, label="Rules file")
+    except (OSError, UnicodeError, yaml.YAMLError, ResourcePolicyError) as exc:
         raise RuleValidationError(f"Cannot load rules: {exc}") from exc
     if not isinstance(raw, dict) or set(raw) not in ({"rules"}, {"rule_pack", "rules"}):
         raise RuleValidationError("Rules file must contain 'rules' and optional 'rule_pack' metadata")

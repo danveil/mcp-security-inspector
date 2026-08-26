@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from enum import StrEnum
+from importlib.resources import as_file, files
 from io import StringIO
 from pathlib import Path
 from typing import Annotated
@@ -22,7 +23,7 @@ from mcpsec.fingerprint import fingerprint_tool
 from mcpsec.loader import load_tools
 from mcpsec.models import SEVERITY_RANK, ScanReport, Severity, ToolDefinition
 from mcpsec.normalizer import normalize_tools
-from mcpsec.reporter import render_terminal, serialize
+from mcpsec.reporter import render_terminal, serialize, terminal_safe
 from mcpsec.retrieval import DEFAULT_MAX_TOOLS, DEFAULT_TIMEOUT_SECONDS, fetch_local_catalog
 from mcpsec.rules import RULE_EXPLANATIONS, load_rule_pack, load_rules
 from mcpsec.scanner import analyze_file
@@ -87,7 +88,7 @@ def analyze(
 
 def _handle_error(exc: Exception) -> None:
     if isinstance(exc, McpsecError):
-        console.print(f"[red]Input error:[/red] {exc}", markup=True)
+        console.print("[red]Input error:[/red]", terminal_safe(exc))
         raise typer.Exit(2) from exc
     console.print("[red]Internal application failure.[/red]")
     raise typer.Exit(3) from exc
@@ -110,12 +111,18 @@ def scan(
     try:
         report = analyze(file, rules, redact, suppressions)
         if format == ReportFormat.table:
-            render_terminal(report, console)
+            if output:
+                buffer = StringIO()
+                render_terminal(report, Console(file=buffer, color_system=None, width=120))
+                output.write_text(buffer.getvalue(), encoding="utf-8")
+                console.print(f"Wrote table report to {terminal_safe(output)}")
+            else:
+                render_terminal(report, console)
         else:
             content = serialize(report, format.value)
             if output:
                 output.write_text(content + ("" if content.endswith("\n") else "\n"), encoding="utf-8")
-                console.print(f"Wrote {format.value} report to {output}")
+                console.print(f"Wrote {format.value} report to {terminal_safe(output)}")
             else:
                 typer.echo(content)
         if fail_on:
@@ -141,7 +148,7 @@ def baseline(
     try:
         value = create_baseline(_tools(file), str(file))
         write_baseline(value, output)
-        console.print(f"Baseline created: {output} ({len(value.tools)} tools)")
+        console.print(f"Baseline created: {terminal_safe(output)} ({len(value.tools)} tools)")
     except Exception as exc:
         _handle_error(exc)
 
@@ -161,11 +168,11 @@ def compare(
         table = Table("Kind", "Tool", "Previous", "Fields", "Differences", show_lines=True)
         for item in drifts:
             table.add_row(
-                item.kind,
-                item.tool_name,
-                item.previous_name or "—",
-                ", ".join(item.fields) or "—",
-                json.dumps(item.differences, ensure_ascii=True) if item.differences else "—",
+                terminal_safe(item.kind),
+                terminal_safe(item.tool_name),
+                terminal_safe(item.previous_name or "—"),
+                terminal_safe(", ".join(item.fields) or "—"),
+                terminal_safe(json.dumps(item.differences, ensure_ascii=True) if item.differences else "—"),
             )
         console.print(table)
     except Exception as exc:
@@ -200,7 +207,10 @@ def validate_rules(
     """Strictly validate a data-only YAML rule file."""
     try:
         validated = load_rule_pack(file)
-        console.print(f"Valid: {len(validated.rules)} rules ({validated.rule_pack.name} {validated.rule_pack.version})")
+        console.print(
+            f"Valid: {len(validated.rules)} rules "
+            f"({terminal_safe(validated.rule_pack.name)} {terminal_safe(validated.rule_pack.version)})"
+        )
     except Exception as exc:
         _handle_error(exc)
 
@@ -210,7 +220,7 @@ def explain(rule_id: Annotated[str, typer.Argument()]) -> None:
     """Explain rationale, benign uses, and analyst guidance for a built-in rule."""
     details = RULE_EXPLANATIONS.get(rule_id.upper())
     if not details:
-        console.print(f"Unknown rule ID: {rule_id}")
+        console.print(f"Unknown rule ID: {terminal_safe(rule_id)}")
         raise typer.Exit(2)
     name, why, benign, guidance = details
     console.print(
@@ -222,8 +232,9 @@ def explain(rule_id: Annotated[str, typer.Argument()]) -> None:
 @app.command()
 def demo() -> None:
     """Scan the bundled mixed demonstration catalog."""
-    demo_path = Path(__file__).parents[2] / "examples" / "mixed_tools.json"
-    scan(demo_path)
+    resource = files("mcpsec").joinpath("resources", "mixed_tools.json")
+    with as_file(resource) as demo_path:
+        scan(demo_path)
 
 
 @app.command()
@@ -239,7 +250,7 @@ def fetch(
     try:
         tools = fetch_local_catalog(url, timeout_seconds=timeout, max_tools=max_tools)
         output.write_text(json.dumps({"tools": tools}, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-        console.print(f"Wrote {len(tools)} tools to {output}; no tools were invoked.")
+        console.print(f"Wrote {len(tools)} tools to {terminal_safe(output)}; no tools were invoked.")
     except Exception as exc:
         _handle_error(exc)
 
@@ -284,14 +295,14 @@ def evaluate_command(
                 buffer = StringIO()
                 render_evaluation_terminal(report, Console(file=buffer, color_system=None, width=120))
                 output.write_text(buffer.getvalue(), encoding="utf-8")
-                console.print(f"Wrote terminal evaluation report to {output}")
+                console.print(f"Wrote terminal evaluation report to {terminal_safe(output)}")
             else:
                 render_evaluation_terminal(report, console)
         else:
             content = serialize_evaluation(report, format.value)
             if output:
                 output.write_text(content + ("" if content.endswith("\n") else "\n"), encoding="utf-8")
-                console.print(f"Wrote {format.value} evaluation report to {output}")
+                console.print(f"Wrote {format.value} evaluation report to {terminal_safe(output)}")
             else:
                 typer.echo(content)
     except Exception as exc:

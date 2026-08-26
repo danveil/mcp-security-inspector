@@ -8,12 +8,23 @@ $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
 $projectRoot = Split-Path -Parent $PSScriptRoot
+$pythonExecutable = Join-Path $projectRoot ".venv\Scripts\python.exe"
 $mcpExecutable = Join-Path $projectRoot ".venv\Scripts\mcp.exe"
 $serverFile = Join-Path $projectRoot "sample_mcp_server\server.py"
 $npmCache = Join-Path $projectRoot ".npm-cache"
 
-if (-not (Test-Path -LiteralPath $mcpExecutable -PathType Leaf)) {
+if (-not (Test-Path -LiteralPath $pythonExecutable -PathType Leaf) -or -not (Test-Path -LiteralPath $mcpExecutable -PathType Leaf)) {
     throw "Project environment not found. Run: python -m venv .venv; .\.venv\Scripts\python.exe -m pip install -e `".[dev]`""
+}
+
+try {
+    & $pythonExecutable --version 2>$null | Out-Null
+}
+catch {
+    throw "Project environment is stale or broken. Remove .venv, recreate it with Python 3.12+, then install: .\.venv\Scripts\python.exe -m pip install -e `".[dev]`""
+}
+if ($LASTEXITCODE -ne 0) {
+    throw "Project environment is stale or broken. Remove .venv, recreate it with Python 3.12+, then install: .\.venv\Scripts\python.exe -m pip install -e `".[dev]`""
 }
 
 if (-not (Get-Command npx.cmd -ErrorAction SilentlyContinue)) {
@@ -43,4 +54,3 @@ try {
 finally {
     Pop-Location
 }
-

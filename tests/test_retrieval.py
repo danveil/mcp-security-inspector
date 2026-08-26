@@ -18,7 +18,16 @@ def test_valid_tools_list() -> None:
 
 @pytest.mark.parametrize(
     "url",
-    ["https://example.com/mcp", "file:///tmp/server", "http://user:pass@localhost/mcp", "http://localhost/mcp#x"],
+    [
+        "https://example.com/mcp",
+        "http://192.168.1.10/mcp",
+        "http://169.254.169.254/latest/meta-data",
+        "file:///tmp/server",
+        "http://user:pass@localhost/mcp",
+        "http://localhost/mcp#x",
+        "http://localhost:bad/mcp",
+        "http://[::1/mcp",
+    ],
 )
 def test_non_local_or_unsafe_url_rejected(url: str) -> None:
     with pytest.raises(RetrievalError):
@@ -59,6 +68,12 @@ def test_malformed_response() -> None:
 
     with pytest.raises(RetrievalError, match="invalid tool metadata"):
         fetch_local_catalog("http://localhost/mcp", retriever=malformed)
+
+
+def test_retrieved_structure_node_count_is_bounded(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr("mcpsec.resource_policy.MAX_STRUCTURE_NODES", 3)
+    with pytest.raises(RetrievalError, match="node limit"):
+        fetch_local_catalog("http://localhost/mcp", retriever=valid_retriever)
 
 
 @pytest.mark.parametrize("failure", [ConnectionError("offline"), RuntimeError("server error")])

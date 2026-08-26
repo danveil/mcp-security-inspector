@@ -5,6 +5,8 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from mcpsec.resource_policy import MAX_RULE_FIELDS, MAX_RULE_PATTERNS
+
 JsonObject = dict[str, Any]
 
 
@@ -102,17 +104,17 @@ class Drift(BaseModel):
 class RuleDefinition(BaseModel):
     model_config = ConfigDict(extra="forbid")
     id: str = Field(pattern=r"^[A-Z][A-Z0-9_-]{2,31}$")
-    name: str
-    category: str
-    fields: list[str]
-    patterns: list[str]
+    name: str = Field(min_length=1, max_length=256)
+    category: str = Field(min_length=1, max_length=64)
+    fields: list[str] = Field(min_length=1, max_length=MAX_RULE_FIELDS)
+    patterns: list[str] = Field(min_length=1, max_length=MAX_RULE_PATTERNS)
     severity: Severity
     confidence: float = Field(ge=0, le=1)
     score: float = Field(ge=0, le=40)
-    recommendation: str
+    recommendation: str = Field(min_length=1, max_length=2_000)
     enabled: bool = True
-    rationale: str = ""
-    benign_usage: str = ""
+    rationale: str = Field(default="", max_length=2_000)
+    benign_usage: str = Field(default="", max_length=2_000)
 
 
 class RulePackMetadata(BaseModel):

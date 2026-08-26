@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 
-from mcpsec.detectors.base import Detector, finding
+from mcpsec.detectors.base import Detector, finding, is_educational_reference, poisoning_text_fields
 from mcpsec.models import Finding, ToolDefinition
 
 PATTERN = re.compile(
@@ -15,23 +15,26 @@ NEGATION = re.compile(r"\b(never|does not|do not|must not)\s+(hide|conceal|suppr
 
 class SecrecyDetector(Detector):
     def detect(self, tool: ToolDefinition, redact: bool = False) -> list[Finding]:
-        if NEGATION.search(tool.description):
-            return []
-        match = PATTERN.search(tool.description)
-        if not match:
-            return []
-        return [
-            finding(
-                rule_id="HID-001",
-                name="Concealment wording",
-                category="concealment",
-                severity="HIGH",
-                confidence=0.88,
-                explanation="The description contains wording that may discourage user disclosure.",
-                evidence=match.group(0),
-                field="description",
-                recommendation="Require explicit user-visible disclosure for tool activity.",
-                score=22,
-                redact=redact,
+        findings: list[Finding] = []
+        for field, text in poisoning_text_fields(tool):
+            if NEGATION.search(text):
+                continue
+            match = PATTERN.search(text)
+            if not match or is_educational_reference(text, match.end()):
+                continue
+            findings.append(
+                finding(
+                    rule_id="HID-001",
+                    name="Concealment wording",
+                    category="concealment",
+                    severity="HIGH",
+                    confidence=0.88,
+                    explanation="The field contains wording that may discourage user disclosure.",
+                    evidence=match.group(0),
+                    field=field,
+                    recommendation="Require explicit user-visible disclosure for tool activity.",
+                    score=22,
+                    redact=redact,
+                )
             )
-        ]
+        return findings

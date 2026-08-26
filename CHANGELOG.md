@@ -2,6 +2,35 @@
 
 All notable changes follow Keep a Changelog conventions and semantic versioning.
 
+## [Unreleased]
+
+### Added
+
+- Central resource policy for JSON/YAML/baseline sizes, structure nodes, text, tool counts, pagination, rule fields/patterns, and YAML aliases/nodes
+- Real loopback transport regression coverage for IPv4, IPv6, redirects, proxy variables, request destinations, and response bytes
+- Packaged demonstration catalog and clean-wheel CLI smoke-test script
+- Field-aware instruction-override and concealment inspection across nested MCP metadata
+
+### Changed
+
+- Oversized security-significant strings and keys are rejected instead of silently truncated
+- Identical alias pairs remain compatible while conflicting or null/non-null alias pairs are rejected
+- Rename inference now requires a unique one-to-one component signature and calculates current fingerprints once
+- Educational instruction-injection quotations are excluded unless they continue with a direct action
+- Corpus 1.0.0 regression result is now TP 37, TN 36, FP 4, FN 3 (F1 91.36%, FPR 10.00%)
+
+### Fixed
+
+- `mcpsec demo` now works from an installed wheel without relying on the source checkout
+- `scan --output` writes terminal-format reports instead of silently ignoring the destination
+- CLI error and comparison output consistently escape hostile Rich markup
+- Windows helper scripts report stale virtual environments explicitly
+
+### Security
+
+- MCP retrieval now uses a dedicated transport that validates every destination as loopback, disables redirects, ignores proxy environment variables, and caps cumulative wire bytes and pages
+- Policy, suppression, baseline, and static catalog inputs now have explicit resource-exhaustion boundaries
+
 ## [0.2.0] - 2026-08-25
 
 ### Added
@@ -27,7 +56,7 @@ All notable changes follow Keep a Changelog conventions and semantic versioning.
 
 ### Security
 
-- Normalization rejects metadata deeper than 64 levels and key collisions introduced by Unicode normalization or key-length bounds
+- Normalization rejects metadata deeper than 64 levels and key collisions introduced by Unicode normalization
 - Retrieval rejects non-loopback endpoints, URL credentials/fragments, invalid tool metadata, duplicate names, oversized responses, excessive tool counts, pagination cursor loops, and timeouts
 - Evaluation applies no suppressions unless explicitly requested and records suppression state
 

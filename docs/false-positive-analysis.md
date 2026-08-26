@@ -6,12 +6,11 @@ For every binary error, `mcpsec evaluate` records the sample ID, expected and pr
 
 ## Corpus 1.0.0 observations
 
-The current five false positives are deliberately retained:
+The current four false positives are deliberately retained:
 
 - `benign_027`: the generic schema property `record` is interpreted as a database capability and mismatches a missing-field reader (`MIS-001`).
 - `benign_028`: “silently” describes a user-enabled accessibility operation but triggers concealment (`HID-001`).
 - `benign_030`: privacy redaction “suppress disclosure” is mistaken for hiding activity (`HID-001`).
-- `benign_031`: a quoted attack phrase used in safety training triggers instruction override (`PI-001`).
 - `benign_035`: a harmless encoded-looking documentation fixture triggers `OBF-004`.
 
 The three false negatives are also retained:
@@ -19,7 +18,7 @@ The three false negatives are also retained:
 - `suspicious_036`: extreme whitespace triggers low-severity `OBF-003`, below the default medium binary threshold.
 - `suspicious_038` and `suspicious_039`: declared high-impact permissions trigger informational `CAP-001`, which provides context but is not a maliciousness verdict.
 
-These cases show why category results and evidence should accompany binary metrics. Automatically raising all capability findings would improve recall on this corpus but would also classify many legitimate administration tools as suspicious. Likewise, suppressing every quoted phrase could miss a genuinely active instruction embedded in quoted text.
+These cases show why category results and evidence should accompany binary metrics. Automatically raising all capability findings would improve recall on this corpus but would also classify many legitimate administration tools as suspicious. `PI-001` now excludes bounded educational/security-warning references unless the matched phrase continues with a direct action; `benign_031` therefore moved from false positive to true negative. Broadly suppressing every quoted phrase would still risk missing a genuinely active instruction embedded in quoted text.
 
 ## Rule-adjustment procedure
 

@@ -62,3 +62,9 @@ def test_size_limit(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     monkeypatch.setattr(Path, "stat", lambda self: type("S", (), {"st_size": MAX_INPUT_BYTES + 1})())
     with pytest.raises(InputError, match="exceeds"):
         load_json(path)
+
+
+def test_static_tool_count_is_bounded(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr("mcpsec.loader.MAX_STATIC_TOOLS", 1)
+    with pytest.raises(InputError, match="tool limit"):
+        extract_tools([{"name": "one"}, {"name": "two"}])

@@ -1,5 +1,7 @@
+import pytest
 from conftest import make_tool
 
+import mcpsec.compare as compare_module
 from mcpsec.baseline import create_baseline
 from mcpsec.compare import compare_baseline
 from mcpsec.normalizer import normalize_tool
@@ -31,6 +33,41 @@ def test_rename_inference() -> None:
     drift = compare_baseline([normalize_tool(make_tool(name="new"))], baseline)
     assert drift[0].kind == "tool_renamed"
     assert drift[0].previous_name == "old"
+
+
+def test_many_removed_to_one_added_is_ambiguous() -> None:
+    baseline = baseline_for(make_tool(name="old_a"), make_tool(name="old_b"))
+    drift = compare_baseline([normalize_tool(make_tool(name="new"))], baseline)
+    assert [item.kind for item in drift] == ["tool_removed", "tool_removed", "tool_added"]
+
+
+def test_one_removed_to_many_added_is_ambiguous() -> None:
+    baseline = baseline_for(make_tool(name="old"))
+    current = [normalize_tool(make_tool(name="new_a")), normalize_tool(make_tool(name="new_b"))]
+    drift = compare_baseline(current, baseline)
+    assert [item.kind for item in drift] == ["tool_removed", "tool_added", "tool_added"]
+
+
+def test_duplicate_equivalent_signature_groups_are_ambiguous() -> None:
+    baseline = baseline_for(make_tool(name="old_a"), make_tool(name="old_b"))
+    current = [normalize_tool(make_tool(name="new_a")), normalize_tool(make_tool(name="new_b"))]
+    assert "tool_renamed" not in [item.kind for item in compare_baseline(current, baseline)]
+
+
+def test_current_fingerprints_are_calculated_once(monkeypatch: pytest.MonkeyPatch) -> None:
+    baseline = baseline_for(make_tool(name="same"), make_tool(name="old"))
+    current = [normalize_tool(make_tool(name="same")), normalize_tool(make_tool(name="new"))]
+    original = compare_module.fingerprint_tool
+    calls = 0
+
+    def counting_fingerprint(tool):
+        nonlocal calls
+        calls += 1
+        return original(tool)
+
+    monkeypatch.setattr(compare_module, "fingerprint_tool", counting_fingerprint)
+    compare_baseline(current, baseline)
+    assert calls == len(current)
 
 
 def test_description_drift() -> None:

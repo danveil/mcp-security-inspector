@@ -43,7 +43,7 @@ For repeatability, JSON output records application version, built-in/custom rule
 
 ## Bundled-corpus baseline
 
-Version 1.0.0 currently yields TP 37, TN 35, FP 5, and FN 3: accuracy 90.00%, precision 88.10%, recall 92.50%, F1 90.24%, FPR 12.50%, FNR 7.50%, and specificity 87.50%. These values are calculated by the evaluator, asserted as a regression baseline, and must be updated transparently if rules or ground truth change.
+Version 1.0.0 currently yields TP 37, TN 36, FP 4, and FN 3: accuracy 91.25%, precision 90.24%, recall 92.50%, F1 91.36%, FPR 10.00%, FNR 7.50%, and specificity 90.00%. These values are calculated by the evaluator, asserted as a regression baseline, and must be updated transparently if rules or ground truth change.
 
 ## Limitations
 

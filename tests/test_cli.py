@@ -1,4 +1,5 @@
 import json
+from importlib.resources import files
 from pathlib import Path
 
 import pytest
@@ -32,7 +33,7 @@ def test_evaluate_json() -> None:
     assert result.exit_code == 0
     payload = json.loads(result.stdout)
     assert payload["metadata"]["sample_count"] == 80
-    assert payload["confusion_matrix"] == {"tp": 37, "tn": 35, "fp": 5, "fn": 3}
+    assert payload["confusion_matrix"] == {"tp": 37, "tn": 36, "fp": 4, "fn": 3}
 
 
 def test_evaluate_output(tmp_path: Path) -> None:
@@ -97,6 +98,23 @@ def test_write_report(tmp_path: Path) -> None:
     assert json.loads(output.read_text(encoding="utf-8"))["version"] == "2.1.0"
 
 
+def test_write_table_report(tmp_path: Path) -> None:
+    output = tmp_path / "report.txt"
+    result = invoke("scan", str(ROOT / "examples" / "clean_tools.json"), "--output", str(output))
+    assert result.exit_code == 0
+    assert "MCP Tool Security Inspector" in output.read_text(encoding="utf-8")
+
+
+def test_input_error_renders_hostile_markup_literally(monkeypatch: pytest.MonkeyPatch) -> None:
+    def fail(*args: object, **kwargs: object) -> None:
+        raise cli_module.McpsecError("[bold]unsafe[/bold]")
+
+    monkeypatch.setattr(cli_module, "analyze", fail)
+    result = invoke("scan", str(ROOT / "examples" / "clean_tools.json"))
+    assert result.exit_code == 2
+    assert "[bold]unsafe[/bold]" in result.stdout
+
+
 def test_invalid_json_exit_code(tmp_path: Path) -> None:
     path = tmp_path / "bad.json"
     path.write_text("{", encoding="utf-8")
@@ -153,6 +171,10 @@ def test_demo() -> None:
     result = invoke("demo")
     assert result.exit_code == 0
     assert "metadata_test_only" in result.stdout
+
+
+def test_demo_resource_is_packaged_with_mcpsec() -> None:
+    assert files("mcpsec").joinpath("resources", "mixed_tools.json").is_file()
 
 
 def test_custom_rules_fire() -> None:
