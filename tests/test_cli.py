@@ -33,6 +33,9 @@ def test_evaluate_json() -> None:
     assert result.exit_code == 0
     payload = json.loads(result.stdout)
     assert payload["metadata"]["sample_count"] == 80
+    assert payload["metadata"]["corpus_split"] == "development"
+    assert payload["metadata"]["configuration"]["builtin_rule_ids"]
+    assert payload["metadata"]["invocation"][-2:] == ["--format", "json"]
     assert payload["confusion_matrix"] == {"tp": 37, "tn": 36, "fp": 4, "fn": 3}
 
 
@@ -48,6 +51,25 @@ def test_evaluate_output(tmp_path: Path) -> None:
     )
     assert result.exit_code == 0
     assert output.read_text(encoding="utf-8").startswith("sample_id,expected,predicted")
+
+
+def test_evaluate_records_custom_rule_and_suppression_file_identity() -> None:
+    result = invoke(
+        "evaluate",
+        str(ROOT / "evaluation" / "corpus" / "manifest.json"),
+        "--format",
+        "json",
+        "--rules",
+        str(ROOT / "rules" / "default_rules.yml"),
+        "--suppressions",
+        str(ROOT / "rules" / "suppressions.example.yml"),
+    )
+    assert result.exit_code == 0
+    configuration = json.loads(result.stdout)["metadata"]["configuration"]
+    assert configuration["custom_rule_pack_name"] == "default"
+    assert len(configuration["custom_rule_file_sha256"]) == 64
+    assert len(configuration["suppression_file_sha256"]) == 64
+    assert configuration["suppressions"] == [{"rule_id": "SEC-001", "tool": "credential_manager_manual"}]
 
 
 def test_fetch_writes_static_catalog(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

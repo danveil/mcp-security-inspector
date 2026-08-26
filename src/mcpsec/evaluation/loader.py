@@ -11,6 +11,7 @@ from mcpsec.exceptions import CorpusValidationError, McpsecError
 from mcpsec.loader import load_tools
 from mcpsec.models import ToolDefinition
 from mcpsec.normalizer import normalize_tools
+from mcpsec.resource_policy import ResourcePolicyError, read_bounded_text, validate_structure
 
 MAX_MANIFEST_BYTES = 2 * 1024 * 1024
 
@@ -23,17 +24,16 @@ class LoadedSample:
 
 def load_manifest(path: Path) -> CorpusManifest:
     try:
-        if path.stat().st_size > MAX_MANIFEST_BYTES:
-            raise CorpusValidationError(f"Manifest exceeds {MAX_MANIFEST_BYTES} bytes")
-        raw = json.loads(path.read_text(encoding="utf-8"))
+        raw = json.loads(read_bounded_text(path, max_bytes=MAX_MANIFEST_BYTES, label="Corpus manifest"))
+        validate_structure(raw, label="Corpus manifest")
         return CorpusManifest.model_validate(raw)
     except CorpusValidationError:
         raise
-    except (OSError, UnicodeError, json.JSONDecodeError, ValidationError) as exc:
+    except (OSError, UnicodeError, json.JSONDecodeError, ValidationError, ResourcePolicyError) as exc:
         raise CorpusValidationError(f"Cannot load corpus manifest: {exc}") from exc
 
 
-def _safe_sample_path(root: Path, relative: str) -> Path:
+def resolve_sample_path(root: Path, relative: str) -> Path:
     candidate = (root / relative).resolve()
     if not candidate.is_relative_to(root.resolve()):
         raise CorpusValidationError(f"Sample path escapes corpus directory: {relative}")
@@ -46,7 +46,7 @@ def load_corpus(path: Path) -> tuple[CorpusManifest, list[LoadedSample]]:
     cache: dict[Path, list[ToolDefinition]] = {}
     loaded: list[LoadedSample] = []
     for entry in manifest.samples:
-        sample_path = _safe_sample_path(root, entry.file)
+        sample_path = resolve_sample_path(root, entry.file)
         try:
             if sample_path not in cache:
                 cache[sample_path] = normalize_tools(load_tools(sample_path), sample_path.name)

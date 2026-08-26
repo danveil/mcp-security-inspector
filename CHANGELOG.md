@@ -10,6 +10,9 @@ All notable changes follow Keep a Changelog conventions and semantic versioning.
 - Real loopback transport regression coverage for IPv4, IPv6, redirects, proxy variables, request destinations, and response bytes
 - Packaged demonstration catalog and clean-wheel CLI smoke-test script
 - Field-aware instruction-override and concealment inspection across nested MCP metadata
+- Typed development/holdout corpus metadata, provenance, difficulty migration, expected field locations, and label-review status
+- Semantic corpus/configuration SHA-256 identities, Git/runtime experiment metadata, and exact cross-split overlap checks
+- Structured evaluation failure classes and a documented holdout isolation and post-unblinding research protocol
 
 ### Changed
 

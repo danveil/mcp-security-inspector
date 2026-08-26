@@ -4,6 +4,7 @@ from pathlib import Path
 from rich.console import Console
 
 from mcpsec.evaluation.evaluator import evaluate_corpus
+from mcpsec.evaluation.models import CorpusSplit, FailureType
 from mcpsec.evaluation.reporter import render_terminal, serialize
 from mcpsec.models import SuppressionDefinition
 
@@ -15,6 +16,9 @@ def test_bundled_corpus_evaluation() -> None:
     report = evaluate_corpus(MANIFEST)
     assert report.metadata.sample_count == 80
     assert report.metadata.corpus_version == "1.0.0"
+    assert report.metadata.corpus_split == CorpusSplit.development
+    assert len(report.metadata.corpus_sha256) == 64
+    assert len(report.metadata.configuration_sha256) == 64
     assert report.confusion_matrix.model_dump() == {"tp": 37, "tn": 36, "fp": 4, "fn": 3}
     assert report.metrics.f1 > 0.9
     assert {item.category for item in report.category_metrics} >= {"schema", "obfuscation", "mismatch"}
@@ -22,6 +26,8 @@ def test_bundled_corpus_evaluation() -> None:
     assert len(report.false_negatives) == 3
     assert report.timing.minimum_ms >= 0
     assert report.timing.maximum_ms >= report.timing.minimum_ms
+    assert {item.failure_type for item in report.false_positives} == {FailureType.false_positive}
+    assert {item.failure_type for item in report.false_negatives} == {FailureType.false_negative_below_threshold}
 
 
 def test_evaluation_json_and_csv() -> None:

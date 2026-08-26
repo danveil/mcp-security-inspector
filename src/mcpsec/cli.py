@@ -16,6 +16,8 @@ from mcpsec.baseline import create_baseline, load_baseline, write_baseline
 from mcpsec.compare import compare_baseline
 from mcpsec.constants import BUILTIN_RULE_PACK_NAME, BUILTIN_RULE_PACK_VERSION
 from mcpsec.evaluation.evaluator import evaluate_corpus
+from mcpsec.evaluation.integrity import compare_corpus_splits, sha256_file
+from mcpsec.evaluation.reporter import integrity_report_json, render_integrity_terminal
 from mcpsec.evaluation.reporter import render_terminal as render_evaluation_terminal
 from mcpsec.evaluation.reporter import serialize as serialize_evaluation
 from mcpsec.exceptions import McpsecError
@@ -24,6 +26,7 @@ from mcpsec.loader import load_tools
 from mcpsec.models import SEVERITY_RANK, ScanReport, Severity, ToolDefinition
 from mcpsec.normalizer import normalize_tools
 from mcpsec.reporter import render_terminal, serialize, terminal_safe
+from mcpsec.resource_policy import MAX_RULE_FILE_BYTES, MAX_SUPPRESSION_FILE_BYTES
 from mcpsec.retrieval import DEFAULT_MAX_TOOLS, DEFAULT_TIMEOUT_SECONDS, fetch_local_catalog
 from mcpsec.rules import RULE_EXPLANATIONS, load_rule_pack, load_rules
 from mcpsec.scanner import analyze_file
@@ -52,6 +55,11 @@ class EvaluationFormat(StrEnum):
     terminal = "terminal"
     json = "json"
     csv = "csv"
+
+
+class IntegrityFormat(StrEnum):
+    terminal = "terminal"
+    json = "json"
 
 
 def _version(value: bool) -> None:
@@ -276,19 +284,43 @@ def evaluate_command(
         custom_rules = []
         pack_name = BUILTIN_RULE_PACK_NAME
         pack_version = BUILTIN_RULE_PACK_VERSION
+        custom_pack_name = None
+        custom_pack_version = None
+        custom_rule_file_sha256 = None
         if rules:
             pack = load_rule_pack(rules)
             custom_rules = pack.rules
+            custom_pack_name = pack.rule_pack.name
+            custom_pack_version = pack.rule_pack.version
             pack_name = f"{BUILTIN_RULE_PACK_NAME}+{pack.rule_pack.name}"
             pack_version = f"{BUILTIN_RULE_PACK_VERSION}+{pack.rule_pack.version}"
+            custom_rule_file_sha256 = sha256_file(rules, max_bytes=MAX_RULE_FILE_BYTES, label="Custom rule file")
         known_rule_ids = set(RULE_EXPLANATIONS) | {rule.id for rule in custom_rules}
         active_suppressions = load_suppressions(suppressions, known_rule_ids) if suppressions else []
+        suppression_file_sha256 = (
+            sha256_file(suppressions, max_bytes=MAX_SUPPRESSION_FILE_BYTES, label="Suppression file")
+            if suppressions
+            else None
+        )
+        invocation = ["mcpsec", "evaluate", manifest.name, "--format", format.value]
+        if output:
+            invocation.extend(["--output", output.name])
+        if rules:
+            invocation.extend(["--rules", rules.name])
+        if suppressions:
+            invocation.extend(["--suppressions", suppressions.name])
         report = evaluate_corpus(
             manifest,
             rules=custom_rules,
             rule_pack_name=pack_name,
             rule_pack_version=pack_version,
+            custom_rule_pack_name=custom_pack_name,
+            custom_rule_pack_version=custom_pack_version,
+            custom_rule_file_sha256=custom_rule_file_sha256,
             suppressions=active_suppressions,
+            suppression_file_sha256=suppression_file_sha256,
+            invocation=invocation,
+            repository_path=Path.cwd(),
         )
         if format == EvaluationFormat.terminal:
             if output:
@@ -305,5 +337,42 @@ def evaluate_command(
                 console.print(f"Wrote {format.value} evaluation report to {terminal_safe(output)}")
             else:
                 typer.echo(content)
+    except Exception as exc:
+        _handle_error(exc)
+
+
+@app.command("corpus-check")
+def corpus_check_command(
+    development: Annotated[
+        Path, typer.Argument(exists=True, dir_okay=False, readable=True, help="Development corpus manifest.")
+    ],
+    holdout: Annotated[
+        Path, typer.Argument(exists=True, dir_okay=False, readable=True, help="Holdout corpus manifest.")
+    ],
+    format: Annotated[IntegrityFormat, typer.Option("--format")] = IntegrityFormat.terminal,
+    output: Annotated[Path | None, typer.Option("--output", help="Write the integrity report.")] = None,
+) -> None:
+    """Reject duplicate IDs and exact normalized content across corpus splits."""
+    try:
+        report = compare_corpus_splits(development, holdout)
+        if format == IntegrityFormat.terminal:
+            if output:
+                buffer = StringIO()
+                render_integrity_terminal(report, Console(file=buffer, color_system=None, width=120))
+                output.write_text(buffer.getvalue(), encoding="utf-8")
+                console.print(f"Wrote terminal corpus integrity report to {terminal_safe(output)}")
+            else:
+                render_integrity_terminal(report, console)
+        else:
+            content = integrity_report_json(report)
+            if output:
+                output.write_text(content + "\n", encoding="utf-8")
+                console.print(f"Wrote JSON corpus integrity report to {terminal_safe(output)}")
+            else:
+                typer.echo(content)
+        if not report.passed:
+            raise typer.Exit(1)
+    except typer.Exit:
+        raise
     except Exception as exc:
         _handle_error(exc)

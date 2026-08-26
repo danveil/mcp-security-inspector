@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 
 from mcpsec.evaluation.loader import load_corpus, load_manifest
+from mcpsec.evaluation.models import CorpusSplit, Difficulty, ProvenanceOrigin
 from mcpsec.exceptions import CorpusValidationError
 
 
@@ -41,7 +42,71 @@ def test_valid_single_tool_corpus(tmp_path: Path) -> None:
     )
     manifest, loaded = load_corpus(write_manifest(tmp_path, [sample()]))
     assert manifest.corpus_version == "1.0.0"
+    assert manifest.split == CorpusSplit.development
     assert loaded[0].tool.name == "safe"
+
+
+def test_research_metadata_and_legacy_difficulty_migration(tmp_path: Path) -> None:
+    value = sample()
+    value.update(
+        {
+            "difficulty": "borderline",
+            "field_locations": ["description", "inputSchema.properties.token.description"],
+            "provenance": {
+                "origin_type": "derived",
+                "source_reference": "public-fixture-001",
+                "derivation_notes": "Identifiers were replaced with harmless synthetic values.",
+            },
+        }
+    )
+    path = write_manifest(tmp_path, [value])
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    raw.update(
+        {
+            "split": "holdout",
+            "methodology_version": "1.2.0",
+            "methodology_note": "Labels were frozen before this evaluation run.",
+            "label_review_status": "independently_reviewed",
+            "source_license_policy": "Only redistributable public fixtures are accepted.",
+        }
+    )
+    path.write_text(json.dumps(raw), encoding="utf-8")
+    manifest = load_manifest(path)
+    assert manifest.split == CorpusSplit.holdout
+    assert manifest.samples[0].difficulty == Difficulty.moderate
+    assert manifest.samples[0].provenance.origin_type == ProvenanceOrigin.derived
+
+
+@pytest.mark.parametrize("location", ["", ".description", "inputSchema..token", "inputSchema/token", "items[bad]"])
+def test_invalid_field_location_is_rejected(tmp_path: Path, location: str) -> None:
+    value = sample()
+    value["field_locations"] = [location]
+    with pytest.raises(CorpusValidationError, match="field_locations"):
+        load_manifest(write_manifest(tmp_path, [value]))
+
+
+@pytest.mark.parametrize(
+    ("manifest_mutation", "sample_mutation", "message"),
+    [
+        ({"split": "training"}, {}, "split"),
+        ({}, {"difficulty": "ambiguous"}, "difficulty"),
+        ({}, {"provenance": {"origin_type": "borrowed"}}, "origin_type"),
+    ],
+)
+def test_invalid_research_enums_are_rejected(
+    tmp_path: Path,
+    manifest_mutation: dict[str, object],
+    sample_mutation: dict[str, object],
+    message: str,
+) -> None:
+    value = sample()
+    value.update(sample_mutation)
+    path = write_manifest(tmp_path, [value])
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    raw.update(manifest_mutation)
+    path.write_text(json.dumps(raw), encoding="utf-8")
+    with pytest.raises(CorpusValidationError, match=message):
+        load_manifest(path)
 
 
 @pytest.mark.parametrize(

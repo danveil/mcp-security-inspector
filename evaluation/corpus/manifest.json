@@ -1,6 +1,11 @@
 {
   "corpus_name": "mcpsec-synthetic-metadata",
   "corpus_version": "1.0.0",
+  "split": "development",
+  "methodology_version": "1.0.0",
+  "methodology_note": "Synthetic development and regression corpus used during detector design and tuning; it is not a holdout test set.",
+  "label_review_status": "single_reviewer",
+  "source_license_policy": "Repository-authored synthetic fixtures distributed under the project MIT license; no third-party or private metadata is included.",
   "description": "Harmless synthetic MCP metadata for reproducible detector evaluation and false-positive analysis.",
   "samples": [
     {"id":"benign_001","file":"benign/catalog_01.json","tool_name":"calculator","source_type":"tool_catalog","expected":"benign","categories":[],"rationale":"Ordinary arithmetic metadata with a narrow numeric schema."},
