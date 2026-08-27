@@ -27,12 +27,16 @@ class DetectorFamily:
 
 
 DETECTOR_FAMILIES = (
-    DetectorFamily("injection", InjectionDetector(), ("PI-001",)),
-    DetectorFamily("concealment", SecrecyDetector(), ("HID-001",)),
-    DetectorFamily("sensitive-data", SensitiveDataDetector(), ("SEC-001",)),
+    DetectorFamily("injection", InjectionDetector(), ("PI-001", "PI-002")),
+    DetectorFamily("concealment", SecrecyDetector(), ("HID-001", "HID-002")),
+    DetectorFamily("sensitive-data", SensitiveDataDetector(), ("SEC-001", "SEC-002")),
     DetectorFamily("schema", SchemaDetector(), ("SCH-001", "SCH-002")),
-    DetectorFamily("mismatch", MismatchDetector(), ("MIS-001",)),
-    DetectorFamily("obfuscation", ObfuscationDetector(), ("OBF-001", "OBF-002", "OBF-003", "OBF-004")),
+    DetectorFamily("mismatch", MismatchDetector(), ("MIS-001", "MIS-002")),
+    DetectorFamily(
+        "obfuscation",
+        ObfuscationDetector(),
+        ("OBF-001", "OBF-002", "OBF-003", "OBF-004", "OBF-005"),
+    ),
     DetectorFamily("capability", PermissionsDetector(), ("CAP-001",)),
 )
 

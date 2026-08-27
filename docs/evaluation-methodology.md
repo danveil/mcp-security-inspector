@@ -60,6 +60,10 @@ Before a future holdout run, compare the frozen manifests with `mcpsec corpus-ch
 
 Development corpus version 1.0.0 currently yields TP 37, TN 36, FP 4, and FN 3: accuracy 91.25%, precision 90.24%, recall 92.50%, F1 91.36%, FPR 10.00%, FNR 7.50%, and specificity 90.00%. These values are calculated by the evaluator and asserted as a regression baseline. They are not holdout accuracy and must be updated transparently if rules or ground truth change.
 
+## Post-unblinding exploratory v0.3 fixtures
+
+`evaluation/exploratory/v0_3/manifest.json` is a separate 36-sample development fixture set with 18 benign hard negatives and 18 suspicious construct cases. It was authored after the original holdout was exposed, from the frozen Day 4A construct design rather than copied holdout sentences. Its purpose is intended-rule and safety-boundary regression coverage. Report its metrics separately from the bundled development corpus and never call it a holdout or pool its scores with another corpus. Success on these authored fixtures does not establish improved generalization; that requires a new untouched, independently reviewed, preregistered holdout.
+
 ## Limitations
 
-The development corpus is small, synthetic, English-oriented, and partly constructed around the documented taxonomy. It is suitable for regression testing and reproducible undergraduate research exercises, but it is not representative prevalence data and does not establish real-world accuracy. Samples do not measure runtime implementation behavior, multi-turn attacks, server compromise, social context, or unseen-language generalization. Detector tuning against this corpus can overfit; independent holdout construction and review remain future work.
+The development corpora are small, synthetic, English-oriented, and partly constructed around the documented taxonomy. They are suitable for regression testing and reproducible undergraduate research exercises, but they are not representative prevalence data and do not establish real-world accuracy. Samples do not measure runtime implementation behavior, multi-turn attacks, server compromise, social context, or unseen-language generalization. The original holdout has already been exposed and cannot validate modified detectors; any confirmatory v0.3 claim requires a new untouched holdout.

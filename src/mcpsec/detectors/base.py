@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import json
 import re
+import unicodedata
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
+from dataclasses import dataclass
 from typing import Any
 
 from mcpsec.constants import EVIDENCE_LENGTH
@@ -15,6 +17,58 @@ def excerpt(value: str, redact: bool = False) -> str:
     if redact:
         return "[REDACTED: untrusted evidence]"
     return value[:EVIDENCE_LENGTH] + ("…" if len(value) > EVIDENCE_LENGTH else "")
+
+
+@dataclass(frozen=True)
+class TextSignal:
+    start: int
+    end: int
+    evidence: str
+    kind: str
+
+
+CONTEXT_BOUNDARY = re.compile(r"[.!?;\r\n]")
+
+
+def bounded_context(text: str, start: int, end: int, *, radius: int = 160) -> tuple[str, int]:
+    """Return a sentence-bounded local window and its offset in ``text``."""
+    lower = max(0, start - radius)
+    upper = min(len(text), end + radius)
+    prefix = text[lower:start]
+    suffix = text[end:upper]
+    previous = list(CONTEXT_BOUNDARY.finditer(prefix))
+    if previous:
+        lower += previous[-1].end()
+    following = CONTEXT_BOUNDARY.search(suffix)
+    if following:
+        upper = end + following.start()
+    return text[lower:upper], lower
+
+
+def has_local_pattern(pattern: re.Pattern[str], text: str, start: int, end: int, *, radius: int = 160) -> bool:
+    context, _ = bounded_context(text, start, end, radius=radius)
+    return bool(pattern.search(context))
+
+
+def safe_transformed_text(value: str, *, limit: int = 96) -> str:
+    """Render transformed hostile text without terminal or invisible control effects."""
+    rendered: list[str] = []
+    for character in value:
+        category = unicodedata.category(character)
+        if character == "\x1b" or (category in {"Cc", "Cf"} and character not in "\t\r\n"):
+            rendered.append(f"U+{ord(character):04X}")
+        elif character == "\n":
+            rendered.append("\\n")
+        elif character == "\r":
+            rendered.append("\\r")
+        elif character == "\t":
+            rendered.append("\\t")
+        else:
+            rendered.append(character)
+        if sum(len(part) for part in rendered) >= limit:
+            break
+    result = "".join(rendered)
+    return result[:limit] + ("…" if len(result) > limit or len(value) > len(rendered) else "")
 
 
 def strings(value: Any, prefix: str = "") -> Iterable[tuple[str, str]]:

@@ -25,7 +25,7 @@ def test_help() -> None:
 def test_version() -> None:
     result = invoke("--version")
     assert result.exit_code == 0
-    assert "0.2.0" in result.stdout
+    assert "0.3.0a1" in result.stdout
 
 
 def test_evaluate_json() -> None:
@@ -172,6 +172,11 @@ def test_rules_list() -> None:
     result = invoke("rules", "list")
     assert result.exit_code == 0
     assert "PI-001" in result.stdout
+    assert "PI-002" in result.stdout
+    assert "HID-002" in result.stdout
+    assert "SEC-002" in result.stdout
+    assert "MIS-002" in result.stdout
+    assert "OBF-005" in result.stdout
 
 
 def test_rules_validate() -> None:

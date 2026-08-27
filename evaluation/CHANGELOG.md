@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- Added a separate post-unblinding 36-sample v0.3 exploratory development set with 18 benign hard negatives and 18 suspicious construct cases for `PI-002`, `HID-002`, `SEC-002`, `MIS-002`, and `OBF-005`; it is not a confirmatory holdout.
+- Confirmed no duplicate IDs or exact canonical content overlap between the bundled development corpus and the v0.3 exploratory fixture set.
+- Preserved the bundled development baseline at TP 37, TN 36, FP 4, and FN 3 after the exploratory P0 detector changes.
 - Declared corpus 1.0.0 as the development/regression split without changing any sample content or ground-truth label.
 - Added corpus methodology, single-reviewer status, and synthetic source/license-policy metadata.
 - Added backward-compatible typed support for provenance, normalized difficulty, and expected field locations.

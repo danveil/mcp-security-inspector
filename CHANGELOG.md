@@ -6,6 +6,8 @@ All notable changes follow Keep a Changelog conventions and semantic versioning.
 
 ### Added
 
+- Post-unblinding exploratory `PI-002`, `HID-002`, `SEC-002`, `MIS-002`, and bounded depth-one `OBF-005` detector rules
+- Structured, path-preserving high-impact capability signals and a 36-sample v0.3 exploratory development fixture set
 - Central resource policy for JSON/YAML/baseline sizes, structure nodes, text, tool counts, pagination, rule fields/patterns, and YAML aliases/nodes
 - Real loopback transport regression coverage for IPv4, IPv6, redirects, proxy variables, request destinations, and response bytes
 - Packaged demonstration catalog and clean-wheel CLI smoke-test script
@@ -20,6 +22,8 @@ All notable changes follow Keep a Changelog conventions and semantic versioning.
 
 ### Changed
 
+- Package identity is now `0.3.0a1`, marking the accepted post-unblinding exploratory detector candidate rather than a final release
+- Sensitive-data, instruction-priority, and concealment matching now use scoped local context and negation while retaining the bundled development confusion matrix
 - Oversized security-significant strings and keys are rejected instead of silently truncated
 - Identical alias pairs remain compatible while conflicting or null/non-null alias pairs are rejected
 - Rename inference now requires a unique one-to-one component signature and calculates current fingerprints once
@@ -35,6 +39,7 @@ All notable changes follow Keep a Changelog conventions and semantic versioning.
 
 ### Security
 
+- Representation decoding is limited to four explicit formats, strict UTF-8, depth one, fixed candidate/output/count/retained-text budgets, and inert evidence rendering
 - MCP retrieval now uses a dedicated transport that validates every destination as loopback, disables redirects, ignores proxy environment variables, and caps cumulative wire bytes and pages
 - Policy, suppression, baseline, and static catalog inputs now have explicit resource-exhaustion boundaries
 

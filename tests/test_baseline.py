@@ -10,7 +10,7 @@ from mcpsec.normalizer import normalize_tool
 
 def test_create_baseline() -> None:
     baseline = create_baseline([normalize_tool(make_tool())], "fixture", "2026-01-01T00:00:00+00:00")
-    assert baseline.application_version == "0.2.0"
+    assert baseline.application_version == "0.3.0a1"
     assert baseline.format_version == "1.0"
     assert baseline.created_at.startswith("2026")
     assert baseline.tools[0].name == "calculator"

@@ -5,17 +5,35 @@ RULE_EXPLANATIONS = {
         "Security documentation may quote or explicitly negate these phrases.",
         "Review context and remove instructions aimed at the model.",
     ),
+    "PI-002": (
+        "Instruction-priority claim",
+        "Metadata authority claims can compete with agent or user guidance.",
+        "Policy documentation and ordinary record-priority language may use similar terms.",
+        "Verify the local context and remove metadata-level instruction authority.",
+    ),
     "HID-001": (
         "Concealment wording",
         "Requests to hide activity can reduce meaningful user oversight.",
         "Privacy-preserving operations may use words such as 'silently' without deceptive intent.",
         "Require transparent, user-visible behavior.",
     ),
+    "HID-002": (
+        "Withheld material activity",
+        "Excluding material operations from user or operator visibility weakens oversight.",
+        "UI collapsing, privacy redaction, and irrelevant-field omission can be legitimate.",
+        "Require user-visible disclosure and auditable records for material activity.",
+    ),
     "SEC-001": (
         "Sensitive credential terminology",
         "Credential-related inputs may expose high-value data.",
         "Password managers and authentication tools legitimately handle these values.",
         "Verify necessity, minimization, and protection.",
+    ),
+    "SEC-002": (
+        "Sensitive value handling action",
+        "Active collection, access, storage, transmission, or output of secret values creates exposure risk.",
+        "Reviewed credential managers may legitimately perform these actions.",
+        "Verify necessity, consent, minimization, storage, and transport controls.",
     ),
     "SCH-001": (
         "Malformed JSON Schema",
@@ -34,6 +52,12 @@ RULE_EXPLANATIONS = {
         "Hidden capability expansion can be obscured by a benign name.",
         "Broad utility tools may be difficult to categorize.",
         "Align declared purpose with schema capabilities.",
+    ),
+    "MIS-002": (
+        "Corroborated purpose/capability contradiction",
+        "An undeclared high-impact capability with independent corroboration can hide material behavior.",
+        "Aligned administration tools and non-operative simulation or planning metadata are legitimate.",
+        "Align purpose and safeguards with the capability or remove the unrelated operation.",
     ),
     "OBF-001": (
         "Invisible Unicode formatting",
@@ -58,6 +82,12 @@ RULE_EXPLANATIONS = {
         "Encoded text may conceal instructions or opaque content.",
         "Binary examples may be legitimate.",
         "Review decoded content separately without execution.",
+    ),
+    "OBF-005": (
+        "Decoded high-risk metadata",
+        "A strictly bounded depth-one representation may conceal a high-risk static construct.",
+        "Safe printable examples and candidate-limit review events may be benign.",
+        "Replace encoded directives with transparent metadata and inspect them without execution.",
     ),
     "CAP-001": (
         "High-impact capability indicators",

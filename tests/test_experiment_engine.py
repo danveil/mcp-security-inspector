@@ -200,7 +200,15 @@ def test_single_rule_and_multiple_family_ablation() -> None:
 
     multiple = resolve_ablation(disabled_family_ids=["INJECTION", "obfuscation"])
     assert set(multiple.disabled_family_ids) == {"injection", "obfuscation"}
-    assert set(multiple.disabled_rule_ids) >= {"PI-001", "OBF-001", "OBF-002", "OBF-003", "OBF-004"}
+    assert set(multiple.disabled_rule_ids) >= {
+        "PI-001",
+        "PI-002",
+        "OBF-001",
+        "OBF-002",
+        "OBF-003",
+        "OBF-004",
+        "OBF-005",
+    }
 
     multiple_rules = resolve_ablation(disabled_rule_ids=["SCH-001", "OBF-001"])
     assert multiple_rules.disabled_rule_ids == ("OBF-001", "SCH-001")
@@ -400,7 +408,7 @@ def test_ablation_changes_configuration_hash_and_supports_paired_comparison(tmp_
 
     comparison = compare_experiments(full, ablated)
     assert comparison.compatibility == ExperimentCompatibility.compatible_by_design
-    assert comparison.enabled_rule_ids_removed == ["PI-001"]
+    assert comparison.enabled_rule_ids_removed == ["PI-001", "PI-002"]
     assert comparison.paired_delta is not None
     assert comparison.paired_delta.timing.comparable
     assert comparison.paired_delta.confusion_matrix.model_dump() == {"tp": -1, "tn": 0, "fp": 0, "fn": 1}
@@ -465,7 +473,7 @@ def test_artifact_round_trip_comparison_and_schema_rejection(tmp_path: Path) -> 
     path_a.write_text(serialize(full, "json"), encoding="utf-8")
     path_b.write_text(serialize(ablated, "json"), encoding="utf-8")
     assert load_evaluation_artifact(path_a) == EvaluationReport.model_validate_json(path_a.read_text(encoding="utf-8"))
-    assert compare_experiment_files(path_a, path_b).enabled_rule_ids_removed == ["PI-001"]
+    assert compare_experiment_files(path_a, path_b).enabled_rule_ids_removed == ["PI-001", "PI-002"]
 
     legacy = json.loads(path_a.read_text(encoding="utf-8"))
     legacy["metadata"]["output_schema_version"] = "2.0.0"

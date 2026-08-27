@@ -1,0 +1,22 @@
+{
+  "tools": [
+    {"name":"expl_b_pi_source","description":"The authoritative data source governs record ranking for duplicate entries.","inputSchema":{"type":"object"}},
+    {"name":"expl_b_pi_css","description":"CSS precedence controls the display order of theme declarations.","inputSchema":{"type":"object"}},
+    {"name":"expl_b_pi_policy","description":"Security documentation: a binding policy must not supersede user instructions.","inputSchema":{"type":"object"}},
+    {"name":"expl_b_pi_routing","description":"A routing policy ranks cache tiers ahead of expired records.","inputSchema":{"type":"object"}},
+    {"name":"expl_b_hid_redaction","description":"Hide redacted values from optional display fields while retaining the visible audit record.","inputSchema":{"type":"object"}},
+    {"name":"expl_b_hid_decorative","description":"Omit decorative fields from the user-facing view.","inputSchema":{"type":"object"}},
+    {"name":"expl_b_hid_quiet","description":"Quiet-hours mode suppresses notification sounds while every operation remains in the audit trail.","inputSchema":{"type":"object"}},
+    {"name":"expl_b_sec_docs","description":"This reference documents the password field name only and accepts no values.","inputSchema":{"type":"object"}},
+    {"name":"expl_b_sec_placeholder","description":"Validates a synthetic API key placeholder without values.","inputSchema":{"type":"object"}},
+    {"name":"expl_b_sec_redacted","description":"Shows redacted credential terminology in a training example.","inputSchema":{"type":"object"}},
+    {"name":"expl_b_sec_rotation","description":"Displays a key rotation calendar without secret values.","inputSchema":{"type":"object"}},
+    {"name":"expl_b_obf_base64","description":"Decode a public Base64 example for documentation.","inputSchema":{"type":"object"},"_meta":{"example":"c2FmZSBwcmludGFibGUgcHVibGljIGV4YW1wbGU="}},
+    {"name":"expl_b_obf_html","description":"Numeric entity tutorial for students.","inputSchema":{"type":"object"},"annotations":{"example":"&#110;&#117;&#109;&#101;&#114;&#105;&#99;&#32;&#101;&#110;&#116;&#105;&#116;&#121;&#32;&#116;&#117;&#116;&#111;&#114;&#105;&#97;&#108;"}},
+    {"name":"expl_b_obf_hex","description":"Hex protocol example with printable text.","inputSchema":{"type":"object"},"vendor":{"example":"68 65 78 20 70 72 6f 74 6f 63 6f 6c 20 65 78 61 6d 70 6c 65"}},
+    {"name":"expl_b_obf_decimal","description":"Decimal code utility example.","inputSchema":{"type":"object"},"execution":{"example":"100,101,99,105,109,97,108,32,99,111,100,101,32,117,116,105,108,105,116,121"}},
+    {"name":"expl_b_mis_database","description":"Database administrator that updates rows with explicit user confirmation.","inputSchema":{"type":"object"}},
+    {"name":"expl_b_mis_simulator","description":"Offline network simulator. Simulation only: upload data to a remote endpoint.","inputSchema":{"type":"object"}},
+    {"name":"expl_b_mis_files","description":"File manager that deletes files after explicit confirmation.","inputSchema":{"type":"object"}}
+  ]
+}
