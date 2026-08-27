@@ -3,7 +3,9 @@ from pathlib import Path
 import pytest
 from conftest import make_tool
 
+from mcpsec.evaluation.evaluator import evaluate_corpus
 from mcpsec.exceptions import RuleValidationError
+from mcpsec.models import RuleDefinition, Severity
 from mcpsec.normalizer import normalize_tool
 from mcpsec.rules.loader import CustomRuleDetector, load_rule_pack, load_rules
 from mcpsec.scanner import analyze_tools
@@ -32,6 +34,34 @@ def test_valid_rule(tmp_path: Path) -> None:
     assert load_rules(write(tmp_path, VALID))[0].id == "TST-001"
 
 
+def test_custom_rule_id_cannot_collide_with_builtin(tmp_path: Path) -> None:
+    with pytest.raises(RuleValidationError, match="conflict with built-in rule IDs: PI-001"):
+        load_rules(write(tmp_path, VALID.replace("TST-001", "PI-001")))
+
+
+def test_custom_rule_id_case_semantics_remain_uppercase(tmp_path: Path) -> None:
+    with pytest.raises(RuleValidationError):
+        load_rules(write(tmp_path, VALID.replace("TST-001", "pi-001")))
+
+
+def test_programmatic_custom_rule_collision_is_rejected_before_scan() -> None:
+    rule = RuleDefinition(
+        id="PI-001",
+        name="Collision",
+        category="test",
+        fields=["description"],
+        patterns=["safe"],
+        severity=Severity.LOW,
+        confidence=0.5,
+        score=1,
+        recommendation="Use a unique custom identifier.",
+    )
+    with pytest.raises(RuleValidationError, match="PI-001"):
+        analyze_tools([normalize_tool(make_tool())], source="test", rules=[rule])
+    with pytest.raises(RuleValidationError, match="PI-001"):
+        evaluate_corpus(Path("not-read-because-rule-ownership-is-validated-first.json"), rules=[rule])
+
+
 def test_versioned_rule_pack(tmp_path: Path) -> None:
     text = "rule_pack:\n  name: research\n  version: 1.2.3\n" + VALID
     pack = load_rule_pack(write(tmp_path, text))
@@ -42,6 +72,12 @@ def test_versioned_rule_pack(tmp_path: Path) -> None:
 def test_custom_rule_matches_literal(tmp_path: Path) -> None:
     detector = CustomRuleDetector(load_rules(write(tmp_path, VALID)))
     assert detector.detect(normalize_tool(make_tool(description="SEND A COPY now")))[0].rule_id == "TST-001"
+
+
+def test_custom_rule_can_inspect_icon_text(tmp_path: Path) -> None:
+    rules = load_rules(write(tmp_path, VALID.replace("fields: [description]", "fields: [icons]")))
+    findings = CustomRuleDetector(rules).detect(normalize_tool(make_tool(icons=[{"src": "send a copy"}])))
+    assert findings[0].field == "icons[0].src"
 
 
 def test_custom_rule_no_match(tmp_path: Path) -> None:

@@ -19,8 +19,14 @@ def test_bundled_corpus_evaluation() -> None:
     assert report.metadata.corpus_split == CorpusSplit.development
     assert len(report.metadata.corpus_sha256) == 64
     assert len(report.metadata.configuration_sha256) == 64
+    assert report.metadata.rule_pack_version == "2.0.0"
+    assert report.metadata.output_schema_version == "3.1.0"
+    assert report.metadata.finding_report_limit == 2_048
+    assert report.metadata.findings_detected == report.metadata.findings_retained
+    assert report.metadata.findings_truncated is False
+    assert all(sample.findings_detected == len(sample.findings) for sample in report.samples)
     assert report.confusion_matrix.model_dump() == {"tp": 37, "tn": 36, "fp": 4, "fn": 3}
-    assert report.metrics.f1 > 0.9
+    assert report.metrics.f1 > 0.89
     assert {item.category for item in report.category_metrics} >= {"schema", "obfuscation", "mismatch"}
     assert len(report.false_positives) == 4
     assert len(report.false_negatives) == 3

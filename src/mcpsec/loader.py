@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import Any
 
@@ -9,20 +8,20 @@ from mcpsec.resource_policy import (
     MAX_INPUT_BYTES,
     MAX_STATIC_TOOLS,
     ResourcePolicyError,
-    read_bounded_text,
+    StrictJsonError,
+    load_bounded_json,
     validate_structure,
 )
 
 
 def load_json(path: Path) -> Any:
     try:
-        text = read_bounded_text(path, max_bytes=MAX_INPUT_BYTES, label="Input", encoding="utf-8-sig")
-        value = json.loads(text)
+        value = load_bounded_json(path, max_bytes=MAX_INPUT_BYTES, label="Input", encoding="utf-8-sig")
         validate_structure(value, label="Input")
         return value
     except OSError as exc:
         raise InputError(f"Cannot read input: {path}") from exc
-    except (UnicodeError, json.JSONDecodeError, ResourcePolicyError) as exc:
+    except (UnicodeError, StrictJsonError, ResourcePolicyError) as exc:
         raise InputError(f"Invalid JSON input: {exc}") from exc
 
 

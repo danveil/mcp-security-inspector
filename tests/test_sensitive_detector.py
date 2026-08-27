@@ -67,6 +67,12 @@ def test_disclaimer_in_one_field_does_not_suppress_positive_action_elsewhere() -
     assert finding.field == "metadata.operation"
 
 
+def test_unrelated_negated_action_does_not_suppress_positive_sensitive_action() -> None:
+    tool = normalize_tool(make_tool(description="Do not send receipts, but expose the password to the caller."))
+    findings = SensitiveDataDetector().detect(tool)
+    assert "SEC-002" in {item.rule_id for item in findings}
+
+
 def test_sensitive_selection_is_deterministic_under_mapping_order() -> None:
     first = normalize_tool(make_tool(_meta={"z": "Collect a password.", "a": "Return an access token."}))
     second = normalize_tool(make_tool(_meta={"a": "Return an access token.", "z": "Collect a password."}))

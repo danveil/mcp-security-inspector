@@ -1,0 +1,3 @@
+evaluation/runs/exp-20260827T060056391880Z-c514ba03-a660fd6d.json -text -diff
+evaluation/runs/day3c-deep-failure-analysis.md -text -diff
+evaluation/runs/day4c/post-unblinding-exploratory-holdout-full-analysis-core.json -text -diff

@@ -27,8 +27,8 @@ Tool metadata can influence both human approval and model tool selection. A mali
 
 ## Features
 
-- Single-tool, array, direct `tools` object, and JSON-RPC `tools/list` response loading
-- Unknown-field preservation, Unicode NFC normalization, conflicting-alias rejection, and explicit oversized-text rejection
+- Single-tool, array, direct `tools` object, and JSON-RPC `tools/list` response loading with duplicate-key and non-finite-number rejection
+- Unknown-field/raw-source preservation, icon-text inspection, Unicode NFC normalization, conflicting-alias rejection, and explicit malformed-schema/oversized-text rejection
 - Stable UTF-8 canonical JSON and SHA-256 full/component fingerprints
 - Privacy-conscious baselines and field-level drift classification
 - Instruction override, concealment, sensitive data, schema, mismatch, obfuscation, and capability detectors
@@ -38,7 +38,7 @@ Tool metadata can influence both human approval and model tool selection. A mali
 - Evaluation-only detector-family/rule ablations, authoritative JSON run preservation, and compatibility-aware experiment comparison
 - Versioned data-only rule packs and justified, scoped suppressions
 - Opt-in, localhost-only, bounded MCP SDK `tools/list` retrieval
-- Rich terminal, JSON, CSV, and SARIF 2.1.0 output
+- Rich terminal, JSON, CSV, and SARIF 2.1.0 output with explicit deterministic finding budgets
 - Evidence redaction and spreadsheet formula-injection mitigation
 - CI severity thresholds with documented exit codes
 - No telemetry, tool calls, icon downloads, metadata URL following, arbitrary command spawning, or metadata execution
@@ -85,7 +85,7 @@ mcpsec scan examples/suspicious_tools.json --format sarif --output report.sarif
 mcpsec scan examples/mixed_tools.json --rules rules/default_rules.yml --fail-on high
 ```
 
-Structured reports contain no ANSI escape sequences. CSV fields beginning with spreadsheet formula characters are prefixed with an apostrophe.
+Structured reports contain no ANSI escape sequences. CSV fields beginning with spreadsheet formula characters are prefixed with an apostrophe. `--redact` replaces finding evidence excerpts only; copied original tool metadata and the report source are not redacted.
 
 ## Baseline and schema-drift workflow
 
@@ -108,15 +108,15 @@ mcpsec evaluate evaluation/corpus/manifest.json --timing-warmups 3 --timing-repe
 mcpsec evaluate evaluation/corpus/manifest.json --ablation without-injection --runs-dir evaluation/runs
 mcpsec evaluate evaluation/corpus/manifest.json --disable-rule SCH-001 --disable-family capability
 mcpsec compare-experiments evaluation/runs/EXPERIMENT-A.json evaluation/runs/EXPERIMENT-B.json
-# Detector-free integrity check for the reviewed, still-unblinded holdout:
+# Detector-free integrity check for the preserved, already exposed holdout:
 mcpsec corpus-check evaluation/corpus/manifest.json evaluation/holdout/manifest.json
 ```
 
 The bundled development corpus contains 40 benign and 40 suspicious harmless static definitions, including realistic borderline language. It was visible during detector tuning, so its results are regression evidence rather than independent accuracy. The separate 48-sample holdout 1.0.1 was independently reviewed and evaluated once under the frozen Day 3 H0; it is now exposed and cannot provide confirmatory evidence for modified detectors. Its original artifacts, one malformed-schema disagreement, and subjective difficulty judgments remain preserved. The default experiment applies every built-in rule, no suppressions, a medium binary threshold, one `analysis-core` measurement, and no warm-up. Research runs can repeat measurements on development data, use the broader `static-end-to-end` boundary, disable named detector families or stable rule IDs, and compare preserved JSON artifacts without rescanning. Ablation is confined to evaluation; fingerprints, baselines, drift behavior, thresholds, and risk formulas remain unchanged.
 
-JSON output records an experiment ID, Git state when available, platform/dependency versions, portable invocation, corpus split/version/hash, the exact enabled and disabled detector/family/rule sets, timing definition, complete active configuration and configuration hash, Wilson 95% intervals for accuracy/recall/FPR, per-sample provenance/difficulty/expectations, stratified raw counts, and mechanically classified failures. It does not record usernames, hostnames, environment-variable values, absolute paths, or Git diffs. `--runs-dir evaluation/runs` preserves an authoritative JSON copy named by experiment ID; generated runs remain untracked. `compare-experiments` calculates B−A deltas only when corpus identity, split, samples, ground truth, and threshold are compatible, and refuses latency deltas when timing boundaries or runtime environments differ.
+JSON output records an experiment ID, Git state when available, platform/dependency versions, portable invocation, corpus split/version/hash, the exact enabled and disabled detector/family/rule sets, timing definition, complete active configuration and configuration hash, Wilson 95% intervals for accuracy/recall/FPR, per-sample provenance/difficulty/expectations, finding-budget status, stratified raw counts, and mechanically classified failures. It does not record usernames, hostnames, environment-variable values, absolute paths, or Git diffs. `--runs-dir evaluation/runs` preserves an authoritative JSON copy named by experiment ID; generated runs remain untracked unless specifically allowlisted, hashed, and documented as immutable research evidence. `compare-experiments` calculates B−A deltas only when corpus identity, split, samples, ground truth, and threshold are compatible, validates historical artifacts from their recorded identities rather than the current detector registry, and refuses latency deltas when timing boundaries or runtime environments differ.
 
-**Development/regression result on bundled synthetic corpus 1.0.0 — not holdout or real-world detection accuracy:** TP 37, TN 36, FP 4, FN 3; accuracy 91.25%, precision 90.24%, recall 92.50%, F1 91.36%, false-positive rate 10.00%, false-negative rate 7.50%, and specificity 90.00%.
+**Development/regression result on bundled synthetic corpus 1.0.0 after the Day 5B context-scoping correctness fixes — not holdout or real-world detection accuracy:** TP 37, TN 36, FP 4, FN 3; accuracy 91.25%, precision 90.24%, recall 92.50%, F1 91.36%, false-positive rate 10.00%, false-negative rate 7.50%, and specificity 90.00%. This is the unchanged development regression baseline; no rule, threshold, corpus sample, or label was tuned to obtain it.
 
 The `0.3.0a1` prerelease candidate adds `PI-002`, `HID-002`, `SEC-002`, `MIS-002`, and bounded depth-one `OBF-005`. Its separate 36-sample construct-derived exploratory development set currently yields TP 18, TN 18, FP 0, and FN 0. That is intended-mechanism regression evidence only, not a holdout result or a claim of improved generalization.
 
@@ -143,7 +143,7 @@ See the [research protocol](docs/research-protocol.md), [holdout experiment plan
 
 Each finding's configured contribution is multiplied by confidence. Equivalent `(category, rule ID)` contributions are deduplicated using the strongest instance. Contributions are grouped and capped at 35 per category; category risks are combined using `100 × (1 − Π(1 − category/100))`. Two documented correlations add bounded synergy: instruction override + concealment adds 10, and concealment + sensitive-data language adds 7. The final value is rounded and capped at 100. See [risk scoring](docs/risk-scoring.md).
 
-Bands: 0–19 informational, 20–39 low, 40–59 medium, 60–79 high, 80–100 critical. A score prioritizes review; it is not a probability or verdict.
+Bands: 0–19 informational, 20–39 low, 40–59 medium, 60–79 high, 80–100 critical. The aggregate risk band is calculated separately from individual finding severity, so one `HIGH` finding can coexist with an informational aggregate band. Classification and `--fail-on` use finding severity, not the aggregate band. A score prioritizes review; it is not a probability or verdict.
 
 ## Rules and explainability
 
@@ -154,7 +154,7 @@ mcpsec explain SEC-001
 mcpsec scan catalog.json --suppressions rules/suppressions.example.yml
 ```
 
-Custom rules allow ID, name, category, fields, literal patterns, severity, confidence, score, recommendation, rationale, benign usage, and enabled state. Rule-pack name/version metadata makes experiments reproducible. Separate suppressions require a known rule ID, optional exact tool scope, and written justification. They cannot contain Python expressions, shell commands, imports, templates, or executable regex. See [detection rules](docs/detection-rules.md).
+Custom rules allow ID, name, category, fields, literal patterns, severity, confidence, score, recommendation, rationale, benign usage, and enabled state. Custom IDs must be unique and cannot collide with built-in IDs. Rule-pack name/version metadata makes experiments reproducible: package `0.3.0a1` currently uses built-in rule pack `2.0.0`; package and rule-pack versions are independent because packaging changes need not alter detection semantics. Separate suppressions require a known rule ID, optional exact tool scope, and written justification. They cannot contain Python expressions, shell commands, imports, templates, or executable regex. See [detection rules](docs/detection-rules.md).
 
 ## Opt-in local MCP retrieval
 
@@ -196,7 +196,7 @@ Tests cover input shapes, Unicode, canonicalization, hashes, baselines, drift, d
 
 ## Security model and false positives
 
-All input is untrusted data. Files, structures, tool counts, pages, YAML aliases/nodes, rule fields, and pattern counts are bounded. Strings longer than 100,000 characters are rejected rather than truncated. Conflicting camelCase/snake_case aliases are rejected. YAML uses `SafeLoader`; schema content is validated but never evaluated; custom matching is literal and bounded; terminal escape bytes are neutralized; reporters do not render HTML. A finding says “suspicious” or “requires review,” never asserts compromise. Every built-in rule documents its rationale, benign triggers, and guidance through `mcpsec explain`.
+All input is untrusted data. JSON duplicate keys, `NaN`, and infinities are rejected. Files, structures, tool counts, findings, retained evidence, pages, YAML aliases/nodes, rule fields, and pattern counts are bounded. Finding output retains at most 64 findings per tool, 2,048 findings per scan or evaluation run, and 8,192 evidence characters per tool; reports expose detected, retained, and truncation status. Strings longer than 100,000 characters are rejected rather than truncated, and a missing, null, or non-object `inputSchema` is rejected instead of silently becoming an empty schema. Conflicting camelCase/snake_case aliases are rejected. YAML uses `SafeLoader`; schema content is validated but never evaluated; custom matching is literal and bounded; terminal escape bytes are neutralized; reporters do not render HTML. A finding says “suspicious” or “requires review,” never asserts compromise. Every built-in rule documents its rationale, benign triggers, and guidance through `mcpsec explain`.
 
 See [SECURITY.md](SECURITY.md), [detection rules](docs/detection-rules.md), and [limitations](docs/limitations.md).
 
@@ -206,7 +206,7 @@ A clean scan does not establish trust; a suspicious scan does not prove maliciou
 
 ## Roadmap
 
-- Complete the Day 3A pre-unblinding audit and create a clean research checkpoint before the reviewed holdout's first evaluation
+- Confirm the v0.3 detector on a new untouched, independently reviewed, preregistered holdout before making a new confirmatory claim
 - Richer MCP 2026-07-28 `x-mcp-header` validation
 - Experimental signed baseline envelopes and baseline policy profiles
 - Delta SARIF and explicit detection-policy profiles

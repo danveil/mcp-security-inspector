@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 
-from mcpsec.detectors.base import Detector, TextSignal, all_text_fields, bounded_context, finding
+from mcpsec.detectors.base import Detector, TextSignal, all_text_fields, bounded_context, finding, has_local_pattern
 from mcpsec.models import Finding, ToolDefinition
 
 PATTERN = re.compile(
@@ -42,8 +42,15 @@ def sensitive_action_signal(text: str) -> TextSignal | None:
             action
             for action in VALUE_ACTION.finditer(context)
             if offset + action.end() <= sensitive.start() or offset + action.start() >= sensitive.end()
+            if not has_local_pattern(
+                NEGATED_ACTION,
+                text,
+                offset + action.start(),
+                offset + action.end(),
+                radius=96,
+            )
         ]
-        if not actions or NEGATED_ACTION.search(context) or SAFE_ACTION_CONTEXT.search(context):
+        if not actions or SAFE_ACTION_CONTEXT.search(context):
             continue
         action = actions[0]
         start = min(sensitive.start(), offset + action.start())

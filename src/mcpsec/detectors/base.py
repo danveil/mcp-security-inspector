@@ -28,6 +28,8 @@ class TextSignal:
 
 
 CONTEXT_BOUNDARY = re.compile(r"[.!?;\r\n]")
+CONTRASTIVE_CONNECTOR = re.compile(r"\b(?:but|however|yet|instead)\b", re.I)
+COORDINATING_CONNECTOR = re.compile(r"(?:,|\b(?:and|or|nor)\b)", re.I)
 
 
 def bounded_context(text: str, start: int, end: int, *, radius: int = 160) -> tuple[str, int]:
@@ -45,9 +47,26 @@ def bounded_context(text: str, start: int, end: int, *, radius: int = 160) -> tu
     return text[lower:upper], lower
 
 
-def has_local_pattern(pattern: re.Pattern[str], text: str, start: int, end: int, *, radius: int = 160) -> bool:
-    context, _ = bounded_context(text, start, end, radius=radius)
-    return bool(pattern.search(context))
+def has_local_pattern(
+    pattern: re.Pattern[str],
+    text: str,
+    start: int,
+    end: int,
+    *,
+    radius: int = 160,
+    include_coordinated: bool = False,
+) -> bool:
+    context, offset = bounded_context(text, start, end, radius=radius)
+    local_start = start - offset
+    local_end = end - offset
+    for match in pattern.finditer(context):
+        if match.start() < local_end and match.end() > local_start:
+            return True
+        if include_coordinated and match.end() <= local_start:
+            bridge = context[match.end() : local_start]
+            if len(bridge) <= 80 and COORDINATING_CONNECTOR.search(bridge) and not CONTRASTIVE_CONNECTOR.search(bridge):
+                return True
+    return False
 
 
 def safe_transformed_text(value: str, *, limit: int = 96) -> str:
@@ -75,7 +94,8 @@ def strings(value: Any, prefix: str = "") -> Iterable[tuple[str, str]]:
     if isinstance(value, str):
         yield prefix, value
     elif isinstance(value, dict):
-        for key, item in value.items():
+        for key in sorted(value, key=str):
+            item = value[key]
             path = f"{prefix}.{key}" if prefix else str(key)
             yield path, str(key)
             yield from strings(item, path)
@@ -106,7 +126,9 @@ def poisoning_text_fields(tool: ToolDefinition) -> list[tuple[str, str]]:
         ("outputSchema", tool.output_schema),
         ("annotations", tool.annotations),
         ("execution", tool.execution),
+        ("icons", tool.icons),
         ("metadata", tool.metadata),
+        ("source", tool.source),
     ):
         values.extend(text_values(value, field))
     values.extend(text_values(tool.unknown_fields))
@@ -124,9 +146,11 @@ DIRECT_ACTION_AFTER_INDICATOR = re.compile(
 )
 
 
-def is_educational_reference(text: str, match_end: int) -> bool:
+def is_educational_reference(text: str, match_start: int, match_end: int) -> bool:
     """Suppress an educational quotation unless it continues with a direct action."""
-    return bool(EDUCATIONAL_CONTEXT.search(text)) and not DIRECT_ACTION_AFTER_INDICATOR.search(text[match_end:])
+    context, offset = bounded_context(text, match_start, match_end)
+    local_end = match_end - offset
+    return bool(EDUCATIONAL_CONTEXT.search(context)) and not DIRECT_ACTION_AFTER_INDICATOR.search(context[local_end:])
 
 
 def all_text_fields(tool: ToolDefinition) -> list[tuple[str, str]]:
@@ -136,10 +160,18 @@ def all_text_fields(tool: ToolDefinition) -> list[tuple[str, str]]:
         ("output_schema", tool.output_schema),
         ("annotations", tool.annotations),
         ("execution", tool.execution),
+        ("icons", tool.icons),
         ("metadata", tool.metadata),
+        ("source", tool.source),
         ("unknown_fields", tool.unknown_fields),
     ):
-        values.extend((f"{field}.{path}", text) for path, text in strings(value))
+        values.extend(
+            (
+                field if not path else f"{field}{path}" if path.startswith("[") else f"{field}.{path}",
+                text,
+            )
+            for path, text in strings(value)
+        )
     return values
 
 

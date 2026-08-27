@@ -53,7 +53,11 @@ def instruction_priority_signal(text: str) -> TextSignal | None:
         context, offset = bounded_context(text, authority.start(), authority.end())
         instruction = INSTRUCTION_OBJECT.search(context)
         target = CONFLICT_TARGET.search(context)
-        if not instruction or not target or PRIORITY_NEGATION.search(context):
+        if (
+            not instruction
+            or not target
+            or has_local_pattern(PRIORITY_NEGATION, text, authority.start(), authority.end())
+        ):
             continue
         start = min(authority.start(), offset + instruction.start(), offset + target.start())
         end = max(authority.end(), offset + instruction.end(), offset + target.end())
@@ -69,7 +73,7 @@ class InjectionDetector(Detector):
             if (
                 match
                 and not has_local_pattern(NEGATION, text, match.start(), match.end())
-                and not is_educational_reference(text, match.end())
+                and not is_educational_reference(text, match.start(), match.end())
             ):
                 findings.append(
                     finding(
@@ -91,7 +95,7 @@ class InjectionDetector(Detector):
                     )
                 )
             priority = instruction_priority_signal(text)
-            if priority and not is_educational_reference(text, priority.end):
+            if priority and not is_educational_reference(text, priority.start, priority.end):
                 findings.append(
                     finding(
                         rule_id="PI-002",

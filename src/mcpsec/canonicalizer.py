@@ -34,5 +34,7 @@ def canonical_json(value: Any) -> str:
 
 
 def canonical_tool(tool: ToolDefinition) -> str:
-    payload = tool.model_dump(exclude={"source"}, mode="json")
+    payload = tool.model_dump(exclude={"provenance"}, mode="json")
+    if tool.source is None:
+        payload.pop("source", None)
     return canonical_json(payload)

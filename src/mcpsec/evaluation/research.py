@@ -20,6 +20,7 @@ from mcpsec.evaluation.models import (
     TimingMode,
 )
 from mcpsec.models import RuleDefinition, Severity, SuppressionDefinition
+from mcpsec.rules.loader import validate_custom_rule_ids
 
 DEPENDENCY_DISTRIBUTIONS = (
     "httpx2",
@@ -129,6 +130,7 @@ def build_evaluation_configuration(
     custom_rule_file_sha256: str | None,
     suppression_file_sha256: str | None,
 ) -> EvaluationConfiguration:
+    validate_custom_rule_ids(rules)
     custom_configuration = _semantic_custom_rules(rules)
     return EvaluationConfiguration(
         suspicious_threshold=threshold,

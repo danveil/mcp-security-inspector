@@ -18,6 +18,8 @@ def fingerprint_tool(tool: ToolDefinition) -> Fingerprints:
         "metadata": tool.metadata,
         "unknown_fields": tool.unknown_fields,
     }
+    if tool.source is not None:
+        metadata["source"] = tool.source
     return Fingerprints(
         full_sha256=sha256(canonical_tool(tool)),
         description_sha256=sha256(tool.description),

@@ -6,6 +6,9 @@ All notable changes follow Keep a Changelog conventions and semantic versioning.
 
 ### Added
 
+- Immutable tracked preservation of the original v0.2 H0, Day 3C analysis, and authentic dirty Day 4C exploratory artifact with exact hashes
+- Strict JSON duplicate-key and non-finite-number rejection across scan, manifest, baseline, artifact, and JSON configuration inputs
+- Deterministic per-tool/report finding and retained-evidence budgets with explicit truncation status
 - Post-unblinding exploratory `PI-002`, `HID-002`, `SEC-002`, `MIS-002`, and bounded depth-one `OBF-005` detector rules
 - Structured, path-preserving high-impact capability signals and a 36-sample v0.3 exploratory development fixture set
 - Central resource policy for JSON/YAML/baseline sizes, structure nodes, text, tool counts, pagination, rule fields/patterns, and YAML aliases/nodes
@@ -22,6 +25,10 @@ All notable changes follow Keep a Changelog conventions and semantic versioning.
 
 ### Changed
 
+- Built-in rule pack identity is now `2.0.0`, independently versioned from package `0.3.0a1`
+- Current experiment output schema is `3.1.0`; preserved strict schema `3.0.0` artifacts remain self-describing and loadable
+- Raw top-level `source` is preserved separately from internal provenance, icon text is inspected, and malformed/missing `inputSchema` is rejected
+- Development regression result after relation-scoping fixes remains TP 37, TN 36, FP 4, FN 3 without corpus, threshold, severity, scoring, or label changes
 - Package identity is now `0.3.0a1`, marking the accepted post-unblinding exploratory detector candidate rather than a final release
 - Sensitive-data, instruction-priority, and concealment matching now use scoped local context and negation while retaining the bundled development confusion matrix
 - Oversized security-significant strings and keys are rejected instead of silently truncated
@@ -32,6 +39,9 @@ All notable changes follow Keep a Changelog conventions and semantic versioning.
 
 ### Fixed
 
+- Historical artifact loading no longer resolves old rule sets against the current registry; real H0-to-Day-4C comparison now returns precise provenance/configuration warnings
+- Educational, negation, sensitive-action, capability, and concealment suppressors are scoped to the matched local relation instead of suppressing unrelated positive evidence
+- Custom rule IDs cannot collide with built-ins, and baselines reject duplicate tool names before dictionary comparison
 - `mcpsec demo` now works from an installed wheel without relying on the source checkout
 - `scan --output` writes terminal-format reports instead of silently ignoring the destination
 - CLI error and comparison output consistently escape hostile Rich markup

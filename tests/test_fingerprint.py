@@ -28,3 +28,12 @@ def test_description_change_is_component_scoped() -> None:
 
 def test_output_hash_optional() -> None:
     assert fingerprint_tool(normalize_tool(make_tool())).output_schema_sha256 is None
+
+
+def test_raw_source_changes_metadata_fingerprint_but_internal_provenance_does_not() -> None:
+    first = fingerprint_tool(normalize_tool(make_tool(source={"catalog": "one"}), "path-a"))
+    second = fingerprint_tool(normalize_tool(make_tool(source={"catalog": "two"}), "path-b"))
+    same_raw_other_path = fingerprint_tool(normalize_tool(make_tool(source={"catalog": "one"}), "path-c"))
+    assert first.metadata_sha256 != second.metadata_sha256
+    assert first.full_sha256 != second.full_sha256
+    assert first == same_raw_other_path

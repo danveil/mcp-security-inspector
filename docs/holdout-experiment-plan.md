@@ -1,5 +1,7 @@
 # Pre-registered holdout experiment plan
 
+> **EXPERIMENT COMPLETED — 2026-08-27.** This document is the historical preregistration and is intentionally not rewritten to imply foreknowledge of results. The original v0.2 H0 is preserved at `evaluation/runs/exp-20260827T060056391880Z-c514ba03-a660fd6d.json` (SHA-256 `3307c28daca91132507abad116b771cbc4b505ab8c6e961e6ff33ed436871b80`). The v0.3 run on the same exposed holdout is post-unblinding exploratory evidence only; see `evaluation/runs/README.md`.
+
 ## Status and study identity
 
 - Study title: Independent holdout evaluation of deterministic MCP tool-poisoning metadata detection

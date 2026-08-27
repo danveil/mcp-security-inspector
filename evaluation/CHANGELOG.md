@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Verified that the bundled development regression result remains TP 37, TN 36, FP 4, and FN 3 after the Day 5B relation-scoping correctness fixes; no corpus sample, label, threshold, severity, score, or holdout artifact changed.
+- Preserved the original v0.2 H0, Day 3C report, and Day 4C post-unblinding exploratory artifact as specifically allowlisted immutable tracked evidence with exact SHA-256 identities.
 - Added a separate post-unblinding 36-sample v0.3 exploratory development set with 18 benign hard negatives and 18 suspicious construct cases for `PI-002`, `HID-002`, `SEC-002`, `MIS-002`, and `OBF-005`; it is not a confirmatory holdout.
 - Confirmed no duplicate IDs or exact canonical content overlap between the bundled development corpus and the v0.3 exploratory fixture set.
 - Preserved the bundled development baseline at TP 37, TN 36, FP 4, and FN 3 after the exploratory P0 detector changes.
@@ -11,7 +13,7 @@
 - Added deterministic corpus hashing and development/holdout exact-overlap validation.
 - Constructed a separate 48-sample candidate holdout corpus 1.0.0 with balanced labels and difficulties, explicit provenance, expected categories, and poisoning-bearing field paths.
 - Recorded detector-free cross-split integrity, preliminary near-duplicate review, coverage, and confounding checks. At construction time the holdout remained unreviewed and unevaluated.
-- Baseline remains TP 37, TN 36, FP 4, and FN 3.
+- The original pre-Day-5B baseline was TP 37, TN 36, FP 4, and FN 3.
 
 ## [Holdout 1.0.1] - 2026-08-27
 

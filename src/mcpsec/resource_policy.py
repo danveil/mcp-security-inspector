@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any
 
@@ -21,6 +22,9 @@ MAX_SUPPRESSIONS = 500
 MAX_RULE_PATTERNS = 32
 MAX_RULE_FIELDS = 9
 MAX_PATTERN_LENGTH = 256
+MAX_FINDINGS_PER_TOOL = 64
+MAX_FINDINGS_PER_REPORT = 2_048
+MAX_RETAINED_EVIDENCE_CHARS_PER_TOOL = 8_192
 MAX_YAML_ALIASES = 50
 MAX_YAML_NODES = 10_000
 MAX_YAML_DEPTH = 64
@@ -29,6 +33,35 @@ MAX_YAML_SCALAR_LENGTH = MAX_TEXT_LENGTH
 
 class ResourcePolicyError(ValueError):
     """An input exceeded a deterministic resource boundary."""
+
+
+class StrictJsonError(ValueError):
+    """JSON violated strict, interoperable parsing semantics."""
+
+
+def strict_json_loads(text: str, *, label: str = "JSON input") -> Any:
+    """Parse JSON while rejecting duplicate keys and non-finite numbers."""
+
+    def reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+        value: dict[str, Any] = {}
+        for key, item in pairs:
+            if key in value:
+                rendered = key[:80] + ("…" if len(key) > 80 else "")
+                raise StrictJsonError(f"{label} contains duplicate object key {rendered!r}")
+            value[key] = item
+        return value
+
+    def reject_non_finite(constant: str) -> Any:
+        raise StrictJsonError(f"{label} contains forbidden non-finite number {constant}")
+
+    try:
+        return json.loads(
+            text,
+            object_pairs_hook=reject_duplicate_keys,
+            parse_constant=reject_non_finite,
+        )
+    except json.JSONDecodeError as exc:
+        raise StrictJsonError(f"{label} is not valid JSON: {exc.msg} at line {exc.lineno}, column {exc.colno}") from exc
 
 
 def read_bounded_text(path: Path, *, max_bytes: int, label: str, encoding: str = "utf-8") -> str:
@@ -40,6 +73,11 @@ def read_bounded_text(path: Path, *, max_bytes: int, label: str, encoding: str =
     if len(content) > max_bytes:
         raise ResourcePolicyError(f"{label} exceeds the {max_bytes}-byte limit")
     return content.decode(encoding)
+
+
+def load_bounded_json(path: Path, *, max_bytes: int, label: str, encoding: str = "utf-8") -> Any:
+    text = read_bounded_text(path, max_bytes=max_bytes, label=label, encoding=encoding)
+    return strict_json_loads(text, label=label)
 
 
 def validate_structure(value: Any, *, label: str) -> None:

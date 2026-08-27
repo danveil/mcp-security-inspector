@@ -8,7 +8,7 @@ APP_NAME = "MCP Tool Security Inspector"
 EVIDENCE_LENGTH = 240
 DEFAULT_RULES_PATH = Path(__file__).parents[2] / "rules" / "default_rules.yml"
 BUILTIN_RULE_PACK_NAME = "builtin"
-BUILTIN_RULE_PACK_VERSION = "1.0.0"
+BUILTIN_RULE_PACK_VERSION = "2.0.0"
 KNOWN_CATEGORIES = {
     "capability",
     "concealment",

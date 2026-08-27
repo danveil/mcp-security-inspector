@@ -37,6 +37,8 @@ def report_csv(report: EvaluationReport) -> str:
             "failure_type",
             "expected_rule_ids",
             "expected_field_locations",
+            "findings_detected",
+            "findings_truncated",
         ]
     )
     for sample in report.samples:
@@ -54,6 +56,8 @@ def report_csv(report: EvaluationReport) -> str:
                 sample.failure_type or "",
                 ";".join(sample.expected_rule_ids),
                 ";".join(sample.expected_field_locations),
+                sample.findings_detected,
+                sample.findings_truncated,
             ]
         )
     return output.getvalue()
@@ -94,6 +98,12 @@ def render_terminal(report: EvaluationReport, console: Console | None = None) ->
         f"Rules: {terminal_safe(metadata.rule_pack_name)} {metadata.rule_pack_version}  "
         f"Samples: {metadata.sample_count}"
     )
+    if metadata.findings_truncated:
+        console.print(
+            "[bold yellow]Finding output bounded:[/bold yellow] "
+            f"retained {metadata.findings_retained} of {metadata.findings_detected} findings "
+            f"(run limit {metadata.finding_report_limit})."
+        )
     console.print(
         f"Experiment: {metadata.experiment_id}  Corpus SHA-256: {metadata.corpus_sha256[:12]}…  "
         f"Configuration SHA-256: {metadata.configuration_sha256[:12]}…"
@@ -290,27 +300,27 @@ def render_comparison_terminal(report: ExperimentComparisonReport, console: Cons
         prediction_table = Table(
             "Sample",
             "Truth",
-            "A → B",
+            "A -> B",
             "Rules A",
             "Rules B",
-            "Risk A → B",
-            "Failure A → B",
+            "Risk A -> B",
+            "Failure A -> B",
             show_lines=True,
         )
         for change in delta.prediction_changes:
             prediction_table.add_row(
                 terminal_safe(change.sample_id),
                 change.expected,
-                f"{change.prediction_a} → {change.prediction_b}",
+                f"{change.prediction_a} -> {change.prediction_b}",
                 ", ".join(terminal_safe(value) for value in change.triggered_rule_ids_a) or "—",
                 ", ".join(terminal_safe(value) for value in change.triggered_rule_ids_b) or "—",
-                f"{change.risk_score_a} → {change.risk_score_b}",
-                f"{terminal_safe(change.failure_type_a or 'none')} → {terminal_safe(change.failure_type_b or 'none')}",
+                f"{change.risk_score_a} -> {change.risk_score_b}",
+                f"{terminal_safe(change.failure_type_a or 'none')} -> {terminal_safe(change.failure_type_b or 'none')}",
             )
         console.print(prediction_table)
     if delta.timing.comparable:
         console.print(
-            f"Latency Δ (B-A): mean={delta.timing.mean_ms:+.3f} ms, "
+            f"Latency delta (B-A): mean={delta.timing.mean_ms:+.3f} ms, "
             f"p95={delta.timing.p95_ms:+.3f} ms, corpus pass={delta.timing.mean_corpus_pass_ms:+.3f} ms"
         )
     else:

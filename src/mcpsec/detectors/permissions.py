@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
-from mcpsec.detectors.base import Detector, all_text_fields, bounded_context, finding
+from mcpsec.detectors.base import Detector, all_text_fields, bounded_context, finding, has_local_pattern
 from mcpsec.models import Finding, ToolDefinition
 
 CAPABILITIES = {
@@ -123,7 +123,9 @@ def capability_signals_for_text(text: str, field: str) -> tuple[CapabilitySignal
     for category, pattern, destructive in STRUCTURED_CAPABILITIES:
         for match in pattern.finditer(text):
             context, _ = bounded_context(text, match.start(), match.end())
-            if NEGATED_CAPABILITY.search(context) or NON_OPERATIVE_CONTEXT.search(context):
+            if has_local_pattern(NEGATED_CAPABILITY, text, match.start(), match.end()) or NON_OPERATIVE_CONTEXT.search(
+                context
+            ):
                 continue
             signals.append(
                 CapabilitySignal(

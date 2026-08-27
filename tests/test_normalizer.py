@@ -61,7 +61,9 @@ def test_unicode_nfc() -> None:
 
 
 def test_source_preserved() -> None:
-    assert normalize_tool(make_tool(), "fixture").source == "fixture"
+    tool = normalize_tool(make_tool(source={"catalog": "registry"}), "fixture")
+    assert tool.source == {"catalog": "registry"}
+    assert tool.provenance == "fixture"
 
 
 def test_meta_alias() -> None:
@@ -72,6 +74,23 @@ def test_output_and_icons() -> None:
     tool = normalize_tool(make_tool(outputSchema={"type": "object"}, icons=[{"src": "data:"}]))
     assert tool.output_schema == {"type": "object"}
     assert tool.icons[0]["src"] == "data:"
+
+
+@pytest.mark.parametrize("value", [None, [], "object", 7, True])
+def test_input_schema_must_be_an_object(value: object) -> None:
+    with pytest.raises(InputError, match="inputSchema"):
+        normalize_tool(make_tool(inputSchema=value))
+
+
+def test_input_schema_is_required() -> None:
+    raw = make_tool()
+    raw.pop("inputSchema")
+    with pytest.raises(InputError, match="inputSchema is required"):
+        normalize_tool(raw)
+
+
+def test_empty_input_schema_object_is_valid() -> None:
+    assert normalize_tool(make_tool(inputSchema={})).input_schema == {}
 
 
 @pytest.mark.parametrize(

@@ -137,7 +137,7 @@ class ObfuscationDetector(Detector):
             if capability_signals_for_text(candidate.decoded, candidate.field):
                 signals.append("high_impact_capability")
             original_field = fields.get(candidate.field, "")
-            if not signals or is_educational_reference(original_field, candidate.end):
+            if not signals or is_educational_reference(original_field, candidate.start, candidate.end):
                 continue
             results.append(
                 finding(

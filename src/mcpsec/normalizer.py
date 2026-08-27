@@ -64,6 +64,17 @@ def _aliased_object(raw: dict[str, Any], primary: str, alias: str, *, optional: 
     return _object(value, primary, optional)
 
 
+def _required_aliased_object(raw: dict[str, Any], primary: str, alias: str) -> dict[str, Any]:
+    if primary not in raw and alias not in raw:
+        raise InputError(f"{primary} is required and must be a JSON object")
+    value = _aliased_object(raw, primary, alias)
+    if value is None:  # defensive narrowing; non-optional aliases never return None
+        raise InputError(f"{primary} is required and must be a JSON object")
+    if raw.get(primary, raw.get(alias)) is None:
+        raise InputError(f"{primary} is required and must be a JSON object")
+    return value
+
+
 def normalize_tool(raw: dict[str, Any], source: str = "unknown") -> ToolDefinition:
     name = raw.get("name")
     if not isinstance(name, str) or not name.strip():
@@ -79,14 +90,15 @@ def normalize_tool(raw: dict[str, Any], source: str = "unknown") -> ToolDefiniti
         name=_normalize(name),
         title=_normalize(title),
         description=_normalize(description),
-        input_schema=_aliased_object(raw, "inputSchema", "input_schema") or {},
+        input_schema=_required_aliased_object(raw, "inputSchema", "input_schema"),
         output_schema=_aliased_object(raw, "outputSchema", "output_schema", optional=True),
         annotations=_object(raw.get("annotations"), "annotations") or {},
         execution=_object(raw.get("execution"), "execution") or {},
         icons=_normalize(icons),
         metadata=_aliased_object(raw, "_meta", "metadata") or {},
         unknown_fields=_normalize({key: value for key, value in raw.items() if key not in KNOWN_FIELDS}),
-        source=source,
+        source=_normalize(raw.get("source")),
+        provenance=source,
     )
 
 

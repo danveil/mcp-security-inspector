@@ -4,11 +4,11 @@
 
 This protocol evaluates whether deterministic static inspection of MCP tool metadata identifies predefined suspicious metadata characteristics while retaining benign metadata. It evaluates detector behavior on labeled metadata, not whether an MCP server is trustworthy or whether its runtime implementation is safe.
 
-The primary hypothesis is that the fixed detector configuration achieves useful binary and category-level discrimination on data that was not used to tune it. The null hypothesis is that observed discrimination on a held-out set is not meaningfully better than chance or an agreed comparison baseline. The repository contains a separately constructed and independently reviewed holdout, but it remains prediction-unexposed and must not be evaluated until the documented clean-checkpoint and pre-unblinding gates are complete.
+The original primary hypothesis was that the fixed v0.2 detector configuration would achieve useful binary and category-level discrimination on data that had not been used to tune it. That first confirmatory evaluation is complete and its artifact is preserved unchanged. Holdout 1.0.1 is now exposed: any v0.3 evaluation on it is post-unblinding exploratory evidence, and another confirmatory claim requires a new untouched, independently reviewed, preregistered holdout.
 
 ## Threat-model scope
 
-The unit of analysis is one normalized static MCP tool definition. In scope are tool names, titles, descriptions, input and output schemas, annotations, execution hints, metadata, icons, and preserved unknown fields. The experiment covers metadata indicators such as instruction override, concealment, sensitive-data requests, schema concerns, name/capability mismatch, obfuscation, and high-impact capability context.
+The unit of analysis is one normalized static MCP tool definition. In scope are tool names, titles, descriptions, input and output schemas, annotations, execution hints, metadata, icon text, a raw top-level `source` value, and preserved unknown fields. Icon resources and source references are not fetched. The experiment covers metadata indicators such as instruction override, concealment, sensitive-data requests, schema concerns, name/capability mismatch, obfuscation, and high-impact capability context.
 
 Runtime behavior, tool invocation, server compromise, multi-turn interaction, model-specific susceptibility, network attacks, metadata-linked resources, and malicious code execution are out of scope. Evaluation must remain offline. Corpus content is hostile data: it is parsed under normal resource limits, never executed, never fetched, and never sent to a model.
 
@@ -16,12 +16,12 @@ Runtime behavior, tool invocation, server compromise, multi-turn interaction, mo
 
 Every corpus manifest declares exactly one `split`: `development` or `holdout`.
 
-- The bundled 80-sample corpus is the **development/regression split**. Its rules and examples have informed detector implementation, so its TP 37, TN 36, FP 4, and FN 3 result is a regression baseline, not independent test accuracy.
-- The **holdout split** is stored separately with different sample IDs and was assembled without running detector predictions. One independent reviewer, blinded to expected labels and detector predictions, reviewed all 48 samples. Final clean-checkpoint freeze remains mandatory before the first scored evaluation.
-- Holdout labels must remain concealed from anyone tuning detectors until the detector configuration, threshold, custom rules, suppressions, and evaluation procedure are frozen.
+- The bundled 80-sample corpus is the **development/regression split**. Its rules and examples have informed detector implementation. After the Day 5B context-scoping fixes it retains TP 37, TN 36, FP 4, and FN 3; this is a regression result, not independent test accuracy.
+- The **holdout split** is stored separately with different sample IDs. One independent reviewer, blinded to expected labels and detector predictions, reviewed all 48 samples before the frozen first evaluation. That evaluation has now occurred, so the split is no longer prediction-unexposed.
+- For any future holdout, labels must remain concealed from anyone tuning detectors until the detector configuration, threshold, custom rules, suppressions, and evaluation procedure are frozen.
 - No detector, rule, threshold, severity, score, suppression, or sample label may be changed in response to holdout results and then reported as if the same holdout remained unseen.
 
-Before unblinding, run:
+The completed study used the following detector-free pre-unblinding integrity gate; retain it for future holdouts:
 
 ```bash
 mcpsec corpus-check evaluation/corpus/manifest.json path/to/holdout/manifest.json
@@ -98,12 +98,12 @@ Ablations answer how predictions and metrics change when selected built-in detec
 
 | Family ID | Stable built-in rule IDs | Preset |
 |---|---|---|
-| `injection` | `PI-001` | `without-injection` |
-| `concealment` | `HID-001` | `without-concealment` |
-| `sensitive-data` | `SEC-001` | `without-sensitive-data` |
+| `injection` | `PI-001`, `PI-002` | `without-injection` |
+| `concealment` | `HID-001`, `HID-002` | `without-concealment` |
+| `sensitive-data` | `SEC-001`, `SEC-002` | `without-sensitive-data` |
 | `schema` | `SCH-001`, `SCH-002` | `without-schema` |
-| `mismatch` | `MIS-001` | `without-mismatch` |
-| `obfuscation` | `OBF-001`–`OBF-004` | `without-obfuscation` |
+| `mismatch` | `MIS-001`, `MIS-002` | `without-mismatch` |
+| `obfuscation` | `OBF-001`–`OBF-005` | `without-obfuscation` |
 | `capability` | `CAP-001` | `without-capability` |
 
 `full` enables every family. Repeatable `--disable-family` and `--disable-rule` selections are unioned with the preset. Unknown identifiers are rejected. Disabling every rule in a family omits its detector from evaluation; disabling one rule in a multi-rule family filters that rule's findings while retaining the others. Therefore, single-rule ablation supports effectiveness analysis but must not be interpreted as the exact compute cost of that sub-rule. There is intentionally no “without fingerprinting” or “without drift” preset: fingerprints and drift are separate static-analysis functions and are not part of detector classification.
@@ -125,11 +125,11 @@ Accuracy uses `(TP+TN)/(TP+TN+FP+FN)`, recall uses `TP/(TP+FN)`, and false-posit
 
 ## Artifact preservation and comparison
 
-Use `--runs-dir evaluation/runs` to write a JSON artifact named `<experiment-id>.json` in addition to the requested display/output. Generated files in that directory are intentionally ignored by Git; copy chosen immutable artifacts to controlled research storage and record their SHA-256 externally when required. CI preserves its development evaluation JSON as a GitHub Actions artifact for 14 days. Neither mechanism publishes data.
+Use `--runs-dir evaluation/runs` to write a JSON artifact named `<experiment-id>.json` in addition to the requested display/output. Generated files are ignored by default. The original v0.2 H0, Day 3C analysis, and Day 4C exploratory artifact are specifically allowlisted as tracked immutable evidence with exact hashes in `evaluation/runs/README.md`. CI preserves its development evaluation JSON as a GitHub Actions artifact for 14 days. Neither mechanism publishes data.
 
 `mcpsec compare-experiments A.json B.json` reads the current bounded output schema and reports all configuration differences, enabled rule additions/removals, confusion and metric deltas as B−A, paired prediction changes, and newly introduced or resolved FP/FN sample IDs. Corpus hash, split, sample population, paired ground truth, and classification threshold must match; otherwise the artifacts are incompatible and no paired deltas are calculated. Different application versions, Git commits, dirty state, or other non-ablation settings produce explicit warnings. Latency deltas are emitted only for an identical timing boundary and runtime environment.
 
-Output schema `3.0.0` is intentionally strict. Earlier evaluation artifacts lack the full timing, ablation, uncertainty, and stratification record and are rejected with a clear schema error rather than silently coerced into a misleading comparison. Preserve the original older artifact and rerun the same frozen configuration with the current evaluator if a current comparison is needed.
+Current output schema `3.1.0` adds explicit finding-budget status. The loader also supports preserved schema `3.0.0` artifacts and validates their recorded configuration, rule-pack identity, enabled/disabled rule sets, samples, metrics, and hashes without requiring equality to the current detector registry. Schemas older than `3.0.0` still lack the full timing, ablation, uncertainty, and stratification record and are rejected with a clear error.
 
 ## Reporting and versioning
 
@@ -137,7 +137,7 @@ Keep development and holdout results separate. A report must state its split, co
 
 - Change the corpus version when examples, labels, rationales, provenance, or other research-significant manifest data change intentionally.
 - Change the methodology version when labeling, split construction, scoring, or review procedures change.
-- Change the built-in or custom rule-pack version when detection behavior changes.
+- Change the built-in or custom rule-pack version when detection behavior changes. Package `0.3.0a1` uses built-in rule pack `2.0.0`; these versions are independent because package-only changes need not change detector semantics.
 - Change the output schema version when artifact compatibility changes.
 
 Record intentional corpus and metric changes in `evaluation/CHANGELOG.md` and relevant project documentation.

@@ -37,6 +37,9 @@ from mcpsec.evaluation.research import (
 from mcpsec.evaluation.stratification import stratify_samples
 from mcpsec.evaluation.uncertainty import uncertainty_for_matrix
 from mcpsec.models import SEVERITY_RANK, Finding, RuleDefinition, Severity, SuppressionDefinition, ToolScanResult
+from mcpsec.resource_policy import MAX_FINDINGS_PER_REPORT
+from mcpsec.risk import calculate_risk
+from mcpsec.rules.loader import validate_custom_rule_ids
 from mcpsec.scanner import analyze_tools
 
 
@@ -127,6 +130,7 @@ def evaluate_corpus(
     timestamp_factory: Callable[[], datetime] = utc_now,
     clock: Callable[[], float] = time.perf_counter,
 ) -> EvaluationReport:
+    validate_custom_rule_ids(rules or [])
     manifest, loaded_unsorted = load_corpus(manifest_path)
     loaded = sorted(loaded_unsorted, key=lambda sample: sample.entry.id)
     active_rules = rules or []
@@ -144,6 +148,8 @@ def evaluate_corpus(
     tool_root = manifest_path.resolve().parent
     all_observations: list[float] = []
     outcomes: list[SampleEvaluation] = []
+    findings_detected = 0
+    findings_retained = 0
     for sample in loaded:
         result, observations = _analyze_sample(
             sample,
@@ -154,6 +160,22 @@ def evaluate_corpus(
             suppressions=active_suppressions,
             clock=clock,
         )
+        detected_for_sample = result.findings_detected or len(result.findings)
+        remaining = max(0, MAX_FINDINGS_PER_REPORT - findings_retained)
+        if len(result.findings) > remaining:
+            retained_findings = result.findings[:remaining]
+            risk_score, severity = calculate_risk(retained_findings)
+            result = result.model_copy(
+                update={
+                    "findings": retained_findings,
+                    "risk_score": risk_score,
+                    "severity": severity,
+                    "findings_detected": detected_for_sample,
+                    "findings_truncated": True,
+                }
+            )
+        findings_detected += detected_for_sample
+        findings_retained += len(result.findings)
         all_observations.extend(observations)
         suspicious = any(SEVERITY_RANK[item.severity] >= SEVERITY_RANK[threshold] for item in result.findings)
         predicted = CorpusLabel.suspicious if suspicious else CorpusLabel.benign
@@ -184,6 +206,8 @@ def evaluate_corpus(
                 researcher_notes=sample.entry.notes,
                 risk_score=result.risk_score,
                 findings=result.findings,
+                findings_detected=detected_for_sample,
+                findings_truncated=detected_for_sample > len(result.findings),
                 elapsed_ms=statistics.fmean(observations),
                 timing_observations=len(observations),
             )
@@ -253,6 +277,10 @@ def evaluate_corpus(
                 f"{timing_configuration.mode.value}; warm-ups excluded; {timing_configuration.definition}"
             ),
             sample_count=len(outcomes),
+            findings_detected=findings_detected,
+            findings_retained=findings_retained,
+            findings_truncated=findings_detected > findings_retained,
+            finding_report_limit=MAX_FINDINGS_PER_REPORT,
             suppressions_applied=bool(active_suppressions),
             suspicious_threshold=threshold.value,
         ),

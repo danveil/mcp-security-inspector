@@ -1,12 +1,12 @@
 # Independent holdout corpus
 
-## Purpose and blindness boundary
+## Purpose and completed blindness boundary
 
 This directory contains inert static MCP tool metadata for the research question: “How effectively does the lightweight deterministic prototype detect known MCP tool-poisoning patterns on unseen metadata?” It evaluates known tool-poisoning construct detection, not general maliciousness or runtime behavior.
 
-The corpus must not be passed to `mcpsec evaluate`, `mcpsec scan`, detector classes, or any prediction-producing path until the review and freeze conditions in `docs/holdout-experiment-plan.md` are satisfied. Structural loading, normalization, hashing, descriptive coverage counting, and `mcpsec corpus-check` are permitted because they produce no detector predictions.
+**STATUS — FIRST EXPERIMENT COMPLETED 2026-08-27.** The original prohibition on prediction-producing access was honored through the frozen v0.2 H0 run. The corpus is now exposed and must not be described or reused as an unseen confirmatory holdout for modified detectors. Any later use is explicitly post-unblinding exploratory analysis; a new confirmatory claim requires a fresh untouched holdout.
 
-Version 1.0.1 is the independently reviewed, prediction-unexposed holdout. Its final corpus SHA-256 is `c514ba03ac2ca6a6f67ec1e6cc7bb24f0347ccf51a98b0083bdaa53234f5a2d8`. It is not authorized for evaluation until the exact reviewed files are committed and the Day 3A pre-unblinding audit is complete.
+Version 1.0.1 is the independently reviewed holdout used for the completed first evaluation. Its final corpus SHA-256 is `c514ba03ac2ca6a6f67ec1e6cc7bb24f0347ccf51a98b0083bdaa53234f5a2d8`. The original v0.2 H0 and later v0.3 post-unblinding exploratory evidence are preserved with hashes and scientific status in `evaluation/runs/README.md`.
 
 ## Sampling rubric
 
@@ -73,6 +73,6 @@ Corpus-level `label_review_status` is `independently_reviewed`. One independent 
 
 R08 / `holdout_s011` remains suspicious after adjudication under the pre-existing malformed-schema security-review rubric. The reviewer benign judgment, confidence, rationale, and ambiguity remain preserved. Original difficulty labels also remain unchanged; reviewer difficulty agreed on 16/48 and is recorded separately. This is single-reviewer evidence, not multi-expert consensus.
 
-The next gate is to review the diff, commit the exact corpus and plan as a clean research checkpoint, and complete the Day 3A pre-unblinding audit before the first holdout evaluation.
+The review/freeze checkpoint, Day 3A audit, and first H0 evaluation are complete. The original H0 bytes remain immutable; Day 5 remediation does not relabel, modify, or retune this corpus.
 
-Construction and review evidence is retained in `integrity-report.json`, `near-duplicate-review.md`, `coverage-report.md`, `review-ledger.md`, and `reviewer-source.md`. These artifacts contain corpus identity, human judgments, and descriptive design checks only; they contain no detector predictions, findings, risk scores, or performance metrics.
+Construction and review evidence is retained in `integrity-report.json`, `near-duplicate-review.md`, `coverage-report.md`, `review-ledger.md`, and `reviewer-source.md`. Those files contain corpus identity, human judgments, and descriptive design checks only; prediction and performance evidence is preserved separately under `evaluation/runs/`.

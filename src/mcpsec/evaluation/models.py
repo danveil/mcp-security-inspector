@@ -10,7 +10,8 @@ from mcpsec.models import Finding, Severity
 
 SHA256_PATTERN = r"^[0-9a-f]{64}$"
 FIELD_LOCATION_PATTERN = r"^[A-Za-z_$][A-Za-z0-9_$-]*(?:\.[A-Za-z_$][A-Za-z0-9_$-]*|\[[0-9]+\])*$"
-OUTPUT_SCHEMA_VERSION = "3.0.0"
+OUTPUT_SCHEMA_VERSION = "3.1.0"
+SUPPORTED_OUTPUT_SCHEMA_VERSIONS = frozenset({"3.0.0", OUTPUT_SCHEMA_VERSION})
 MIN_STRATUM_SAMPLE_COUNT = 10
 
 
@@ -306,8 +307,20 @@ class SampleEvaluation(BaseModel):
     researcher_notes: str = ""
     risk_score: int = Field(ge=0, le=100)
     findings: list[Finding]
+    findings_detected: int | None = Field(default=None, ge=0)
+    findings_truncated: bool = False
     elapsed_ms: float = Field(ge=0)
     timing_observations: int = Field(default=1, ge=1)
+
+    @model_validator(mode="after")
+    def validate_finding_counts(self) -> SampleEvaluation:
+        if self.findings_detected is None:
+            self.findings_detected = len(self.findings)
+        if self.findings_detected < len(self.findings):
+            raise ValueError("findings_detected cannot be smaller than retained findings")
+        if self.findings_truncated != (self.findings_detected > len(self.findings)):
+            raise ValueError("findings_truncated does not match detected and retained finding counts")
+        return self
 
 
 class TimingStatistics(BaseModel):
@@ -391,6 +404,10 @@ class EvaluationMetadata(BaseModel):
     invocation: list[str]
     timing_methodology: str
     sample_count: int = Field(ge=0)
+    findings_detected: int | None = Field(default=None, ge=0)
+    findings_retained: int | None = Field(default=None, ge=0)
+    findings_truncated: bool = False
+    finding_report_limit: int | None = Field(default=None, ge=1)
     suppressions_applied: bool
     suspicious_threshold: str
 

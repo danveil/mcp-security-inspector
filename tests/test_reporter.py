@@ -8,7 +8,7 @@ from conftest import make_tool
 from rich.console import Console
 
 from mcpsec.cli import analyze
-from mcpsec.models import Finding, ScanReport, ToolScanResult
+from mcpsec.models import Finding, FindingBudgetStatus, ScanReport, ToolScanResult
 from mcpsec.normalizer import normalize_tool
 from mcpsec.reporter import (
     neutralize_csv,
@@ -38,6 +38,20 @@ def sample_report(name: str = "tool") -> ScanReport:
         tool=normalize_tool(make_tool(name=name)), findings=[finding], risk_score=8, severity="INFORMATIONAL"
     )
     return ScanReport(application="MCP Tool Security Inspector", version="0.1.0", source="fixture.json", tools=[result])
+
+
+def bounded_report() -> ScanReport:
+    report = sample_report()
+    report.tools[0] = report.tools[0].model_copy(update={"findings_detected": 2, "findings_truncated": True})
+    report.finding_budget = FindingBudgetStatus(
+        per_tool_limit=1,
+        report_limit=1,
+        evidence_char_limit_per_tool=240,
+        findings_detected=2,
+        findings_retained=1,
+        truncated=True,
+    )
+    return report
 
 
 def test_json_machine_readable() -> None:
@@ -72,7 +86,11 @@ def test_csv_is_parseable_and_evidence_neutralized() -> None:
 
 def test_clean_csv_row(tmp_path: Path) -> None:
     report = analyze(Path("examples/clean_tools.json"))
-    assert len(list(csv.reader(io.StringIO(report_csv(report))))) == 3
+    rows = list(csv.DictReader(io.StringIO(report_csv(report))))
+    assert len(rows) == 2
+    assert rows[0]["field"] == rows[0]["evidence"] == rows[0]["recommendation"] == ""
+    assert rows[0]["findings_detected"] == rows[0]["findings_retained"] == "0"
+    assert rows[0]["findings_truncated"] == "False"
 
 
 def test_sarif_shape() -> None:
@@ -86,6 +104,19 @@ def test_terminal_output() -> None:
     render_terminal(sample_report(), Console(file=output, force_terminal=False, width=160))
     assert "MCP Tool Security Inspector" in output.getvalue()
     assert "TST-001" in output.getvalue()
+
+
+def test_finding_budget_status_is_visible_in_every_report_format() -> None:
+    report = bounded_report()
+    assert json.loads(report_json(report))["finding_budget"]["truncated"] is True
+    csv_rows = list(csv.DictReader(io.StringIO(report_csv(report))))
+    assert csv_rows[0]["findings_truncated"] == "True"
+    sarif = json.loads(report_sarif(report))
+    assert sarif["runs"][0]["properties"]["findingBudget"]["truncated"] is True
+    output = io.StringIO()
+    render_terminal(report, Console(file=output, force_terminal=False, width=160))
+    assert "Finding output bounded" in output.getvalue()
+    assert "OUTPUT BOUNDED" in output.getvalue()
 
 
 @pytest.mark.parametrize("format_name", ["json", "csv", "sarif"])

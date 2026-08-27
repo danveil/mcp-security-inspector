@@ -1,8 +1,8 @@
 # Security policy
 
-## Supported version
+## Supported versions and platforms
 
-Security fixes are provided for the latest 0.2.x release until a later supported line is announced.
+Security fixes are provided for the latest published 0.2.x release until a later supported line is announced. The source-tree `0.3.0a1` candidate is an unreleased alpha and is not yet a supported release. The project requires Python 3.12 or newer; automated CI covers Ubuntu and development validation covers Windows. No macOS support claim is made until that platform is exercised in CI.
 
 ## Reporting a vulnerability
 

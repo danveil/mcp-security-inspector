@@ -147,7 +147,12 @@ def test_path_escape_rejected(tmp_path: Path) -> None:
 
 def test_catalog_requires_valid_tool_selection(tmp_path: Path) -> None:
     (tmp_path / "tool.json").write_text(
-        json.dumps([{"name": "one"}, {"name": "two"}]),
+        json.dumps(
+            [
+                {"name": "one", "inputSchema": {"type": "object"}},
+                {"name": "two", "inputSchema": {"type": "object"}},
+            ]
+        ),
         encoding="utf-8",
     )
     with pytest.raises(CorpusValidationError, match="tool_name is required"):
@@ -156,7 +161,12 @@ def test_catalog_requires_valid_tool_selection(tmp_path: Path) -> None:
 
 def test_named_catalog_selection(tmp_path: Path) -> None:
     (tmp_path / "tool.json").write_text(
-        json.dumps([{"name": "one"}, {"name": "two"}]),
+        json.dumps(
+            [
+                {"name": "one", "inputSchema": {"type": "object"}},
+                {"name": "two", "inputSchema": {"type": "object"}},
+            ]
+        ),
         encoding="utf-8",
     )
     value = sample()

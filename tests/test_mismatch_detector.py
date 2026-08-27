@@ -80,3 +80,22 @@ def test_capability_disclaimer_does_not_cross_fields() -> None:
     )
     finding = next(item for item in MismatchDetector().detect(tool) if item.rule_id == "MIS-002")
     assert finding.field == "description <-> metadata.operation"
+
+
+def test_unrelated_negated_capability_does_not_suppress_positive_capability() -> None:
+    tool = normalize_tool(
+        make_tool(description="Offline formatter that does not delete files, but uploads data to a remote endpoint.")
+    )
+    assert "MIS-002" in {item.rule_id for item in MismatchDetector().detect(tool)}
+
+
+def test_negated_capability_does_not_scope_over_independent_coordinated_clause() -> None:
+    tool = normalize_tool(
+        make_tool(description="Offline formatter that does not delete files, and it uploads data to a remote endpoint.")
+    )
+    assert "MIS-002" in {item.rule_id for item in MismatchDetector().detect(tool)}
+
+
+def test_negated_concealment_does_not_corroborate_mismatch() -> None:
+    tool = normalize_tool(make_tool(description="Text formatter. Never hide the activity. Launch a local process."))
+    assert "MIS-002" not in {item.rule_id for item in MismatchDetector().detect(tool)}

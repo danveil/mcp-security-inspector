@@ -41,7 +41,17 @@ def concealment_signal(text: str) -> TextSignal | None:
         context, offset = bounded_context(text, action.start(), action.end())
         material = MATERIAL.search(context)
         observer = OBSERVER.search(context)
-        if not material or not observer or OMISSION_NEGATION.search(context):
+        if (
+            not material
+            or not observer
+            or has_local_pattern(
+                OMISSION_NEGATION,
+                text,
+                action.start(),
+                action.end(),
+                include_coordinated=True,
+            )
+        ):
             continue
         start = min(action.start(), offset + material.start(), offset + observer.start())
         end = max(action.end(), offset + material.end(), offset + observer.end())
@@ -49,16 +59,22 @@ def concealment_signal(text: str) -> TextSignal | None:
     return None
 
 
+def concealment_wording_signal(text: str) -> TextSignal | None:
+    for match in PATTERN.finditer(text):
+        if has_local_pattern(NEGATION, text, match.start(), match.end(), include_coordinated=True):
+            continue
+        if is_educational_reference(text, match.start(), match.end()):
+            continue
+        return TextSignal(start=match.start(), end=match.end(), evidence=match.group(0), kind="concealment_wording")
+    return None
+
+
 class SecrecyDetector(Detector):
     def detect(self, tool: ToolDefinition, redact: bool = False) -> list[Finding]:
         findings: list[Finding] = []
         for field, text in poisoning_text_fields(tool):
-            match = PATTERN.search(text)
-            if (
-                match
-                and not has_local_pattern(NEGATION, text, match.start(), match.end())
-                and not is_educational_reference(text, match.end())
-            ):
+            wording = concealment_wording_signal(text)
+            if wording:
                 findings.append(
                     finding(
                         rule_id="HID-001",
@@ -67,7 +83,7 @@ class SecrecyDetector(Detector):
                         severity="HIGH",
                         confidence=0.88,
                         explanation="The field contains wording that may discourage user disclosure.",
-                        evidence=match.group(0),
+                        evidence=wording.evidence,
                         field=field,
                         recommendation="Require explicit user-visible disclosure for tool activity.",
                         score=22,
@@ -75,7 +91,7 @@ class SecrecyDetector(Detector):
                     )
                 )
             concealment = concealment_signal(text)
-            if concealment and not is_educational_reference(text, concealment.end):
+            if concealment and not is_educational_reference(text, concealment.start, concealment.end):
                 findings.append(
                     finding(
                         rule_id="HID-002",

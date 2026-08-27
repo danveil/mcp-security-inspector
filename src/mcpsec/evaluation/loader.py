@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -11,7 +10,7 @@ from mcpsec.exceptions import CorpusValidationError, McpsecError
 from mcpsec.loader import load_tools
 from mcpsec.models import ToolDefinition
 from mcpsec.normalizer import normalize_tools
-from mcpsec.resource_policy import ResourcePolicyError, read_bounded_text, validate_structure
+from mcpsec.resource_policy import ResourcePolicyError, StrictJsonError, load_bounded_json, validate_structure
 
 MAX_MANIFEST_BYTES = 2 * 1024 * 1024
 
@@ -24,12 +23,12 @@ class LoadedSample:
 
 def load_manifest(path: Path) -> CorpusManifest:
     try:
-        raw = json.loads(read_bounded_text(path, max_bytes=MAX_MANIFEST_BYTES, label="Corpus manifest"))
+        raw = load_bounded_json(path, max_bytes=MAX_MANIFEST_BYTES, label="Corpus manifest")
         validate_structure(raw, label="Corpus manifest")
         return CorpusManifest.model_validate(raw)
     except CorpusValidationError:
         raise
-    except (OSError, UnicodeError, json.JSONDecodeError, ValidationError, ResourcePolicyError) as exc:
+    except (OSError, UnicodeError, StrictJsonError, ValidationError, ResourcePolicyError) as exc:
         raise CorpusValidationError(f"Cannot load corpus manifest: {exc}") from exc
 
 

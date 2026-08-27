@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 import pytest
@@ -51,3 +52,34 @@ def test_baseline_file_size_is_bounded(tmp_path: Path, monkeypatch: pytest.Monke
     monkeypatch.setattr("mcpsec.baseline.MAX_BASELINE_BYTES", 20)
     with pytest.raises(InputError, match="byte limit"):
         load_baseline(path)
+
+
+def test_duplicate_baseline_tool_names_are_rejected(tmp_path: Path) -> None:
+    baseline = create_baseline([normalize_tool(make_tool())], "fixture")
+    payload = baseline.model_dump(mode="json")
+    payload["tools"] = [payload["tools"][0], payload["tools"][0]]
+    path = tmp_path / "duplicate-baseline.json"
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    with pytest.raises(InputError, match="tool names must be unique"):
+        load_baseline(path)
+
+
+def test_baseline_tool_name_case_semantics_are_exact(tmp_path: Path) -> None:
+    baseline = create_baseline(
+        [normalize_tool(make_tool(name="tool")), normalize_tool(make_tool(name="Tool"))],
+        "fixture",
+    )
+    path = tmp_path / "case-baseline.json"
+    write_baseline(baseline, path)
+    assert [item.name for item in load_baseline(path).tools] == ["tool", "Tool"]
+
+
+def test_baseline_unknown_keys_remain_forward_compatible(tmp_path: Path) -> None:
+    baseline = create_baseline([normalize_tool(make_tool())], "fixture")
+    payload = baseline.model_dump(mode="json")
+    payload["future_metadata"] = {"version": 2}
+    path = tmp_path / "forward-compatible-baseline.json"
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    loaded = load_baseline(path)
+    assert loaded.source == "fixture"
+    assert "future_metadata" not in loaded.model_dump()

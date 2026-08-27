@@ -42,7 +42,9 @@ def write_corpus(
     categories: list[str] | None = None,
 ) -> Path:
     root.mkdir()
-    (root / "tool.json").write_text(json.dumps(tool), encoding="utf-8")
+    normalized_tool = dict(tool)
+    normalized_tool.setdefault("inputSchema", {"type": "object"})
+    (root / "tool.json").write_text(json.dumps(normalized_tool), encoding="utf-8")
     manifest = {
         "corpus_name": f"{split}-test-corpus",
         "corpus_version": "1.0.0",

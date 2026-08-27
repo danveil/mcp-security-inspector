@@ -6,11 +6,12 @@ from pathlib import Path
 
 from pydantic import ValidationError
 
-from mcpsec.constants import KNOWN_CATEGORIES
+from mcpsec.constants import BUILTIN_RULE_PACK_NAME, BUILTIN_RULE_PACK_VERSION, KNOWN_CATEGORIES
 from mcpsec.evaluation.ablation import resolve_ablation
 from mcpsec.evaluation.metrics import calculate_metrics, confusion
 from mcpsec.evaluation.models import (
     OUTPUT_SCHEMA_VERSION,
+    SUPPORTED_OUTPUT_SCHEMA_VERSIONS,
     ClassificationMetricDelta,
     ConfigurationDifference,
     ConfusionMatrixDelta,
@@ -27,7 +28,7 @@ from mcpsec.evaluation.stratification import stratify_samples
 from mcpsec.evaluation.uncertainty import uncertainty_for_matrix
 from mcpsec.exceptions import ExperimentArtifactError
 from mcpsec.models import SEVERITY_RANK, Severity
-from mcpsec.resource_policy import ResourcePolicyError, read_bounded_text, validate_structure
+from mcpsec.resource_policy import ResourcePolicyError, StrictJsonError, load_bounded_json, validate_structure
 from mcpsec.risk import calculate_risk
 
 MAX_EXPERIMENT_ARTIFACT_BYTES = 20 * 1024 * 1024
@@ -78,29 +79,42 @@ def _validate_report_consistency(report: EvaluationReport) -> None:
     if metadata.experiment_id != experiment_id(timestamp, metadata.corpus_sha256, metadata.configuration_sha256):
         raise ExperimentArtifactError("Experiment artifact experiment ID is inconsistent with its identities")
 
-    resolved = resolve_ablation(
-        preset=configuration.ablation_preset,
-        disabled_rule_ids=configuration.disabled_builtin_rule_ids,
-        disabled_family_ids=configuration.disabled_builtin_family_ids,
+    enabled_detectors = set(configuration.enabled_builtin_detector_ids)
+    disabled_detectors = set(configuration.disabled_builtin_detector_ids)
+    if enabled_detectors & disabled_detectors:
+        raise ExperimentArtifactError("Experiment artifact detector sets overlap")
+    current_builtin_identity = (
+        metadata.rule_pack_name.split("+", 1)[0] == BUILTIN_RULE_PACK_NAME
+        and metadata.rule_pack_version.split("+", 1)[0] == BUILTIN_RULE_PACK_VERSION
     )
-    recorded_ablation = (
-        tuple(configuration.enabled_builtin_detector_ids),
-        tuple(configuration.disabled_builtin_detector_ids),
-        tuple(configuration.enabled_builtin_family_ids),
-        tuple(configuration.disabled_builtin_family_ids),
-        tuple(configuration.enabled_builtin_rule_ids),
-        tuple(configuration.disabled_builtin_rule_ids),
-    )
-    resolved_ablation = (
-        tuple(sorted(resolved.enabled_detector_ids)),
-        tuple(sorted(resolved.disabled_detector_ids)),
-        tuple(sorted(resolved.enabled_family_ids)),
-        tuple(sorted(resolved.disabled_family_ids)),
-        tuple(sorted(resolved.enabled_rule_ids)),
-        tuple(sorted(resolved.disabled_rule_ids)),
-    )
-    if recorded_ablation != resolved_ablation:
-        raise ExperimentArtifactError("Experiment artifact ablation sets are internally inconsistent")
+    if current_builtin_identity:
+        resolved = resolve_ablation(
+            preset=configuration.ablation_preset,
+            disabled_rule_ids=configuration.disabled_builtin_rule_ids,
+            disabled_family_ids=configuration.disabled_builtin_family_ids,
+        )
+        recorded_ablation = (
+            tuple(configuration.enabled_builtin_detector_ids),
+            tuple(configuration.disabled_builtin_detector_ids),
+            tuple(configuration.enabled_builtin_family_ids),
+            tuple(configuration.disabled_builtin_family_ids),
+            tuple(configuration.enabled_builtin_rule_ids),
+            tuple(configuration.disabled_builtin_rule_ids),
+        )
+        resolved_ablation = (
+            tuple(sorted(resolved.enabled_detector_ids)),
+            tuple(sorted(resolved.disabled_detector_ids)),
+            tuple(sorted(resolved.enabled_family_ids)),
+            tuple(sorted(resolved.disabled_family_ids)),
+            tuple(sorted(resolved.enabled_rule_ids)),
+            tuple(sorted(resolved.disabled_rule_ids)),
+        )
+        if recorded_ablation != resolved_ablation:
+            raise ExperimentArtifactError("Experiment artifact ablation sets are internally inconsistent")
+    elif configuration.ablation_preset.value != "full":
+        expected_disabled_family = configuration.ablation_preset.value.removeprefix("without-")
+        if expected_disabled_family not in configuration.disabled_builtin_family_ids:
+            raise ExperimentArtifactError("Historical experiment artifact ablation preset is internally inconsistent")
 
     threshold = Severity(metadata.suspicious_threshold)
     for sample in report.samples:
@@ -121,6 +135,8 @@ def _validate_report_consistency(report: EvaluationReport) -> None:
             or (sample.failure_type.value if sample.failure_type else None) != _expected_failure(sample)
         ):
             raise ExperimentArtifactError(f"Experiment artifact sample {sample.sample_id} is internally inconsistent")
+        if sample.findings_detected is None or sample.findings_detected < len(sample.findings):
+            raise ExperimentArtifactError(f"Experiment artifact sample {sample.sample_id} has invalid finding counts")
         if sample.timing_observations != configuration.timing.measured_repetitions:
             raise ExperimentArtifactError(f"Experiment artifact sample {sample.sample_id} has inconsistent timing")
 
@@ -167,25 +183,35 @@ def _validate_report_consistency(report: EvaluationReport) -> None:
         or timing.observation_count != metadata.sample_count * configuration.timing.measured_repetitions
     ):
         raise ExperimentArtifactError("Experiment artifact timing counts are internally inconsistent")
+    detected = sum(sample.findings_detected or len(sample.findings) for sample in report.samples)
+    retained = sum(len(sample.findings) for sample in report.samples)
+    if metadata.output_schema_version == OUTPUT_SCHEMA_VERSION and (
+        metadata.findings_detected != detected
+        or metadata.findings_retained != retained
+        or metadata.findings_truncated != (detected > retained)
+        or metadata.finding_report_limit is None
+    ):
+        raise ExperimentArtifactError("Experiment artifact finding-budget metadata is internally inconsistent")
 
 
 def load_evaluation_artifact(path: Path) -> EvaluationReport:
     try:
-        raw = json.loads(read_bounded_text(path, max_bytes=MAX_EXPERIMENT_ARTIFACT_BYTES, label="Experiment artifact"))
+        raw = load_bounded_json(path, max_bytes=MAX_EXPERIMENT_ARTIFACT_BYTES, label="Experiment artifact")
         validate_structure(raw, label="Experiment artifact")
         if not isinstance(raw, dict) or not isinstance(raw.get("metadata"), dict):
             raise ExperimentArtifactError("Experiment artifact must contain a metadata object")
         schema_version = raw["metadata"].get("output_schema_version")
-        if schema_version != OUTPUT_SCHEMA_VERSION:
+        if schema_version not in SUPPORTED_OUTPUT_SCHEMA_VERSIONS:
             raise ExperimentArtifactError(
-                f"Unsupported experiment output schema {schema_version!r}; expected {OUTPUT_SCHEMA_VERSION}"
+                f"Unsupported experiment output schema {schema_version!r}; supported versions are "
+                f"{', '.join(sorted(SUPPORTED_OUTPUT_SCHEMA_VERSIONS))}"
             )
         report = EvaluationReport.model_validate(raw)
         _validate_report_consistency(report)
         return report
     except ExperimentArtifactError:
         raise
-    except (OSError, UnicodeError, json.JSONDecodeError, ValidationError, ResourcePolicyError) as exc:
+    except (OSError, UnicodeError, StrictJsonError, ValidationError, ResourcePolicyError) as exc:
         raise ExperimentArtifactError(f"Cannot load experiment artifact: {exc}") from exc
 
 
@@ -312,6 +338,21 @@ def compare_experiments(a: EvaluationReport, b: EvaluationReport) -> ExperimentC
         warnings.append("Non-ablation evaluation configuration differs: " + ", ".join(non_ablation_differences) + ".")
     if a.metadata.application_version != b.metadata.application_version:
         warnings.append("Application versions differ.")
+    if (a.metadata.rule_pack_name, a.metadata.rule_pack_version) != (
+        b.metadata.rule_pack_name,
+        b.metadata.rule_pack_version,
+    ):
+        warnings.append("Recorded rule-pack identities differ.")
+    if (
+        a.metadata.configuration.ablation_preset.value == "full"
+        and b.metadata.configuration.ablation_preset.value == "full"
+        and set(a.metadata.configuration.enabled_builtin_rule_ids)
+        != set(b.metadata.configuration.enabled_builtin_rule_ids)
+    ):
+        warnings.append(
+            "Full configurations resolve to different recorded built-in rule sets; paired effectiveness deltas are "
+            "an exploratory rule-pack comparison."
+        )
     if a.metadata.git.commit != b.metadata.git.commit:
         warnings.append("Git commits differ.")
     if a.metadata.git.dirty or b.metadata.git.dirty:

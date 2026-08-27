@@ -4,8 +4,7 @@ import re
 
 from mcpsec.detectors.base import Detector, all_text_fields, finding, safe_transformed_text, strings
 from mcpsec.detectors.permissions import capability_signals
-from mcpsec.detectors.secrecy import PATTERN as LEGACY_CONCEALMENT
-from mcpsec.detectors.secrecy import concealment_signal
+from mcpsec.detectors.secrecy import concealment_signal, concealment_wording_signal
 from mcpsec.models import Finding, ToolDefinition
 
 CATEGORIES = {
@@ -109,7 +108,7 @@ class MismatchDetector(Detector):
         )
         unrelated_under_narrow = narrow and len({signal.category for signal in unauthorized}) >= 2
         concealed = any(
-            concealment_signal(text) or LEGACY_CONCEALMENT.search(text) for _, text in all_text_fields(tool)
+            concealment_signal(text) or concealment_wording_signal(text) for _, text in all_text_fields(tool)
         )
         destructive_without_confirmation = any(
             signal.destructive and NO_CONFIRMATION.search(signal.context) for signal in unauthorized

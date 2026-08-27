@@ -30,3 +30,8 @@ baseline*.json
 work/
 evaluation/runs/*
 !evaluation/runs/README.md
+!evaluation/runs/exp-20260827T060056391880Z-c514ba03-a660fd6d.json
+!evaluation/runs/day3c-deep-failure-analysis.md
+!evaluation/runs/day4c/
+evaluation/runs/day4c/*
+!evaluation/runs/day4c/post-unblinding-exploratory-holdout-full-analysis-core.json

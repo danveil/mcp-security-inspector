@@ -44,6 +44,9 @@ def report_csv(report: ScanReport) -> str:
             "field",
             "evidence",
             "recommendation",
+            "findings_detected",
+            "findings_retained",
+            "findings_truncated",
         ]
     )
     for result in report.tools:
@@ -58,6 +61,9 @@ def report_csv(report: ScanReport) -> str:
                     "",
                     "",
                     "",
+                    result.findings_detected,
+                    len(result.findings),
+                    result.findings_truncated,
                 ]
             )
         for finding in result.findings:
@@ -71,6 +77,9 @@ def report_csv(report: ScanReport) -> str:
                     neutralize_csv(finding.field),
                     neutralize_csv(finding.evidence),
                     neutralize_csv(finding.recommendation),
+                    result.findings_detected,
+                    len(result.findings),
+                    result.findings_truncated,
                 ]
             )
     return output.getvalue()
@@ -123,6 +132,11 @@ def report_sarif(report: ScanReport) -> str:
                     }
                 },
                 "results": results,
+                "properties": {
+                    "findingBudget": (
+                        report.finding_budget.model_dump(mode="json") if report.finding_budget is not None else None
+                    )
+                },
             }
         ],
     }
@@ -138,6 +152,12 @@ def render_terminal(report: ScanReport, console: Console | None = None) -> None:
     console.print(f"Tools: {total}  Clean: {total - affected}  With findings: {affected}")
     if severity:
         console.print("Findings: " + ", ".join(f"{key}={value}" for key, value in sorted(severity.items())))
+    if report.finding_budget is not None and report.finding_budget.truncated:
+        console.print(
+            "[bold yellow]Finding output bounded:[/bold yellow] "
+            f"retained {report.finding_budget.findings_retained} of "
+            f"{report.finding_budget.findings_detected}; review structured budget status."
+        )
     table = Table(show_lines=True)
     table.add_column("Tool")
     table.add_column("Risk", justify="right")
@@ -153,6 +173,8 @@ def render_terminal(report: ScanReport, console: Console | None = None) -> None:
             )
             or "No indicators detected"
         )
+        if result.findings_truncated:
+            findings += f"\n[OUTPUT BOUNDED: retained {len(result.findings)} of {result.findings_detected} findings]"
         table.add_row(terminal_safe(result.tool.name), f"{result.risk_score}/100", str(result.severity), findings)
     console.print(table)
 

@@ -13,14 +13,21 @@ from mcpsec.resource_policy import (
     MAX_RULE_FILE_BYTES,
     MAX_RULES,
     ResourcePolicyError,
+    StrictJsonError,
+    load_bounded_json,
     load_bounded_yaml,
 )
+from mcpsec.rules.builtin import RULE_EXPLANATIONS
 
 
 def load_rule_pack(path: Path) -> RulePack:
     try:
-        raw = load_bounded_yaml(path, max_bytes=MAX_RULE_FILE_BYTES, label="Rules file")
-    except (OSError, UnicodeError, yaml.YAMLError, ResourcePolicyError) as exc:
+        raw = (
+            load_bounded_json(path, max_bytes=MAX_RULE_FILE_BYTES, label="Rules file")
+            if path.suffix.casefold() == ".json"
+            else load_bounded_yaml(path, max_bytes=MAX_RULE_FILE_BYTES, label="Rules file")
+        )
+    except (OSError, UnicodeError, yaml.YAMLError, StrictJsonError, ResourcePolicyError) as exc:
         raise RuleValidationError(f"Cannot load rules: {exc}") from exc
     if not isinstance(raw, dict) or set(raw) not in ({"rules"}, {"rule_pack", "rules"}):
         raise RuleValidationError("Rules file must contain 'rules' and optional 'rule_pack' metadata")
@@ -32,8 +39,7 @@ def load_rule_pack(path: Path) -> RulePack:
         rules = TypeAdapter(list[RuleDefinition]).validate_python(raw["rules"])
     except ValidationError as exc:
         raise RuleValidationError(str(exc)) from exc
-    if len({rule.id for rule in rules}) != len(rules):
-        raise RuleValidationError("Rule IDs must be unique")
+    validate_custom_rule_ids(rules)
     if any(not rule.patterns or any(not p or len(p) > MAX_PATTERN_LENGTH for p in rule.patterns) for rule in rules):
         raise RuleValidationError(f"Patterns must be 1-{MAX_PATTERN_LENGTH} characters")
     allowed = {
@@ -44,7 +50,9 @@ def load_rule_pack(path: Path) -> RulePack:
         "output_schema",
         "annotations",
         "execution",
+        "icons",
         "metadata",
+        "source",
         "unknown_fields",
     }
     if any(not set(rule.fields) <= allowed for rule in rules):
@@ -55,6 +63,15 @@ def load_rule_pack(path: Path) -> RulePack:
     except ValidationError as exc:
         raise RuleValidationError(str(exc)) from exc
     return RulePack(rule_pack=validated_metadata, rules=rules)
+
+
+def validate_custom_rule_ids(rules: list[RuleDefinition]) -> None:
+    ids = [rule.id for rule in rules]
+    if len(set(ids)) != len(ids):
+        raise RuleValidationError("Custom rule IDs must be unique")
+    collisions = sorted(set(ids) & set(RULE_EXPLANATIONS))
+    if collisions:
+        raise RuleValidationError(f"Custom rule ID(s) conflict with built-in rule IDs: {', '.join(collisions)}")
 
 
 def load_rules(path: Path) -> list[RuleDefinition]:
@@ -71,7 +88,7 @@ class CustomRuleDetector(Detector):
             field: [] for field in {r for rule in self.rules for r in rule.fields}
         }
         for path, text in all_text_fields(tool):
-            root = path.split(".", 1)[0]
+            root = path.split(".", 1)[0].split("[", 1)[0]
             if root in available:
                 available[root].append((path, text))
         results: list[Finding] = []

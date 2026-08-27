@@ -3,7 +3,7 @@ from __future__ import annotations
 from enum import StrEnum
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from mcpsec.resource_policy import MAX_RULE_FIELDS, MAX_RULE_PATTERNS
 
@@ -39,7 +39,8 @@ class ToolDefinition(BaseModel):
     icons: list[JsonObject] = Field(default_factory=list)
     metadata: JsonObject = Field(default_factory=dict)
     unknown_fields: JsonObject = Field(default_factory=dict)
-    source: str = "unknown"
+    source: Any = None
+    provenance: str = "unknown"
 
 
 class Finding(BaseModel):
@@ -60,6 +61,27 @@ class ToolScanResult(BaseModel):
     findings: list[Finding]
     risk_score: int = Field(ge=0, le=100)
     severity: Severity
+    findings_detected: int | None = Field(default=None, ge=0)
+    findings_truncated: bool = False
+
+    @model_validator(mode="after")
+    def validate_finding_counts(self) -> ToolScanResult:
+        if self.findings_detected is None:
+            self.findings_detected = len(self.findings)
+        if self.findings_detected < len(self.findings):
+            raise ValueError("findings_detected cannot be smaller than retained findings")
+        if self.findings_truncated != (self.findings_detected > len(self.findings)):
+            raise ValueError("findings_truncated does not match detected and retained finding counts")
+        return self
+
+
+class FindingBudgetStatus(BaseModel):
+    per_tool_limit: int = Field(ge=1)
+    report_limit: int = Field(ge=1)
+    evidence_char_limit_per_tool: int = Field(ge=1)
+    findings_detected: int = Field(ge=0)
+    findings_retained: int = Field(ge=0)
+    truncated: bool
 
 
 class ScanReport(BaseModel):
@@ -67,6 +89,7 @@ class ScanReport(BaseModel):
     version: str
     source: str
     tools: list[ToolScanResult]
+    finding_budget: FindingBudgetStatus | None = None
 
 
 class Fingerprints(BaseModel):
@@ -91,6 +114,13 @@ class BaselineFile(BaseModel):
     created_at: str
     source: str
     tools: list[BaselineTool]
+
+    @model_validator(mode="after")
+    def validate_unique_tool_names(self) -> BaselineFile:
+        names = [tool.name for tool in self.tools]
+        if len(set(names)) != len(names):
+            raise ValueError("Baseline tool names must be unique")
+        return self
 
 
 class Drift(BaseModel):

@@ -41,3 +41,15 @@ def test_source_excluded_from_tool_canonicalization() -> None:
     a = normalize_tool(make_tool(), "a")
     b = normalize_tool(make_tool(), "b")
     assert canonical_tool(a) == canonical_tool(b)
+
+
+def test_absent_raw_source_preserves_prior_canonical_shape() -> None:
+    tool = normalize_tool(make_tool())
+    expected = tool.model_dump(exclude={"source", "provenance"}, mode="json")
+    assert canonical_tool(tool) == canonical_json(expected)
+
+
+def test_user_supplied_raw_source_is_security_significant() -> None:
+    first = normalize_tool(make_tool(source={"catalog": "one"}))
+    second = normalize_tool(make_tool(source={"catalog": "two"}))
+    assert canonical_tool(first) != canonical_tool(second)
