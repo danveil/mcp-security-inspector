@@ -108,11 +108,11 @@ mcpsec evaluate evaluation/corpus/manifest.json --timing-warmups 3 --timing-repe
 mcpsec evaluate evaluation/corpus/manifest.json --ablation without-injection --runs-dir evaluation/runs
 mcpsec evaluate evaluation/corpus/manifest.json --disable-rule SCH-001 --disable-family capability
 mcpsec compare-experiments evaluation/runs/EXPERIMENT-A.json evaluation/runs/EXPERIMENT-B.json
-# When an independently created holdout exists:
-mcpsec corpus-check evaluation/corpus/manifest.json path/to/holdout/manifest.json
+# Detector-free integrity check for the reviewed, still-unblinded holdout:
+mcpsec corpus-check evaluation/corpus/manifest.json evaluation/holdout/manifest.json
 ```
 
-The bundled corpus contains 40 benign and 40 suspicious harmless static definitions, including realistic borderline language. It is explicitly a development/regression split because it was visible during detector tuning; no holdout corpus is included yet. The default experiment applies every built-in rule, no suppressions, a medium binary threshold, one `analysis-core` measurement, and no warm-up. Research runs can repeat measurements, use the broader `static-end-to-end` boundary, disable named detector families or stable rule IDs, and compare preserved JSON artifacts without rescanning. Ablation is confined to evaluation; ordinary scans, fingerprints, baselines, drift behavior, detector patterns, severities, thresholds, and risk formulas are unchanged.
+The bundled development corpus contains 40 benign and 40 suspicious harmless static definitions, including realistic borderline language. It was visible during detector tuning, so its results are regression evidence rather than independent accuracy. A separate 48-sample holdout 1.0.1 has been reviewed by one independent reviewer but remains intentionally unevaluated; its one malformed-schema disagreement and subjective difficulty judgments are preserved in the review ledger. Do not run it until the clean-checkpoint and pre-unblinding gates in `docs/holdout-experiment-plan.md` are complete. The default experiment applies every built-in rule, no suppressions, a medium binary threshold, one `analysis-core` measurement, and no warm-up. Research runs can repeat measurements, use the broader `static-end-to-end` boundary, disable named detector families or stable rule IDs, and compare preserved JSON artifacts without rescanning. Ablation is confined to evaluation; ordinary scans, fingerprints, baselines, drift behavior, detector patterns, severities, thresholds, and risk formulas are unchanged.
 
 JSON output records an experiment ID, Git state when available, platform/dependency versions, portable invocation, corpus split/version/hash, the exact enabled and disabled detector/family/rule sets, timing definition, complete active configuration and configuration hash, Wilson 95% intervals for accuracy/recall/FPR, per-sample provenance/difficulty/expectations, stratified raw counts, and mechanically classified failures. It does not record usernames, hostnames, environment-variable values, absolute paths, or Git diffs. `--runs-dir evaluation/runs` preserves an authoritative JSON copy named by experiment ID; generated runs remain untracked. `compare-experiments` calculates B−A deltas only when corpus identity, split, samples, ground truth, and threshold are compatible, and refuses latency deltas when timing boundaries or runtime environments differ.
 
@@ -128,7 +128,7 @@ JSON output records an experiment ID, Git state when available, platform/depende
 | schema | 100.00% | 81.82% | 90.00% |
 | sensitive data | 58.33% | 100.00% | 73.68% |
 
-See the [research protocol](docs/research-protocol.md), [evaluation methodology](docs/evaluation-methodology.md), [experiment-plan template](docs/experiment-plan-template.md), and [false-positive analysis](docs/false-positive-analysis.md). The corpus is versioned separately; label and research-significant metadata changes must be recorded in `evaluation/CHANGELOG.md`.
+See the [research protocol](docs/research-protocol.md), [holdout experiment plan](docs/holdout-experiment-plan.md), [evaluation methodology](docs/evaluation-methodology.md), [experiment-plan template](docs/experiment-plan-template.md), and [false-positive analysis](docs/false-positive-analysis.md). The corpora are versioned separately; label and research-significant metadata changes must be recorded in `evaluation/CHANGELOG.md`.
 
 ## Risk scoring
 
@@ -197,7 +197,7 @@ A clean scan does not establish trust; a suspicious scan does not prove maliciou
 
 ## Roadmap
 
-- Independently reviewed, frozen holdout corpus with documented provenance and manual near-duplicate review
+- Complete the Day 3A pre-unblinding audit and create a clean research checkpoint before the reviewed holdout's first evaluation
 - Richer MCP 2026-07-28 `x-mcp-header` validation
 - Experimental signed baseline envelopes and baseline policy profiles
 - Delta SARIF and explicit detection-policy profiles

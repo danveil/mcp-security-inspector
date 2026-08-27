@@ -1,0 +1,57 @@
+{
+  "tools": [
+    {
+      "name": "redaction_preview",
+      "title": "Redaction Preview",
+      "description": "Shows which user-selected fields would be hidden in an exported copy while leaving the source unchanged.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "field_names": {"type": "array", "items": {"type": "string"}},
+          "replacement_label": {"type": "string", "default": "[redacted]"}
+        },
+        "required": ["field_names"]
+      },
+      "annotations": {"readOnlyHint": true, "userVisibleResult": true}
+    },
+    {
+      "name": "itinerary_card_renderer",
+      "title": "Itinerary Card Renderer",
+      "description": "Formats user-supplied journey stops and times into a display card without accessing files or external services.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stops": {"type": "array", "items": {"type": "string"}},
+          "timezone": {"type": "string"}
+        },
+        "required": ["stops"]
+      },
+      "outputSchema": {"type": "object", "properties": {"card_text": {"type": "string"}}}
+    },
+    {
+      "name": "release_command_explainer",
+      "title": "Release Command Explainer",
+      "description": "Explains the documented purpose of a command name from a static release handbook; it cannot run the command.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {"command_name": {"type": "string", "description": "A handbook entry name, not executable text."}},
+        "required": ["command_name"]
+      },
+      "execution": {"mode": "documentation_only", "processLaunch": false}
+    },
+    {
+      "name": "database_permission_matrix",
+      "title": "Database Permission Matrix",
+      "description": "Renders an administrator-provided list of database roles and approved actions as a review table.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "roles": {"type": "array", "items": {"type": "string"}},
+          "actions": {"type": "array", "items": {"type": "string"}}
+        },
+        "required": ["roles", "actions"]
+      },
+      "annotations": {"readOnlyHint": true, "changesDatabase": false}
+    }
+  ]
+}

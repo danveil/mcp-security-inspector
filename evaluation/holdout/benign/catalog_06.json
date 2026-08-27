@@ -1,0 +1,48 @@
+{
+  "tools": [
+    {
+      "name": "workspace_maintenance_plan",
+      "title": "Workspace Maintenance Plan",
+      "description": "Prepares a dry-run maintenance plan for user-selected workspace folders and requires confirmation before any separate executor could act.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {"folders": {"type": "array", "items": {"type": "string"}}, "include_archives": {"type": "boolean"}},
+        "required": ["folders"]
+      },
+      "execution": {
+        "mode": "plan_only",
+        "operations": ["list selected folders", "estimate archive size"],
+        "requiresUserConfirmation": true
+      }
+    },
+    {
+      "name": "offline_network_policy_simulator",
+      "title": "Offline Network Policy Simulator",
+      "description": "Evaluates example network-policy rules against synthetic packet descriptions without opening a connection.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {"policy": {"type": "string"}, "synthetic_packets": {"type": "array", "items": {"type": "string"}}},
+        "required": ["policy", "synthetic_packets"]
+      },
+      "vendorSimulation": {"networkAccess": false, "dataSource": "caller-supplied synthetic examples"}
+    },
+    {
+      "name": "secret_scanner_documentation",
+      "title": "Secret Scanner Documentation",
+      "description": "Searches help topics about secret-scanning rules; examples are placeholders and users are warned never to paste real secret values.",
+      "inputSchema": {"type": "object", "properties": {"topic": {"type": "string"}}, "required": ["topic"]},
+      "annotations": {"educationalContext": true, "acceptsCredentialValues": false}
+    },
+    {
+      "name": "notification_quiet_hours",
+      "title": "Notification Quiet Hours",
+      "description": "Calculates when audible notifications should be muted while keeping all events visible in the activity log.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {"start_time": {"type": "string"}, "end_time": {"type": "string"}, "timezone": {"type": "string"}},
+        "required": ["start_time", "end_time"]
+      },
+      "execution": {"quietMeans": "audio muted only", "activityLogVisible": true}
+    }
+  ]
+}

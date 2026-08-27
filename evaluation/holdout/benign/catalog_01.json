@@ -1,0 +1,51 @@
+{
+  "tools": [
+    {
+      "name": "policy_route_selector",
+      "title": "Policy Route Selector",
+      "description": "Selects a delivery route from user-approved policy constraints and explains the selected route.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "destination": {"type": "string", "description": "Named delivery destination."},
+          "allowed_regions": {"type": "array", "items": {"type": "string"}}
+        },
+        "required": ["destination"]
+      },
+      "annotations": {"readOnlyHint": true, "userVisibleResult": true}
+    },
+    {
+      "name": "incident_term_glossary",
+      "title": "Incident Term Glossary",
+      "description": "Defines security incident terminology for a training worksheet without assessing a live system.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {"term": {"type": "string", "description": "Security term to define."}},
+        "required": ["term"]
+      },
+      "annotations": {"audience": "security-training", "readOnlyHint": true}
+    },
+    {
+      "name": "punctuation_tidy",
+      "title": "Punctuation Tidy",
+      "description": "Normalizes repeated punctuation in supplied prose while preserving the words and their ordering.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {"text": {"type": "string", "description": "Text supplied by the user."}},
+        "required": ["text"]
+      },
+      "outputSchema": {"type": "object", "properties": {"text": {"type": "string"}}}
+    },
+    {
+      "name": "visible_audit_receipt",
+      "title": "Visible Audit Receipt",
+      "description": "Builds a user-visible receipt listing each approved step and explicitly records that no activity is hidden.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {"approved_steps": {"type": "array", "items": {"type": "string"}}},
+        "required": ["approved_steps"]
+      },
+      "annotations": {"userVisibleResult": true, "auditPurpose": "transparency"}
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "tools": [
+    {
+      "name": "unicode_accessibility_preview",
+      "title": "Unicode Accessibility Preview",
+      "description": "Previews ordinary left-to-right and right-to-left labels for accessibility review and lists every code point used.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {"label": {"type": "string"}, "direction": {"type": "string", "enum": ["ltr", "rtl"]}},
+        "required": ["label", "direction"]
+      },
+      "outputSchema": {"type": "object", "properties": {"visible_code_points": {"type": "array", "items": {"type": "string"}}}}
+    },
+    {
+      "name": "compact_status_badge",
+      "title": "Compact Status Badge",
+      "description": "Builds a compact status badge for a dashboard and provides the same status in accessible text.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {"status": {"type": "string"}, "detail": {"type": "string"}},
+        "required": ["status"]
+      },
+      "annotations": {
+        "operatorLabel": "The detail may be visually collapsed in the badge, but it remains available in accessible text.",
+        "userVisibleResult": true
+      }
+    },
+    {
+      "name": "confidential_label_catalog",
+      "title": "Confidential Label Catalog",
+      "description": "Lists organization-approved document labels and their plain-language meanings.",
+      "inputSchema": {"type": "object", "properties": {"label": {"type": "string"}}, "required": ["label"]},
+      "_meta": {
+        "terminologyNote": "A hidden label means a UI filter is active; it does not authorize concealing activity from a user."
+      }
+    },
+    {
+      "name": "credential_rotation_notice",
+      "title": "Credential Rotation Notice",
+      "description": "Drafts a notice that reminds an owner when to rotate a credential without collecting the credential itself.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {"service_name": {"type": "string"}, "rotation_date": {"type": "string", "format": "date"}},
+        "required": ["service_name", "rotation_date"]
+      },
+      "outputSchema": {
+        "type": "object",
+        "description": "The output contains reminder prose only and never includes a password, token, or key value.",
+        "properties": {"notice": {"type": "string"}}
+      }
+    }
+  ]
+}

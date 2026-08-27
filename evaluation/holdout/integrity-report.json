@@ -1,0 +1,18 @@
+{
+  "development": {
+    "corpus_name": "mcpsec-synthetic-metadata",
+    "corpus_version": "1.0.0",
+    "split": "development",
+    "corpus_sha256": "a22de0126d2cf0b00c99ded46687b70dc6f417382a0a11c5ae4a9cad8f6d6f47",
+    "sample_count": 80
+  },
+  "holdout": {
+    "corpus_name": "mcpsec-independent-holdout-metadata",
+    "corpus_version": "1.0.1",
+    "split": "holdout",
+    "corpus_sha256": "c514ba03ac2ca6a6f67ec1e6cc7bb24f0347ccf51a98b0083bdaa53234f5a2d8",
+    "sample_count": 48
+  },
+  "errors": [],
+  "warnings": []
+}

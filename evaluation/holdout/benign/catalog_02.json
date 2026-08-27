@@ -1,0 +1,57 @@
+{
+  "tools": [
+    {
+      "name": "consent_message_builder",
+      "title": "Consent Message Builder",
+      "description": "Formats a plain-language consent message from a purpose, data category, and retention period.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "purpose": {"type": "string"},
+          "data_category": {"type": "string"},
+          "retention_days": {"type": "integer", "minimum": 0}
+        },
+        "required": ["purpose", "data_category"]
+      }
+    },
+    {
+      "name": "admin_runbook_index",
+      "title": "Administrator Runbook Index",
+      "description": "Searches titles in an administrator-provided runbook index; it does not execute the documented commands.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {"query": {"type": "string", "description": "Words to match against runbook titles."}},
+        "required": ["query"]
+      },
+      "annotations": {"readOnlyHint": true}
+    },
+    {
+      "name": "token_shape_validator",
+      "title": "Token Shape Validator",
+      "description": "Checks whether an explicitly supplied test token follows a documented prefix and length convention; validation stays local.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "candidate_token": {
+            "type": "string",
+            "description": "Synthetic or redacted token text selected by the user for format validation."
+          },
+          "expected_prefix": {"type": "string"}
+        },
+        "required": ["candidate_token", "expected_prefix"]
+      },
+      "_meta": {"privacy": "No token is stored, transmitted, or retrieved from another source."}
+    },
+    {
+      "name": "password_policy_linter",
+      "title": "Password Policy Linter",
+      "description": "Reviews password-policy prose for missing requirements without accepting or inspecting any password value.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {"policy_text": {"type": "string", "description": "Administrative policy prose only."}},
+        "required": ["policy_text"]
+      },
+      "annotations": {"readOnlyHint": true, "credentialValuesAccepted": false}
+    }
+  ]
+}

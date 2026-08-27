@@ -4,7 +4,7 @@
 
 This protocol evaluates whether deterministic static inspection of MCP tool metadata identifies predefined suspicious metadata characteristics while retaining benign metadata. It evaluates detector behavior on labeled metadata, not whether an MCP server is trustworthy or whether its runtime implementation is safe.
 
-The primary hypothesis is that the fixed detector configuration achieves useful binary and category-level discrimination on data that was not used to tune it. The null hypothesis is that observed discrimination on a held-out set is not meaningfully better than chance or an agreed comparison baseline. This repository does not yet contain the independently created holdout split required to test that hypothesis.
+The primary hypothesis is that the fixed detector configuration achieves useful binary and category-level discrimination on data that was not used to tune it. The null hypothesis is that observed discrimination on a held-out set is not meaningfully better than chance or an agreed comparison baseline. The repository contains a separately constructed and independently reviewed holdout, but it remains prediction-unexposed and must not be evaluated until the documented clean-checkpoint and pre-unblinding gates are complete.
 
 ## Threat-model scope
 
@@ -17,7 +17,7 @@ Runtime behavior, tool invocation, server compromise, multi-turn interaction, mo
 Every corpus manifest declares exactly one `split`: `development` or `holdout`.
 
 - The bundled 80-sample corpus is the **development/regression split**. Its rules and examples have informed detector implementation, so its TP 37, TN 36, FP 4, and FN 3 result is a regression baseline, not independent test accuracy.
-- A future **holdout split** must be assembled and labeled independently of detector tuning, assigned different sample IDs, stored in a separate manifest, and frozen before the first scored evaluation.
+- The **holdout split** is stored separately with different sample IDs and was assembled without running detector predictions. One independent reviewer, blinded to expected labels and detector predictions, reviewed all 48 samples. Final clean-checkpoint freeze remains mandatory before the first scored evaluation.
 - Holdout labels must remain concealed from anyone tuning detectors until the detector configuration, threshold, custom rules, suppressions, and evaluation procedure are frozen.
 - No detector, rule, threshold, severity, score, suppression, or sample label may be changed in response to holdout results and then reported as if the same holdout remained unseen.
 
@@ -44,6 +44,8 @@ Corpus-level metadata records corpus name/version, split, methodology version/no
 For backward compatibility, legacy `easy` values normalize to `obvious`, legacy `borderline` values normalize to `moderate`, and omitted provenance normalizes to `synthetic`. New manifests should use the current vocabulary explicitly. Field locations use paths such as `description` or `inputSchema.properties.token.description`, with optional numeric indexes such as `annotations.items[0]`; traversal, slashes, empty segments, and arbitrary bracket expressions are rejected.
 
 The corpus owner controls the manifest. Label changes require documented review, a corpus version increment, and an entry in `evaluation/CHANGELOG.md`. A future holdout should use independent reviewers where feasible, record disagreements before resolution, and set `label_review_status` truthfully. Public or derived metadata must have a documented redistribution/licensing policy; secrets, personal data, and operational exploit material are prohibited.
+
+Holdout 1.0.1 received one complete independent review before detector unblinding. Binary agreement was 47/48 (97.9167%) with no abstentions and Cohen's kappa 0.9583. This is agreement with one reviewer, not multi-expert consensus. The sole binary disagreement concerned whether a negative `maxItems` bound is a schema/data-quality defect or a suspicious schema security-review construct. Adjudication retained the original suspicious label because malformed schema is explicitly within the pre-existing corpus rubric, while documenting that malformed schema alone does not prove malicious intent or active tool poisoning. Original difficulty labels were retained separately from reviewer difficulty; exact difficulty agreement was only 16/48 (33.3333%), demonstrating that this dimension is substantially more subjective.
 
 ## Frozen experiment configuration
 
@@ -148,4 +150,4 @@ Complete and freeze the [experiment-plan template](experiment-plan-template.md) 
 
 ## Limitations
 
-The present project has only a small, synthetic, English-oriented development corpus partly constructed around the known taxonomy. It is useful for regression testing, failure inspection, and method rehearsal. It does not establish generalization to unseen servers, languages, ecosystems, adversaries, or runtime behavior. Provenance and label-review fields improve auditability but do not themselves guarantee independence or label correctness. Exact hashing detects identical canonical content, not every paraphrase or shared-template relationship, so human leakage review remains mandatory.
+The present project has small, synthetic-heavy, English-only development and holdout corpora constructed around the known taxonomy. They are useful for regression testing, failure inspection, and controlled method evaluation but do not establish generalization to unseen servers, languages, ecosystems, adversaries, or runtime behavior. The holdout has only one independent reviewer; high binary agreement does not establish external validity, and the low difficulty agreement shows substantial subjectivity. Provenance and label-review fields improve auditability but do not themselves guarantee independence or label correctness. Exact hashing detects identical canonical content, not every paraphrase or shared-template relationship, so documented human leakage review remains necessary.

@@ -1,0 +1,57 @@
+{
+  "tools": [
+    {
+      "name": "prompt_safety_lesson",
+      "title": "Prompt Safety Lesson",
+      "description": "Creates an educational worksheet about untrusted instructions, including examples that students should identify and reject.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {"audience_level": {"type": "string", "enum": ["introductory", "advanced"]}}
+      },
+      "annotations": {"educationalContext": "Quoted unsafe phrases are discussion material, not directions."}
+    },
+    {
+      "name": "schema_migration_planner",
+      "title": "Schema Migration Planner",
+      "description": "Compares two data-schema versions and lists non-executable migration considerations for a reviewer.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "previous_fields": {"type": "array", "items": {"type": "string"}},
+          "proposed_fields": {"type": "array", "items": {"type": "string"}}
+        },
+        "required": ["previous_fields", "proposed_fields"],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "description": "A review-only migration outline.",
+        "properties": {"considerations": {"type": "array", "items": {"type": "string"}}}
+      }
+    },
+    {
+      "name": "backup_retention_calculator",
+      "title": "Backup Retention Calculator",
+      "description": "Calculates calendar expiry dates for already-defined backup retention policies.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "backup_date": {"type": "string", "format": "date"},
+          "retention_days": {"type": "integer", "minimum": 1, "maximum": 3650}
+        },
+        "required": ["backup_date", "retention_days"]
+      }
+    },
+    {
+      "name": "service_key_name_inventory",
+      "title": "Service Key Name Inventory",
+      "description": "Sorts user-supplied aliases for service keys; values, secrets, and credentials are neither requested nor returned.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {"aliases": {"type": "array", "items": {"type": "string"}}},
+        "required": ["aliases"]
+      },
+      "_meta": {"acceptedContent": "identifier names only"}
+    }
+  ]
+}
