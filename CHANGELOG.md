@@ -4,6 +4,8 @@ All notable changes follow Keep a Changelog conventions and semantic versioning.
 
 ## [Unreleased]
 
+## [0.3.0a1] - 2026-08-28
+
 ### Added
 
 - Immutable tracked preservation of the original v0.2 H0, Day 3C analysis, and authentic dirty Day 4C exploratory artifact with exact hashes

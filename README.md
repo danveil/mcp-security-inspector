@@ -7,12 +7,6 @@
 
 **Security disclaimer:** The MCP Tool Security Inspector is a defensive analysis tool. It identifies indicators that may warrant review but does not establish whether an MCP tool or server is definitively malicious or safe.
 
-## Screenshot placeholders
-
-- `screenshots/clean-scan.png` — clean catalog summary
-- `screenshots/suspicious-scan.png` — finding evidence and recommendations
-- `screenshots/drift-comparison.png` — baseline drift table
-
 ## The problem
 
 AI clients often expose MCP tool names, descriptions, schemas, and metadata to a model. That catalog is a trust boundary: misleading instructions, concealed capabilities, unexpected credential fields, or later schema changes deserve review even when no tool has run. `mcpsec` analyzes that static surface without invoking tools or fetching metadata URLs.
@@ -63,14 +57,21 @@ The implementation never sends catalog content to a model and never executes sca
 
 ## Installation
 
+Install the public alpha from a local clone:
+
 ```bash
+git clone https://github.com/danveil/mcp-security-inspector.git
+cd mcp-security-inspector
 python -m venv .venv
 # Windows: .\.venv\Scripts\Activate.ps1
 # Linux/macOS: source .venv/bin/activate
 python -m pip install --upgrade pip
-python -m pip install -e ".[dev]"
+python -m pip install .
+mcpsec --version
 mcpsec --help
 ```
+
+Contributors can instead install the editable development environment with `python -m pip install -e ".[dev]"`.
 
 See [PREPARATION.md](PREPARATION.md) for the audited environment and editor recommendations.
 
@@ -84,6 +85,24 @@ mcpsec scan examples/suspicious_tools.json --format csv --output report.csv --re
 mcpsec scan examples/suspicious_tools.json --format sarif --output report.sarif
 mcpsec scan examples/mixed_tools.json --rules rules/default_rules.yml --fail-on high
 ```
+
+## Example output
+
+`mcpsec demo` uses a packaged, inert catalog and produces an explainable summary like:
+
+```text
+MCP Tool Security Inspector
+Tools: 3  Clean: 2  With findings: 1
+Findings: HIGH=2, MEDIUM=3
+
+Tool               Risk    Severity       Findings
+calculator         0/100   INFORMATIONAL  No indicators detected
+weather_mock       0/100   INFORMATIONAL  No indicators detected
+metadata_test_only 73/100  HIGH           HID-001, PI-001, MIS-002,
+                                           SCH-002, SEC-001
+```
+
+Findings identify metadata that warrants review; they are not proof that a tool is malicious.
 
 Structured reports contain no ANSI escape sequences. CSV fields beginning with spreadsheet formula characters are prefixed with an apostrophe. `--redact` replaces finding evidence excerpts only; copied original tool metadata and the report source are not redacted.
 
@@ -118,14 +137,14 @@ JSON output records an experiment ID, Git state when available, platform/depende
 
 **Development/regression result on bundled synthetic corpus 1.0.0 after the Day 5B context-scoping correctness fixes — not holdout or real-world detection accuracy:** TP 37, TN 36, FP 4, FN 3; accuracy 91.25%, precision 90.24%, recall 92.50%, F1 91.36%, false-positive rate 10.00%, false-negative rate 7.50%, and specificity 90.00%. This is the unchanged development regression baseline; no rule, threshold, corpus sample, or label was tuned to obtain it.
 
-The `0.3.0a1` prerelease candidate adds `PI-002`, `HID-002`, `SEC-002`, `MIS-002`, and bounded depth-one `OBF-005`. Its separate 36-sample construct-derived exploratory development set currently yields TP 18, TN 18, FP 0, and FN 0. That is intended-mechanism regression evidence only, not a holdout result or a claim of improved generalization.
+The `0.3.0a1` public alpha adds `PI-002`, `HID-002`, `SEC-002`, `MIS-002`, and bounded depth-one `OBF-005`. Its separate 36-sample construct-derived exploratory development set currently yields TP 18, TN 18, FP 0, and FN 0. That is intended-mechanism regression evidence only, not a holdout result or a claim of improved generalization.
 
 | Detector evidence | Corpus status | Recall | F1 | FPR |
 |---|---|---:|---:|---:|
 | v0.2 H0 | Independent first holdout; authoritative confirmatory result | 20.83% | 28.57% | 25.00% |
 | v0.3 candidate | Same exposed holdout; post-unblinding exploratory result | 45.83% | 53.66% | 25.00% |
 
-The v0.3 comparison does not independently demonstrate improved generalization. A confirmatory claim requires a new untouched, independently reviewed, preregistered holdout. See the [v0.3 exploratory checkpoint](docs/v0.3-exploratory-checkpoint.md) for frozen identities and limitations.
+The v0.3 comparison does not independently demonstrate improved generalization. A confirmatory claim requires a new untouched, independently reviewed, preregistered holdout. See the [public research status](docs/research-status.md), [reproducibility guide](docs/reproducibility.md), [v0.3 exploratory checkpoint](docs/v0.3-exploratory-checkpoint.md), and [v0.3.0a1 release notes](docs/releases/v0.3.0a1.md).
 
 | Category | Precision | Recall | F1 |
 |---|---:|---:|---:|
