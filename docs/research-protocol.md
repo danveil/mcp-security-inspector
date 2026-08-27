@@ -76,13 +76,58 @@ A sample is predicted suspicious when any finding is at or above the configured 
 - one-vs-rest metrics for every known or observed category;
 - structured per-sample ground truth, provenance, difficulty, expected and triggered rule IDs, expected field locations, threshold, findings, and researcher notes;
 - mechanically classified failures: `false_positive`, `false_negative_no_finding`, `false_negative_below_threshold`, or `category_mismatch`;
-- total, mean, median, minimum, maximum, and p95 single-pass detector time.
+- total, mean, median, minimum, maximum, p95, population standard deviation, mean per-tool time, and mean corpus-pass time across recorded observations;
+- Wilson score 95% intervals, with raw numerator and denominator, for accuracy, recall, and false-positive rate;
+- binary metrics stratified by expected category, expected field location, difficulty, and ground truth.
 
 Binary failure classes take precedence over category mismatch for the same sample. A false negative with no findings is distinguished from one with findings that all remain below threshold. Full finding records already contain rule ID, category, severity, confidence, field path, evidence, explanation, recommendation, and score contribution.
 
 ## Timing methodology
 
-Current timing is a single wall-clock measurement around `analyze_tools` for each already-loaded sample using `time.perf_counter()`. Loading, hashing, Git inspection, environment collection, serialization, and terminal rendering are excluded. These measurements are machine-dependent diagnostics, not a statistically controlled latency benchmark. Repeated trials, warm-up policy, process isolation, uncertainty intervals, and latency comparisons are deliberately deferred.
+Timing uses the monotonic high-resolution `time.perf_counter()` clock and processes samples in ascending sample-ID order. The configuration records the exact boundary, unmeasured warm-up count, and measured repetition count. Every measured repetition must produce the same typed scan result; inconsistent findings or risk cause the experiment to fail. Warm-ups execute the configured boundary but are excluded from observations and predictions.
+
+The primary `analysis-core` boundary measures `analyze_tools` after the sample has been bounded-loaded and normalized. Its primary latency outcome is mean per-tool analysis time, with median, nearest-rank p95, population standard deviation, minimum, and maximum describing dispersion. It includes built-in detectors selected by the evaluation configuration, custom data-only rules, suppressions, risk calculation, and scan-result construction. The secondary `static-end-to-end` boundary reloads, normalizes, and selects the local static sample inside every repetition, then performs the same analysis; its secondary latency outcome is mean complete corpus-pass time. Both exclude corpus hashing, Git/environment inspection, aggregate metrics, serialization, terminal rendering, networking, and all tool invocation. The default remains zero warm-ups and one measured repetition for a quick regression run; a planned latency experiment must declare its counts before execution.
+
+Timing is machine- and load-dependent. It is neither a hardware-independent benchmark nor a runtime MCP server measurement. Compare latency only when the boundary and recorded runtime environment are identical; even then, interpret the delta as evidence from that environment, not a universal performance claim. The runner does not claim process isolation, CPU pinning, or control of background load.
+
+## Evaluation-only ablation methodology
+
+Ablations answer how predictions and metrics change when selected built-in detector outputs are withheld. They estimate contribution within this detector and corpus configuration; they are not causal proof of a family's importance to real-world attacks. They do not change detector patterns, severities, thresholds, risk weights, fingerprints, baselines, or drift behavior, and they never affect ordinary `scan`. Risk is deterministically recalculated from the remaining findings.
+
+| Family ID | Stable built-in rule IDs | Preset |
+|---|---|---|
+| `injection` | `PI-001` | `without-injection` |
+| `concealment` | `HID-001` | `without-concealment` |
+| `sensitive-data` | `SEC-001` | `without-sensitive-data` |
+| `schema` | `SCH-001`, `SCH-002` | `without-schema` |
+| `mismatch` | `MIS-001` | `without-mismatch` |
+| `obfuscation` | `OBF-001`–`OBF-004` | `without-obfuscation` |
+| `capability` | `CAP-001` | `without-capability` |
+
+`full` enables every family. Repeatable `--disable-family` and `--disable-rule` selections are unioned with the preset. Unknown identifiers are rejected. Disabling every rule in a family omits its detector from evaluation; disabling one rule in a multi-rule family filters that rule's findings while retaining the others. Therefore, single-rule ablation supports effectiveness analysis but must not be interpreted as the exact compute cost of that sub-rule. There is intentionally no “without fingerprinting” or “without drift” preset: fingerprints and drift are separate static-analysis functions and are not part of detector classification.
+
+## Stratification and uncertainty
+
+Strata are calculated only from manifest ground truth and recorded predictions. Expected-category strata can overlap when a suspicious sample has multiple categories; they are not partitions and their counts must not be summed as a corpus total. Field-location strata likewise can overlap. The report always states available and missing sample counts and emits only populated groups; the current development corpus has no expected field-location annotations, so that dimension is reported honestly as 0 available and 80 missing.
+
+Each group includes raw TP, TN, FP, and FN counts plus the usual derived metrics. Metrics with a zero mathematical denominator are listed as undefined even though their machine-readable numeric compatibility value remains `0.0`. A group with fewer than 10 samples is marked `low_evidence` and carries an explicit warning. This flag is descriptive, not a significance test or exclusion rule.
+
+For a binomial proportion with successes `x`, trials `n`, estimate `p=x/n`, and `z=1.959963984540054`, the 95% Wilson interval is:
+
+```text
+centre = (p + z²/(2n)) / (1 + z²/n)
+margin = z × sqrt((p(1-p) + z²/(4n))/n) / (1 + z²/n)
+```
+
+Accuracy uses `(TP+TN)/(TP+TN+FP+FN)`, recall uses `TP/(TP+FN)`, and false-positive rate uses `FP/(FP+TN)`. A zero denominator is recorded as undefined with null estimate and bounds. No confidence interval is claimed for precision or F1 because those require additional assumptions or a separately declared resampling design.
+
+## Artifact preservation and comparison
+
+Use `--runs-dir evaluation/runs` to write a JSON artifact named `<experiment-id>.json` in addition to the requested display/output. Generated files in that directory are intentionally ignored by Git; copy chosen immutable artifacts to controlled research storage and record their SHA-256 externally when required. CI preserves its development evaluation JSON as a GitHub Actions artifact for 14 days. Neither mechanism publishes data.
+
+`mcpsec compare-experiments A.json B.json` reads the current bounded output schema and reports all configuration differences, enabled rule additions/removals, confusion and metric deltas as B−A, paired prediction changes, and newly introduced or resolved FP/FN sample IDs. Corpus hash, split, sample population, paired ground truth, and classification threshold must match; otherwise the artifacts are incompatible and no paired deltas are calculated. Different application versions, Git commits, dirty state, or other non-ablation settings produce explicit warnings. Latency deltas are emitted only for an identical timing boundary and runtime environment.
+
+Output schema `3.0.0` is intentionally strict. Earlier evaluation artifacts lack the full timing, ablation, uncertainty, and stratification record and are rejected with a clear schema error rather than silently coerced into a misleading comparison. Preserve the original older artifact and rerun the same frozen configuration with the current evaluator if a current comparison is needed.
 
 ## Reporting and versioning
 
@@ -98,6 +143,8 @@ Record intentional corpus and metric changes in `evaluation/CHANGELOG.md` and re
 ## Post-unblinding policy
 
 After the first holdout result is revealed, archive its artifact and hashes unchanged. Analysis may identify failures, but any detector tuning based on those failures creates a new development iteration. A subsequent independent holdout, or a clearly versioned and honestly described validation set, is required for another unbiased estimate. Never silently relabel a hard case, delete a failure, move a sample between splits, or reuse an exposed holdout as an unseen test set.
+
+Complete and freeze the [experiment-plan template](experiment-plan-template.md) before unblinding. Record every planned full and ablation run in advance; adding a new ablation after seeing holdout outcomes is exploratory and must be labeled as such. Comparison artifacts do not authorize detector tuning against an exposed holdout.
 
 ## Limitations
 

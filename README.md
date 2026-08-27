@@ -34,7 +34,8 @@ Tool metadata can influence both human approval and model tool selection. A mali
 - Instruction override, concealment, sensitive data, schema, mismatch, obfuscation, and capability detectors
 - Strict data-only YAML rules using safe loading and bounded literal matching
 - Explainable, capped risk scores from 0–100
-- Versioned 80-sample synthetic development corpus with integrity hashes, typed provenance, binary/category metrics, timing, and structured FP/FN evidence
+- Versioned 80-sample synthetic development corpus with integrity hashes, typed provenance, stratified metrics, Wilson intervals, repeated timing, and structured FP/FN evidence
+- Evaluation-only detector-family/rule ablations, authoritative JSON run preservation, and compatibility-aware experiment comparison
 - Versioned data-only rule packs and justified, scoped suppressions
 - Opt-in, localhost-only, bounded MCP SDK `tools/list` retrieval
 - Rich terminal, JSON, CSV, and SARIF 2.1.0 output
@@ -103,11 +104,17 @@ The changed fixture modifies calculator description and input schema and adds `u
 mcpsec evaluate evaluation/corpus/manifest.json
 mcpsec evaluate evaluation/corpus/manifest.json --format json --output evaluation-result.json
 mcpsec evaluate evaluation/corpus/manifest.json --format csv --output evaluation-samples.csv
+mcpsec evaluate evaluation/corpus/manifest.json --timing-warmups 3 --timing-repetitions 10 --runs-dir evaluation/runs
+mcpsec evaluate evaluation/corpus/manifest.json --ablation without-injection --runs-dir evaluation/runs
+mcpsec evaluate evaluation/corpus/manifest.json --disable-rule SCH-001 --disable-family capability
+mcpsec compare-experiments evaluation/runs/EXPERIMENT-A.json evaluation/runs/EXPERIMENT-B.json
 # When an independently created holdout exists:
 mcpsec corpus-check evaluation/corpus/manifest.json path/to/holdout/manifest.json
 ```
 
-The bundled corpus contains 40 benign and 40 suspicious harmless static definitions, including realistic borderline language. It is explicitly a development/regression split because it was visible during detector tuning; no holdout corpus is included yet. The default experiment applies built-in rules, no suppressions, and a medium binary threshold. JSON output records an experiment ID, Git state when available, platform/dependency versions, portable invocation, corpus split/version/hash, complete active configuration and configuration hash, per-sample provenance/difficulty/expectations, and mechanically classified failures. It does not record usernames, hostnames, environment-variable values, absolute paths, or Git diffs.
+The bundled corpus contains 40 benign and 40 suspicious harmless static definitions, including realistic borderline language. It is explicitly a development/regression split because it was visible during detector tuning; no holdout corpus is included yet. The default experiment applies every built-in rule, no suppressions, a medium binary threshold, one `analysis-core` measurement, and no warm-up. Research runs can repeat measurements, use the broader `static-end-to-end` boundary, disable named detector families or stable rule IDs, and compare preserved JSON artifacts without rescanning. Ablation is confined to evaluation; ordinary scans, fingerprints, baselines, drift behavior, detector patterns, severities, thresholds, and risk formulas are unchanged.
+
+JSON output records an experiment ID, Git state when available, platform/dependency versions, portable invocation, corpus split/version/hash, the exact enabled and disabled detector/family/rule sets, timing definition, complete active configuration and configuration hash, Wilson 95% intervals for accuracy/recall/FPR, per-sample provenance/difficulty/expectations, stratified raw counts, and mechanically classified failures. It does not record usernames, hostnames, environment-variable values, absolute paths, or Git diffs. `--runs-dir evaluation/runs` preserves an authoritative JSON copy named by experiment ID; generated runs remain untracked. `compare-experiments` calculates B−A deltas only when corpus identity, split, samples, ground truth, and threshold are compatible, and refuses latency deltas when timing boundaries or runtime environments differ.
 
 **Development/regression result on bundled synthetic corpus 1.0.0 — not holdout or real-world detection accuracy:** TP 37, TN 36, FP 4, FN 3; accuracy 91.25%, precision 90.24%, recall 92.50%, F1 91.36%, false-positive rate 10.00%, false-negative rate 7.50%, and specificity 90.00%.
 
@@ -121,7 +128,7 @@ The bundled corpus contains 40 benign and 40 suspicious harmless static definiti
 | schema | 100.00% | 81.82% | 90.00% |
 | sensitive data | 58.33% | 100.00% | 73.68% |
 
-See the [research protocol](docs/research-protocol.md), [evaluation methodology](docs/evaluation-methodology.md), and [false-positive analysis](docs/false-positive-analysis.md). The corpus is versioned separately; label and research-significant metadata changes must be recorded in `evaluation/CHANGELOG.md`.
+See the [research protocol](docs/research-protocol.md), [evaluation methodology](docs/evaluation-methodology.md), [experiment-plan template](docs/experiment-plan-template.md), and [false-positive analysis](docs/false-positive-analysis.md). The corpus is versioned separately; label and research-significant metadata changes must be recorded in `evaluation/CHANGELOG.md`.
 
 ## Risk scoring
 
@@ -163,7 +170,7 @@ Exit codes are `0` for no configured threshold exceeded, `1` for a completed sca
 mcpsec scan catalog.json --fail-on medium
 ```
 
-The included GitHub Actions workflow installs Python, runs Ruff lint/format checks, mypy, pytest with coverage, and the offline bundled-corpus evaluation. It requires no secrets, does not connect to servers, and does not publish.
+The included GitHub Actions workflow installs Python, runs Ruff lint/format checks, mypy, pytest with coverage, and the offline bundled-corpus evaluation. It retains that JSON evaluation artifact for 14 days. It requires no secrets, does not connect to servers, and does not publish.
 
 ## Testing
 
@@ -176,7 +183,7 @@ python -m pytest --cov=mcpsec --cov-report=term-missing --cov-report=html
 
 On Windows, `scripts\test.ps1 -q` runs the correct virtual-environment interpreter even when the environment is not activated. Use `scripts\dev-inspector.ps1` for the local demonstration server; see [the sample-server guide](sample_mcp_server/README.md). The `/sandbox` address printed by Inspector is an internal iframe endpoint, not the main user interface.
 
-Tests cover input shapes, Unicode, canonicalization, hashes, baselines, drift, detectors, risk caps/deduplication/order invariance, rule packs, suppressions, corpus metadata and hashing, cross-split leakage rejection, reproducibility identity, explicit metric formulas, structured evaluation, retrieval boundaries, safe YAML, structured reports, CSV neutralization, and CLI exit codes.
+Tests cover input shapes, Unicode, canonicalization, hashes, baselines, drift, detectors, risk caps/deduplication/order invariance, rule packs, suppressions, corpus metadata and hashing, cross-split leakage rejection, reproducibility identity, explicit metric formulas, timing boundaries, ablation selection, Wilson intervals, strata, artifact comparison, structured evaluation, retrieval boundaries, safe YAML, structured reports, CSV neutralization, and CLI exit codes.
 
 ## Security model and false positives
 

@@ -13,6 +13,10 @@ All notable changes follow Keep a Changelog conventions and semantic versioning.
 - Typed development/holdout corpus metadata, provenance, difficulty migration, expected field locations, and label-review status
 - Semantic corpus/configuration SHA-256 identities, Git/runtime experiment metadata, and exact cross-split overlap checks
 - Structured evaluation failure classes and a documented holdout isolation and post-unblinding research protocol
+- Repeatable analysis-core and static-end-to-end evaluation timing with explicit warm-up boundaries and dispersion statistics
+- Evaluation-only detector-family and stable rule-ID ablation presets with exact configuration identities
+- Wilson uncertainty intervals, transparent stratified metrics, authoritative run preservation, and paired experiment comparison
+- A pre-registration-style experiment-plan template and short-lived CI evaluation artifact retention
 
 ### Changed
 

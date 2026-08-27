@@ -15,9 +15,15 @@ from mcpsec import __version__
 from mcpsec.baseline import create_baseline, load_baseline, write_baseline
 from mcpsec.compare import compare_baseline
 from mcpsec.constants import BUILTIN_RULE_PACK_NAME, BUILTIN_RULE_PACK_VERSION
+from mcpsec.evaluation.comparison import compare_experiment_files, comparison_json
 from mcpsec.evaluation.evaluator import evaluate_corpus
 from mcpsec.evaluation.integrity import compare_corpus_splits, sha256_file
-from mcpsec.evaluation.reporter import integrity_report_json, render_integrity_terminal
+from mcpsec.evaluation.models import AblationPreset, ExperimentCompatibility, TimingMode
+from mcpsec.evaluation.reporter import (
+    integrity_report_json,
+    render_comparison_terminal,
+    render_integrity_terminal,
+)
 from mcpsec.evaluation.reporter import render_terminal as render_evaluation_terminal
 from mcpsec.evaluation.reporter import serialize as serialize_evaluation
 from mcpsec.exceptions import McpsecError
@@ -60,6 +66,19 @@ class EvaluationFormat(StrEnum):
 class IntegrityFormat(StrEnum):
     terminal = "terminal"
     json = "json"
+
+
+class ComparisonFormat(StrEnum):
+    terminal = "terminal"
+    json = "json"
+
+
+class EvaluationThreshold(StrEnum):
+    informational = "informational"
+    low = "low"
+    medium = "medium"
+    high = "high"
+    critical = "critical"
 
 
 def _version(value: bool) -> None:
@@ -278,6 +297,25 @@ def evaluate_command(
             help="Explicitly apply suppressions; disabled by default for research evaluation.",
         ),
     ] = None,
+    threshold: Annotated[EvaluationThreshold, typer.Option("--threshold")] = EvaluationThreshold.medium,
+    timing_mode: Annotated[TimingMode, typer.Option("--timing-mode")] = TimingMode.analysis_core,
+    timing_warmups: Annotated[
+        int, typer.Option("--timing-warmups", min=0, max=100, help="Unmeasured warm-ups per sample.")
+    ] = 0,
+    timing_repetitions: Annotated[
+        int, typer.Option("--timing-repetitions", min=1, max=1_000, help="Measured repetitions per sample.")
+    ] = 1,
+    ablation: Annotated[AblationPreset, typer.Option("--ablation")] = AblationPreset.full,
+    disable_rule: Annotated[
+        list[str] | None, typer.Option("--disable-rule", help="Disable a stable built-in rule ID; repeatable.")
+    ] = None,
+    disable_family: Annotated[
+        list[str] | None, typer.Option("--disable-family", help="Disable a detector family; repeatable.")
+    ] = None,
+    runs_dir: Annotated[
+        Path | None,
+        typer.Option("--runs-dir", help="Also preserve authoritative JSON as <experiment-id>.json in this directory."),
+    ] = None,
 ) -> None:
     """Evaluate detectors against a versioned, labeled static corpus."""
     try:
@@ -302,13 +340,35 @@ def evaluate_command(
             if suppressions
             else None
         )
-        invocation = ["mcpsec", "evaluate", manifest.name, "--format", format.value]
+        invocation = [
+            "mcpsec",
+            "evaluate",
+            manifest.name,
+            "--format",
+            format.value,
+            "--threshold",
+            threshold.value,
+            "--timing-mode",
+            timing_mode.value,
+            "--timing-warmups",
+            str(timing_warmups),
+            "--timing-repetitions",
+            str(timing_repetitions),
+            "--ablation",
+            ablation.value,
+        ]
         if output:
             invocation.extend(["--output", output.name])
         if rules:
             invocation.extend(["--rules", rules.name])
         if suppressions:
             invocation.extend(["--suppressions", suppressions.name])
+        for rule_id in disable_rule or []:
+            invocation.extend(["--disable-rule", rule_id.upper()])
+        for family_id in disable_family or []:
+            invocation.extend(["--disable-family", family_id.casefold()])
+        if runs_dir:
+            invocation.extend(["--runs-dir", runs_dir.name])
         report = evaluate_corpus(
             manifest,
             rules=custom_rules,
@@ -319,6 +379,13 @@ def evaluate_command(
             custom_rule_file_sha256=custom_rule_file_sha256,
             suppressions=active_suppressions,
             suppression_file_sha256=suppression_file_sha256,
+            threshold=Severity[threshold.value.upper()],
+            ablation_preset=ablation,
+            disabled_builtin_rule_ids=disable_rule,
+            disabled_builtin_family_ids=disable_family,
+            timing_mode=timing_mode,
+            timing_warmups=timing_warmups,
+            timing_repetitions=timing_repetitions,
             invocation=invocation,
             repository_path=Path.cwd(),
         )
@@ -337,6 +404,11 @@ def evaluate_command(
                 console.print(f"Wrote {format.value} evaluation report to {terminal_safe(output)}")
             else:
                 typer.echo(content)
+        if runs_dir:
+            runs_dir.mkdir(parents=True, exist_ok=True)
+            artifact = runs_dir / f"{report.metadata.experiment_id}.json"
+            artifact.write_text(serialize_evaluation(report, "json") + "\n", encoding="utf-8")
+            Console(stderr=True).print(f"Preserved authoritative JSON artifact at {terminal_safe(artifact)}")
     except Exception as exc:
         _handle_error(exc)
 
@@ -371,6 +443,43 @@ def corpus_check_command(
             else:
                 typer.echo(content)
         if not report.passed:
+            raise typer.Exit(1)
+    except typer.Exit:
+        raise
+    except Exception as exc:
+        _handle_error(exc)
+
+
+@app.command("compare-experiments")
+def compare_experiments_command(
+    experiment_a: Annotated[
+        Path, typer.Argument(exists=True, dir_okay=False, readable=True, help="Authoritative JSON artifact A.")
+    ],
+    experiment_b: Annotated[
+        Path, typer.Argument(exists=True, dir_okay=False, readable=True, help="Authoritative JSON artifact B.")
+    ],
+    format: Annotated[ComparisonFormat, typer.Option("--format")] = ComparisonFormat.terminal,
+    output: Annotated[Path | None, typer.Option("--output", help="Write the comparison report.")] = None,
+) -> None:
+    """Compare compatible authoritative experiment artifacts without rescanning."""
+    try:
+        report = compare_experiment_files(experiment_a, experiment_b)
+        if format == ComparisonFormat.terminal:
+            if output:
+                buffer = StringIO()
+                render_comparison_terminal(report, Console(file=buffer, color_system=None, width=140))
+                output.write_text(buffer.getvalue(), encoding="utf-8")
+                console.print(f"Wrote terminal experiment comparison to {terminal_safe(output)}")
+            else:
+                render_comparison_terminal(report, console)
+        else:
+            content = comparison_json(report)
+            if output:
+                output.write_text(content + "\n", encoding="utf-8")
+                console.print(f"Wrote JSON experiment comparison to {terminal_safe(output)}")
+            else:
+                typer.echo(content)
+        if report.compatibility == ExperimentCompatibility.incompatible:
             raise typer.Exit(1)
     except typer.Exit:
         raise

@@ -28,5 +28,11 @@ jobs:
           python scripts/smoke_wheel.py dist/*.whl
       - name: Validate bundled synthetic evaluation corpus
         run: mcpsec evaluate evaluation/corpus/manifest.json --format json --output evaluation-result.json
+      - name: Preserve development evaluation artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: development-evaluation-${{ github.sha }}
+          path: evaluation-result.json
+          retention-days: 14
       - name: Offline clean-catalog policy example
         run: mcpsec scan examples/clean_tools.json --fail-on high

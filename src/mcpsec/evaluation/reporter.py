@@ -7,7 +7,12 @@ import json
 from rich.console import Console
 from rich.table import Table
 
-from mcpsec.evaluation.models import CrossSplitIntegrityReport, EvaluationReport, SampleEvaluation
+from mcpsec.evaluation.models import (
+    CrossSplitIntegrityReport,
+    EvaluationReport,
+    ExperimentComparisonReport,
+    SampleEvaluation,
+)
 from mcpsec.reporter import neutralize_csv, terminal_safe
 
 
@@ -121,11 +126,55 @@ def render_terminal(report: EvaluationReport, console: Console | None = None) ->
         )
     console.print(category_table)
     timing = report.timing
+    timing_config = metadata.configuration.timing
     console.print(
-        f"Timing (machine-dependent): total={timing.total_ms:.3f} ms, mean={timing.mean_ms:.3f} ms, "
+        f"Timing ({timing_config.mode}, warm-ups={timing_config.warmup_repetitions}, "
+        f"measured repetitions={timing_config.measured_repetitions}, machine-dependent): "
+        f"observations={timing.observation_count}, total={timing.total_ms:.3f} ms, mean={timing.mean_ms:.3f} ms, "
         f"median={timing.median_ms:.3f} ms, min={timing.minimum_ms:.3f} ms, "
-        f"max={timing.maximum_ms:.3f} ms, p95={timing.p95_ms:.3f} ms"
+        f"max={timing.maximum_ms:.3f} ms, p95={timing.p95_ms:.3f} ms, "
+        f"population SD={timing.standard_deviation_ms:.3f} ms, "
+        f"mean corpus pass={timing.mean_corpus_pass_ms:.3f} ms"
     )
+    interval_table = Table("Proportion", "Count", "Estimate", "Wilson 95% interval")
+    for name, interval in (
+        ("Accuracy", report.uncertainty.accuracy),
+        ("Recall", report.uncertainty.recall),
+        ("False-positive rate", report.uncertainty.false_positive_rate),
+    ):
+        interval_table.add_row(
+            name,
+            f"{interval.numerator}/{interval.denominator}",
+            _percent(interval.estimate) if interval.estimate is not None else "undefined",
+            (
+                f"{_percent(interval.lower)} to {_percent(interval.upper)}"
+                if interval.lower is not None and interval.upper is not None
+                else "undefined"
+            ),
+        )
+    console.print(interval_table)
+    for stratification in report.stratified_metrics:
+        console.print(
+            f"[bold]Stratification: {stratification.dimension}[/bold] "
+            f"(available={stratification.available_sample_count}, missing={stratification.missing_sample_count})"
+        )
+        if not stratification.groups:
+            console.print("No populated strata.")
+            continue
+        stratum_table = Table("Value", "N", "TP", "TN", "FP", "FN", "F1", "Evidence")
+        for group in stratification.groups:
+            matrix = group.confusion_matrix
+            stratum_table.add_row(
+                terminal_safe(group.value),
+                str(group.sample_count),
+                str(matrix.tp),
+                str(matrix.tn),
+                str(matrix.fp),
+                str(matrix.fn),
+                _percent(group.metrics.f1),
+                "low" if group.low_evidence else "adequate",
+            )
+        console.print(stratum_table)
     _render_errors("False Positives", report.false_positives, console)
     _render_errors("False Negatives", report.false_negatives, console)
 
@@ -167,3 +216,102 @@ def render_integrity_terminal(report: CrossSplitIntegrityReport, console: Consol
             issue.normalized_content_sha256 or "—",
         )
     console.print(table)
+
+
+def render_comparison_terminal(report: ExperimentComparisonReport, console: Console | None = None) -> None:
+    console = console or Console()
+    console.print("[bold cyan]MCP Experiment Comparison[/bold cyan]")
+    console.print(f"A: {terminal_safe(report.experiment_a)}")
+    console.print(f"B: {terminal_safe(report.experiment_b)}")
+    console.print(f"Compatibility: [bold]{report.compatibility}[/bold]")
+    for reason in report.compatibility_reasons:
+        console.print(f"- {terminal_safe(reason)}")
+    for warning in report.warnings:
+        console.print(f"[yellow]Warning:[/yellow] {terminal_safe(warning)}")
+    console.print(
+        "Enabled built-in rules added in B: "
+        + (", ".join(terminal_safe(value) for value in report.enabled_rule_ids_added) or "none")
+    )
+    console.print(
+        "Enabled built-in rules removed in B: "
+        + (", ".join(terminal_safe(value) for value in report.enabled_rule_ids_removed) or "none")
+    )
+    if report.configuration_differences:
+        configuration_table = Table("Configuration field", "Experiment A", "Experiment B", show_lines=True)
+        for difference in report.configuration_differences:
+            configuration_table.add_row(
+                terminal_safe(difference.field),
+                terminal_safe(json.dumps(difference.experiment_a, ensure_ascii=True, sort_keys=True)),
+                terminal_safe(json.dumps(difference.experiment_b, ensure_ascii=True, sort_keys=True)),
+            )
+        console.print(configuration_table)
+    if report.paired_delta is None:
+        console.print("No paired deltas were calculated for incompatible artifacts.")
+        return
+    delta = report.paired_delta
+    matrix = delta.confusion_matrix
+    metrics = delta.metrics
+    table = Table("TP", "TN", "FP", "FN", "Accuracy", "Precision", "Recall", "F1", "FPR")
+    table.add_row(
+        f"{matrix.tp:+d}",
+        f"{matrix.tn:+d}",
+        f"{matrix.fp:+d}",
+        f"{matrix.fn:+d}",
+        f"{metrics.accuracy:+.4f}",
+        f"{metrics.precision:+.4f}",
+        f"{metrics.recall:+.4f}",
+        f"{metrics.f1:+.4f}",
+        f"{metrics.false_positive_rate:+.4f}",
+    )
+    console.print(table)
+    console.print(
+        f"Prediction changes: {len(delta.prediction_changes)}; "
+        f"new/resolved FP: {len(delta.newly_introduced_false_positives)}/"
+        f"{len(delta.resolved_false_positives)}; new/resolved FN: "
+        f"{len(delta.newly_introduced_false_negatives)}/{len(delta.resolved_false_negatives)}"
+    )
+    console.print(
+        "New false positives in B: "
+        + (", ".join(terminal_safe(value) for value in delta.newly_introduced_false_positives) or "none")
+    )
+    console.print(
+        "Resolved false positives in B: "
+        + (", ".join(terminal_safe(value) for value in delta.resolved_false_positives) or "none")
+    )
+    console.print(
+        "New false negatives in B: "
+        + (", ".join(terminal_safe(value) for value in delta.newly_introduced_false_negatives) or "none")
+    )
+    console.print(
+        "Resolved false negatives in B: "
+        + (", ".join(terminal_safe(value) for value in delta.resolved_false_negatives) or "none")
+    )
+    if delta.prediction_changes:
+        prediction_table = Table(
+            "Sample",
+            "Truth",
+            "A → B",
+            "Rules A",
+            "Rules B",
+            "Risk A → B",
+            "Failure A → B",
+            show_lines=True,
+        )
+        for change in delta.prediction_changes:
+            prediction_table.add_row(
+                terminal_safe(change.sample_id),
+                change.expected,
+                f"{change.prediction_a} → {change.prediction_b}",
+                ", ".join(terminal_safe(value) for value in change.triggered_rule_ids_a) or "—",
+                ", ".join(terminal_safe(value) for value in change.triggered_rule_ids_b) or "—",
+                f"{change.risk_score_a} → {change.risk_score_b}",
+                f"{terminal_safe(change.failure_type_a or 'none')} → {terminal_safe(change.failure_type_b or 'none')}",
+            )
+        console.print(prediction_table)
+    if delta.timing.comparable:
+        console.print(
+            f"Latency Δ (B-A): mean={delta.timing.mean_ms:+.3f} ms, "
+            f"p95={delta.timing.p95_ms:+.3f} ms, corpus pass={delta.timing.mean_corpus_pass_ms:+.3f} ms"
+        )
+    else:
+        console.print(f"Latency delta unavailable: {terminal_safe(delta.timing.reason or 'not comparable')}")

@@ -8,7 +8,7 @@ from datetime import UTC, datetime
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 
-from mcpsec.detectors import BUILTIN_DETECTORS
+from mcpsec.evaluation.ablation import ResolvedAblation
 from mcpsec.evaluation.integrity import canonical_sha256
 from mcpsec.evaluation.models import (
     CorpusSplit,
@@ -16,9 +16,10 @@ from mcpsec.evaluation.models import (
     GitMetadata,
     RuntimeEnvironment,
     SuppressionIdentity,
+    TimingConfiguration,
+    TimingMode,
 )
 from mcpsec.models import RuleDefinition, Severity, SuppressionDefinition
-from mcpsec.rules import RULE_EXPLANATIONS
 
 DEPENDENCY_DISTRIBUTIONS = (
     "httpx2",
@@ -29,6 +30,17 @@ DEPENDENCY_DISTRIBUTIONS = (
     "rich",
     "typer",
 )
+
+TIMING_DEFINITIONS = {
+    TimingMode.analysis_core: (
+        "Per-tool analyze_tools wall-clock time after loading and normalization; detector execution, custom rules, "
+        "suppressions, risk calculation, and result construction included."
+    ),
+    TimingMode.static_end_to_end: (
+        "Per-sample local static wall-clock time including bounded file loading, normalization, tool selection, "
+        "detector execution, custom rules, suppressions, risk calculation, and result construction."
+    ),
+}
 
 
 def _run_git(arguments: list[str], working_directory: Path) -> str | None:
@@ -90,10 +102,26 @@ def _semantic_custom_rules(rules: list[RuleDefinition]) -> list[dict[str, object
     return sorted(normalized, key=lambda item: str(item["id"]))
 
 
+def build_timing_configuration(
+    *, mode: TimingMode, warmup_repetitions: int, measured_repetitions: int
+) -> TimingConfiguration:
+    includes_static_input = mode == TimingMode.static_end_to_end
+    return TimingConfiguration(
+        mode=mode,
+        warmup_repetitions=warmup_repetitions,
+        measured_repetitions=measured_repetitions,
+        definition=TIMING_DEFINITIONS[mode],
+        includes_loading=includes_static_input,
+        includes_normalization=includes_static_input,
+    )
+
+
 def build_evaluation_configuration(
     *,
     threshold: Severity,
     corpus_split: CorpusSplit,
+    ablation: ResolvedAblation,
+    timing: TimingConfiguration,
     rules: list[RuleDefinition],
     suppressions: list[SuppressionDefinition],
     custom_rule_pack_name: str | None,
@@ -105,10 +133,14 @@ def build_evaluation_configuration(
     return EvaluationConfiguration(
         suspicious_threshold=threshold,
         corpus_split=corpus_split,
-        builtin_detector_ids=[
-            f"{detector.__class__.__module__}.{detector.__class__.__qualname__}" for detector in BUILTIN_DETECTORS
-        ],
-        builtin_rule_ids=list(RULE_EXPLANATIONS),
+        enabled_builtin_detector_ids=list(ablation.enabled_detector_ids),
+        disabled_builtin_detector_ids=list(ablation.disabled_detector_ids),
+        enabled_builtin_family_ids=list(ablation.enabled_family_ids),
+        disabled_builtin_family_ids=list(ablation.disabled_family_ids),
+        enabled_builtin_rule_ids=list(ablation.enabled_rule_ids),
+        disabled_builtin_rule_ids=list(ablation.disabled_rule_ids),
+        ablation_preset=ablation.preset,
+        timing=timing,
         custom_rule_pack_name=custom_rule_pack_name,
         custom_rule_pack_version=custom_rule_pack_version,
         custom_rule_ids=[rule.id for rule in rules if rule.enabled],

@@ -34,8 +34,9 @@ def test_evaluate_json() -> None:
     payload = json.loads(result.stdout)
     assert payload["metadata"]["sample_count"] == 80
     assert payload["metadata"]["corpus_split"] == "development"
-    assert payload["metadata"]["configuration"]["builtin_rule_ids"]
-    assert payload["metadata"]["invocation"][-2:] == ["--format", "json"]
+    assert payload["metadata"]["configuration"]["enabled_builtin_rule_ids"]
+    invocation = payload["metadata"]["invocation"]
+    assert invocation[invocation.index("--format") : invocation.index("--format") + 2] == ["--format", "json"]
     assert payload["confusion_matrix"] == {"tp": 37, "tn": 36, "fp": 4, "fn": 3}
 
 

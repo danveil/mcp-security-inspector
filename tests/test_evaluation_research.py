@@ -6,6 +6,7 @@ import pytest
 from typer.testing import CliRunner
 
 from mcpsec.cli import app
+from mcpsec.evaluation.ablation import resolve_ablation
 from mcpsec.evaluation.evaluator import evaluate_corpus
 from mcpsec.evaluation.integrity import compare_corpus_splits, corpus_sha256
 from mcpsec.evaluation.models import (
@@ -14,9 +15,11 @@ from mcpsec.evaluation.models import (
     GitMetadata,
     IntegrityIssueKind,
     RuntimeEnvironment,
+    TimingMode,
 )
 from mcpsec.evaluation.research import (
     build_evaluation_configuration,
+    build_timing_configuration,
     collect_git_metadata,
     collect_runtime_environment,
     configuration_sha256,
@@ -131,6 +134,8 @@ def test_configuration_hash_is_semantic_and_order_stable() -> None:
     first = build_evaluation_configuration(
         threshold=Severity.MEDIUM,
         corpus_split=CorpusSplit.development,
+        ablation=resolve_ablation(),
+        timing=build_timing_configuration(mode=TimingMode.analysis_core, warmup_repetitions=0, measured_repetitions=1),
         rules=[rule],
         suppressions=suppressions,
         custom_rule_pack_name="research",
@@ -144,6 +149,8 @@ def test_configuration_hash_is_semantic_and_order_stable() -> None:
     second = build_evaluation_configuration(
         threshold=Severity.MEDIUM,
         corpus_split=CorpusSplit.development,
+        ablation=resolve_ablation(),
+        timing=build_timing_configuration(mode=TimingMode.analysis_core, warmup_repetitions=0, measured_repetitions=1),
         rules=[reordered_rule],
         suppressions=list(reversed(suppressions)),
         custom_rule_pack_name="research",

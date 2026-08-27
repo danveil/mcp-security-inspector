@@ -14,5 +14,9 @@ class CorpusValidationError(McpsecError):
     """Invalid evaluation corpus or ground truth."""
 
 
+class ExperimentArtifactError(McpsecError):
+    """Invalid, unsupported, or incompatible research experiment artifact."""
+
+
 class RetrievalError(McpsecError):
     """Safe MCP catalog retrieval failed."""

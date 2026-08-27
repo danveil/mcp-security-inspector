@@ -28,3 +28,5 @@ baseline*.json
 *.tmp
 *.temp
 work/
+evaluation/runs/*
+!evaluation/runs/README.md

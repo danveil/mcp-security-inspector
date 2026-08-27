@@ -16,7 +16,9 @@ The controlled independent variable is the security characteristic expressed by 
 
 - Accuracy, precision, recall, F1, false-positive rate, false-negative rate, and specificity.
 - One-vs-rest precision, recall, and F1 for each detector category.
-- Total, mean, median, minimum, maximum, and p95 detector processing time.
+- Total, mean, median, minimum, maximum, p95, population standard deviation, per-tool mean, and corpus-pass mean for the declared timing boundary.
+- Wilson 95% intervals with raw counts for accuracy, recall, and false-positive rate.
+- Binary metrics and raw confusion counts stratified by expected category, expected field location, difficulty, and ground truth.
 
 Timings use `time.perf_counter()` and vary by hardware, operating system, Python build, and background load. They are diagnostic measurements, not hardware-independent benchmarks.
 
@@ -35,11 +37,22 @@ python -m pip install -e ".[dev]"
 mcpsec evaluate evaluation/corpus/manifest.json
 mcpsec evaluate evaluation/corpus/manifest.json --format json --output evaluation-result.json
 mcpsec evaluate evaluation/corpus/manifest.json --format csv --output evaluation-samples.csv
+mcpsec evaluate evaluation/corpus/manifest.json --timing-warmups 3 --timing-repetitions 10 --runs-dir evaluation/runs
+mcpsec evaluate evaluation/corpus/manifest.json --timing-mode static-end-to-end --timing-repetitions 10
+mcpsec evaluate evaluation/corpus/manifest.json --ablation without-schema --runs-dir evaluation/runs
+mcpsec evaluate evaluation/corpus/manifest.json --disable-rule SCH-001 --disable-family capability
+mcpsec compare-experiments evaluation/runs/EXPERIMENT-A.json evaluation/runs/EXPERIMENT-B.json
 ```
 
-The default experiment uses built-in rules, a `MEDIUM` binary threshold, and no suppressions. A sample is predicted suspicious when it has at least one finding at or above that threshold. Category evaluation records all finding categories, including informational capability context. Custom rules are opt-in with `--rules`. Suppressions are excluded unless `--suppressions` is explicitly provided, and the report records whether they were applied.
+The default experiment uses every built-in rule, a `MEDIUM` binary threshold, no suppressions, the `analysis-core` boundary, zero warm-ups, and one measured repetition. A sample is predicted suspicious when it has at least one finding at or above that threshold. Category evaluation records all finding categories, including informational capability context. Custom rules are opt-in with `--rules`. Suppressions are excluded unless `--suppressions` is explicitly provided, and the report records whether they were applied.
 
-For repeatability, JSON output records an experiment ID, application and output-schema versions, Git commit/dirty state when available, selected platform/dependency versions, UTC timestamp, portable invocation, corpus split/version/SHA-256, full active configuration and its SHA-256, sample count, suppression identities, and classification threshold. It excludes usernames, hostnames, environment-variable values, absolute paths, and Git diff content.
+`analysis-core` measures per-sample detector/rule/suppression/risk processing after bounded loading and normalization. `static-end-to-end` additionally includes bounded local file loading, normalization, and tool selection in each repetition. Warm-ups execute but are not recorded. Samples are ordered by stable ID, and every measured repetition must return identical findings and risk. Timings use `time.perf_counter()` and remain dependent on hardware, operating system, Python build, and background load; they do not measure server or tool runtime.
+
+Ablation presets and repeatable rule/family exclusions are evaluation-only. The report records the exact enabled and disabled detector, family, and stable rule-ID sets, and its configuration hash changes with the selection. Remaining findings go through the unchanged risk calculation. Ordinary scans, detector definitions, fingerprints, baselines, and drift are unaffected.
+
+For repeatability, JSON output records an experiment ID, application and output-schema versions, Git commit/dirty state when available, selected platform/dependency versions, UTC timestamp, portable invocation, corpus split/version/SHA-256, full active configuration and its SHA-256, sample count, suppression identities, timing observations, uncertainty, strata, and classification threshold. It excludes usernames, hostnames, environment-variable values, absolute paths, and Git diff content. Expected-category and field-location groups may overlap; missingness is explicit, and groups with fewer than 10 samples are marked low evidence. Wilson intervals are reported only for accuracy, recall, and FPR, with null bounds when the denominator is zero.
+
+Preserved artifacts use output schema `3.0.0`. `compare-experiments` rejects mismatched corpus/split/sample/ground-truth/threshold identities, reports B−A paired changes for compatible runs, warns about version or non-ablation differences, and withholds latency deltas unless timing boundary and runtime environment match. Older artifact schemas are rejected rather than silently upgraded. See the [research protocol](research-protocol.md) and complete the [experiment-plan template](experiment-plan-template.md) before a holdout run.
 
 Before a future holdout run, compare the frozen manifests with `mcpsec corpus-check DEVELOPMENT HOLDOUT`. Duplicate IDs and exact canonical tool content are errors. No automatic near-duplicate heuristic is claimed in this phase; a human reviewer must also inspect paraphrases, derivations, and shared templates. The complete split, freezing, unblinding, labeling, timing, and versioning procedure is in the [research protocol](research-protocol.md).
 

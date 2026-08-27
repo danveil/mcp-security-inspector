@@ -31,14 +31,33 @@ def test_zero_division_is_safe() -> None:
 
 
 def test_timing_statistics() -> None:
-    timing = timing_statistics([4.0, 1.0, 3.0, 2.0, 10.0])
+    timing = timing_statistics([4.0, 1.0, 3.0, 2.0, 10.0], sample_count=5)
+    assert timing.observation_count == 5
+    assert timing.sample_count == 5
+    assert timing.measured_repetitions == 1
     assert timing.total_ms == 20
     assert timing.mean_ms == 4
     assert timing.median_ms == 3
     assert timing.minimum_ms == 1
     assert timing.maximum_ms == 10
     assert timing.p95_ms == 10
+    assert timing.standard_deviation_ms == pytest.approx(3.1622776601683795)
+    assert timing.mean_per_tool_ms == 4
+    assert timing.mean_corpus_pass_ms == 20
 
 
 def test_empty_timing_statistics() -> None:
-    assert set(timing_statistics([]).model_dump().values()) == {0.0}
+    timing = timing_statistics([])
+    assert timing.observation_count == 0
+    assert timing.sample_count == 0
+    assert timing.measured_repetitions == 1
+    assert set(timing.model_dump(exclude={"observation_count", "sample_count", "measured_repetitions"}).values()) == {
+        0.0
+    }
+
+
+def test_timing_statistics_requires_complete_repetitions() -> None:
+    with pytest.raises(ValueError, match="sample_count multiplied"):
+        timing_statistics([1.0, 2.0, 3.0], sample_count=2, measured_repetitions=2)
+    with pytest.raises(ValueError, match="at least 1"):
+        timing_statistics([], measured_repetitions=0)

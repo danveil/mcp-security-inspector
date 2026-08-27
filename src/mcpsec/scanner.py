@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from pathlib import Path
 
 from mcpsec import __version__
 from mcpsec.constants import APP_NAME
 from mcpsec.detectors import BUILTIN_DETECTORS
+from mcpsec.detectors.base import Detector
 from mcpsec.loader import load_tools
 from mcpsec.models import (
     RuleDefinition,
@@ -31,8 +33,9 @@ def analyze_tools(
     rules: list[RuleDefinition] | None = None,
     suppressions: list[SuppressionDefinition] | None = None,
     redact: bool = False,
+    builtin_detectors: Sequence[Detector] | None = None,
 ) -> ScanReport:
-    detectors = list(BUILTIN_DETECTORS)
+    detectors = list(BUILTIN_DETECTORS if builtin_detectors is None else builtin_detectors)
     if rules:
         detectors.append(CustomRuleDetector(rules))
     active_suppressions = suppressions or []

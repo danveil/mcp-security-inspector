@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import statistics
 import time
 from collections.abc import Callable
 from datetime import UTC, datetime
@@ -7,10 +8,12 @@ from pathlib import Path
 
 from mcpsec import __version__
 from mcpsec.constants import APP_NAME, BUILTIN_RULE_PACK_NAME, BUILTIN_RULE_PACK_VERSION, KNOWN_CATEGORIES
+from mcpsec.evaluation.ablation import ResolvedAblation, resolve_ablation
 from mcpsec.evaluation.integrity import corpus_sha256
-from mcpsec.evaluation.loader import load_corpus
+from mcpsec.evaluation.loader import LoadedSample, load_corpus, load_sample
 from mcpsec.evaluation.metrics import calculate_metrics, confusion, timing_statistics
 from mcpsec.evaluation.models import (
+    AblationPreset,
     CategoryEvaluation,
     CorpusLabel,
     EvaluationMetadata,
@@ -19,19 +22,22 @@ from mcpsec.evaluation.models import (
     GitMetadata,
     RuntimeEnvironment,
     SampleEvaluation,
+    TimingConfiguration,
+    TimingMode,
 )
 from mcpsec.evaluation.research import (
     build_evaluation_configuration,
+    build_timing_configuration,
     collect_git_metadata,
     collect_runtime_environment,
     configuration_sha256,
     experiment_id,
     utc_now,
 )
-from mcpsec.models import SEVERITY_RANK, Finding, RuleDefinition, Severity, SuppressionDefinition
+from mcpsec.evaluation.stratification import stratify_samples
+from mcpsec.evaluation.uncertainty import uncertainty_for_matrix
+from mcpsec.models import SEVERITY_RANK, Finding, RuleDefinition, Severity, SuppressionDefinition, ToolScanResult
 from mcpsec.scanner import analyze_tools
-
-TIMING_METHODOLOGY = "single-pass analyze_tools wall-clock timing using time.perf_counter; load and reporting excluded"
 
 
 def _failure_type(
@@ -58,6 +64,44 @@ def _portable_invocation(arguments: list[str] | None, manifest_path: Path) -> li
     return [Path(value).name if Path(value).is_absolute() else value for value in values]
 
 
+def _analyze_sample(
+    sample: LoadedSample,
+    *,
+    tool_root: Path,
+    timing: TimingConfiguration,
+    ablation: ResolvedAblation,
+    rules: list[RuleDefinition],
+    suppressions: list[SuppressionDefinition],
+    clock: Callable[[], float],
+) -> tuple[ToolScanResult, list[float]]:
+    def execute() -> ToolScanResult:
+        tool = load_sample(tool_root, sample.entry).tool if timing.mode == TimingMode.static_end_to_end else sample.tool
+        return analyze_tools(
+            [tool],
+            source=sample.entry.id,
+            rules=rules,
+            suppressions=suppressions,
+            builtin_detectors=ablation.detectors,
+        ).tools[0]
+
+    for _ in range(timing.warmup_repetitions):
+        execute()
+
+    observations: list[float] = []
+    reference: ToolScanResult | None = None
+    for _ in range(timing.measured_repetitions):
+        started = clock()
+        result = execute()
+        observations.append(max(0.0, (clock() - started) * 1_000))
+        if reference is None:
+            reference = result
+        elif result != reference:
+            raise RuntimeError(f"Repeated evaluation produced inconsistent results for sample {sample.entry.id}")
+    if reference is None:  # pragma: no cover - TimingConfiguration requires at least one measured repetition
+        raise RuntimeError("Evaluation produced no measured result")
+    return reference, observations
+
+
 def evaluate_corpus(
     manifest_path: Path,
     *,
@@ -70,6 +114,12 @@ def evaluate_corpus(
     suppressions: list[SuppressionDefinition] | None = None,
     suppression_file_sha256: str | None = None,
     threshold: Severity = Severity.MEDIUM,
+    ablation_preset: AblationPreset = AblationPreset.full,
+    disabled_builtin_rule_ids: list[str] | None = None,
+    disabled_builtin_family_ids: list[str] | None = None,
+    timing_mode: TimingMode = TimingMode.analysis_core,
+    timing_warmups: int = 0,
+    timing_repetitions: int = 1,
     invocation: list[str] | None = None,
     repository_path: Path | None = None,
     git_metadata: GitMetadata | None = None,
@@ -77,20 +127,34 @@ def evaluate_corpus(
     timestamp_factory: Callable[[], datetime] = utc_now,
     clock: Callable[[], float] = time.perf_counter,
 ) -> EvaluationReport:
-    manifest, loaded = load_corpus(manifest_path)
+    manifest, loaded_unsorted = load_corpus(manifest_path)
+    loaded = sorted(loaded_unsorted, key=lambda sample: sample.entry.id)
     active_rules = rules or []
     active_suppressions = suppressions or []
+    ablation = resolve_ablation(
+        preset=ablation_preset,
+        disabled_rule_ids=disabled_builtin_rule_ids,
+        disabled_family_ids=disabled_builtin_family_ids,
+    )
+    timing_configuration = build_timing_configuration(
+        mode=timing_mode,
+        warmup_repetitions=timing_warmups,
+        measured_repetitions=timing_repetitions,
+    )
+    tool_root = manifest_path.resolve().parent
+    all_observations: list[float] = []
     outcomes: list[SampleEvaluation] = []
     for sample in loaded:
-        started = clock()
-        scan = analyze_tools(
-            [sample.tool],
-            source=sample.entry.id,
+        result, observations = _analyze_sample(
+            sample,
+            tool_root=tool_root,
+            timing=timing_configuration,
+            ablation=ablation,
             rules=active_rules,
             suppressions=active_suppressions,
+            clock=clock,
         )
-        elapsed_ms = max(0.0, (clock() - started) * 1_000)
-        result = scan.tools[0]
+        all_observations.extend(observations)
         suspicious = any(SEVERITY_RANK[item.severity] >= SEVERITY_RANK[threshold] for item in result.findings)
         predicted = CorpusLabel.suspicious if suspicious else CorpusLabel.benign
         expected_categories = sorted(sample.entry.categories)
@@ -120,7 +184,8 @@ def evaluate_corpus(
                 researcher_notes=sample.entry.notes,
                 risk_score=result.risk_score,
                 findings=result.findings,
-                elapsed_ms=elapsed_ms,
+                elapsed_ms=statistics.fmean(observations),
+                timing_observations=len(observations),
             )
         )
 
@@ -146,6 +211,8 @@ def evaluate_corpus(
     configuration = build_evaluation_configuration(
         threshold=threshold,
         corpus_split=manifest.split,
+        ablation=ablation,
+        timing=timing_configuration,
         rules=active_rules,
         suppressions=active_suppressions,
         custom_rule_pack_name=custom_rule_pack_name,
@@ -182,7 +249,9 @@ def evaluate_corpus(
             python_version=environment.python_version,
             timestamp_utc=timestamp.isoformat(),
             invocation=_portable_invocation(invocation, manifest_path),
-            timing_methodology=TIMING_METHODOLOGY,
+            timing_methodology=(
+                f"{timing_configuration.mode.value}; warm-ups excluded; {timing_configuration.definition}"
+            ),
             sample_count=len(outcomes),
             suppressions_applied=bool(active_suppressions),
             suspicious_threshold=threshold.value,
@@ -201,5 +270,11 @@ def evaluate_corpus(
             if item.expected == CorpusLabel.suspicious and item.predicted == CorpusLabel.benign
         ],
         samples=outcomes,
-        timing=timing_statistics([item.elapsed_ms for item in outcomes]),
+        timing=timing_statistics(
+            all_observations,
+            sample_count=len(outcomes),
+            measured_repetitions=timing_configuration.measured_repetitions,
+        ),
+        uncertainty=uncertainty_for_matrix(matrix),
+        stratified_metrics=stratify_samples(outcomes),
     )
