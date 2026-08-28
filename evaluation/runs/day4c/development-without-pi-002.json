@@ -1,0 +1,4611 @@
+{
+  "metadata": {
+    "output_schema_version": "3.0.0",
+    "experiment_id": "exp-20260827T103340431470Z-a22de012-4e890381",
+    "application": "MCP Tool Security Inspector",
+    "application_version": "0.2.0",
+    "rule_pack_name": "builtin",
+    "rule_pack_version": "1.0.0",
+    "corpus_name": "mcpsec-synthetic-metadata",
+    "corpus_version": "1.0.0",
+    "corpus_split": "development",
+    "corpus_methodology_version": "1.0.0",
+    "corpus_methodology_note": "Synthetic development and regression corpus used during detector design and tuning; it is not a holdout test set.",
+    "label_review_status": "single_reviewer",
+    "source_license_policy": "Repository-authored synthetic fixtures distributed under the project MIT license; no third-party or private metadata is included.",
+    "corpus_sha256": "a22de0126d2cf0b00c99ded46687b70dc6f417382a0a11c5ae4a9cad8f6d6f47",
+    "configuration": {
+      "suspicious_threshold": "MEDIUM",
+      "corpus_split": "development",
+      "enabled_builtin_detector_ids": [
+        "mcpsec.detectors.injection.InjectionDetector",
+        "mcpsec.detectors.mismatch.MismatchDetector",
+        "mcpsec.detectors.obfuscation.ObfuscationDetector",
+        "mcpsec.detectors.permissions.PermissionsDetector",
+        "mcpsec.detectors.schema.SchemaDetector",
+        "mcpsec.detectors.secrecy.SecrecyDetector",
+        "mcpsec.detectors.sensitive_data.SensitiveDataDetector"
+      ],
+      "disabled_builtin_detector_ids": [],
+      "enabled_builtin_family_ids": [
+        "capability",
+        "concealment",
+        "injection",
+        "mismatch",
+        "obfuscation",
+        "schema",
+        "sensitive-data"
+      ],
+      "disabled_builtin_family_ids": [],
+      "enabled_builtin_rule_ids": [
+        "CAP-001",
+        "HID-001",
+        "HID-002",
+        "MIS-001",
+        "MIS-002",
+        "OBF-001",
+        "OBF-002",
+        "OBF-003",
+        "OBF-004",
+        "OBF-005",
+        "PI-001",
+        "SCH-001",
+        "SCH-002",
+        "SEC-001",
+        "SEC-002"
+      ],
+      "disabled_builtin_rule_ids": [
+        "PI-002"
+      ],
+      "ablation_preset": "full",
+      "timing": {
+        "mode": "analysis-core",
+        "warmup_repetitions": 0,
+        "measured_repetitions": 1,
+        "definition": "Per-tool analyze_tools wall-clock time after loading and normalization; detector execution, custom rules, suppressions, risk calculation, and result construction included.",
+        "includes_loading": false,
+        "includes_normalization": false,
+        "sample_ordering": "sample_id_ascending"
+      },
+      "custom_rule_pack_name": null,
+      "custom_rule_pack_version": null,
+      "custom_rule_ids": [],
+      "custom_rule_configuration_sha256": null,
+      "custom_rule_file_sha256": null,
+      "suppressions": [],
+      "suppression_file_sha256": null,
+      "options": {
+        "evidence_redacted": false,
+        "static_analysis_only": true
+      }
+    },
+    "configuration_sha256": "4e8903813618db07ca9e9379a85469a39f2bdb886e947f23fe88039d21917bd9",
+    "git": {
+      "commit": "a4abee4661522ac13edb37e1b075186a2ccd7a03",
+      "dirty": true
+    },
+    "environment": {
+      "python_version": "3.12.13",
+      "platform_system": "Windows",
+      "platform_release": "11",
+      "machine": "",
+      "processor": null,
+      "dependency_versions": {
+        "httpx2": "2.12.0",
+        "jsonschema": "4.26.0",
+        "mcp": "2.1.1",
+        "pydantic": "2.13.4",
+        "PyYAML": "6.0.3",
+        "rich": "14.3.4",
+        "typer": "0.27.1"
+      }
+    },
+    "python_version": "3.12.13",
+    "timestamp_utc": "2026-08-27T10:33:40.431470+00:00",
+    "invocation": [
+      "mcpsec",
+      "evaluate",
+      "manifest.json",
+      "--format",
+      "json",
+      "--threshold",
+      "medium",
+      "--timing-mode",
+      "analysis-core",
+      "--timing-warmups",
+      "0",
+      "--timing-repetitions",
+      "1",
+      "--ablation",
+      "full",
+      "--output",
+      "development-without-pi-002.json",
+      "--disable-rule",
+      "PI-002"
+    ],
+    "timing_methodology": "analysis-core; warm-ups excluded; Per-tool analyze_tools wall-clock time after loading and normalization; detector execution, custom rules, suppressions, risk calculation, and result construction included.",
+    "sample_count": 80,
+    "suppressions_applied": false,
+    "suspicious_threshold": "MEDIUM"
+  },
+  "confusion_matrix": {
+    "tp": 37,
+    "tn": 36,
+    "fp": 4,
+    "fn": 3
+  },
+  "metrics": {
+    "accuracy": 0.9125,
+    "precision": 0.9024390243902439,
+    "recall": 0.925,
+    "f1": 0.9135802469135802,
+    "false_positive_rate": 0.1,
+    "false_negative_rate": 0.075,
+    "specificity": 0.9
+  },
+  "category_metrics": [
+    {
+      "category": "capability",
+      "confusion_matrix": {
+        "tp": 4,
+        "tn": 67,
+        "fp": 7,
+        "fn": 2
+      },
+      "metrics": {
+        "accuracy": 0.8875,
+        "precision": 0.36363636363636365,
+        "recall": 0.6666666666666666,
+        "f1": 0.4705882352941177,
+        "false_positive_rate": 0.0945945945945946,
+        "false_negative_rate": 0.3333333333333333,
+        "specificity": 0.9054054054054054
+      }
+    },
+    {
+      "category": "concealment",
+      "confusion_matrix": {
+        "tp": 8,
+        "tn": 70,
+        "fp": 2,
+        "fn": 0
+      },
+      "metrics": {
+        "accuracy": 0.975,
+        "precision": 0.8,
+        "recall": 1.0,
+        "f1": 0.888888888888889,
+        "false_positive_rate": 0.027777777777777776,
+        "false_negative_rate": 0.0,
+        "specificity": 0.9722222222222222
+      }
+    },
+    {
+      "category": "instruction_override",
+      "confusion_matrix": {
+        "tp": 8,
+        "tn": 72,
+        "fp": 0,
+        "fn": 0
+      },
+      "metrics": {
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "false_positive_rate": 0.0,
+        "false_negative_rate": 0.0,
+        "specificity": 1.0
+      }
+    },
+    {
+      "category": "mismatch",
+      "confusion_matrix": {
+        "tp": 7,
+        "tn": 69,
+        "fp": 4,
+        "fn": 0
+      },
+      "metrics": {
+        "accuracy": 0.95,
+        "precision": 0.6363636363636364,
+        "recall": 1.0,
+        "f1": 0.7777777777777778,
+        "false_positive_rate": 0.0547945205479452,
+        "false_negative_rate": 0.0,
+        "specificity": 0.9452054794520548
+      }
+    },
+    {
+      "category": "obfuscation",
+      "confusion_matrix": {
+        "tp": 4,
+        "tn": 75,
+        "fp": 1,
+        "fn": 0
+      },
+      "metrics": {
+        "accuracy": 0.9875,
+        "precision": 0.8,
+        "recall": 1.0,
+        "f1": 0.888888888888889,
+        "false_positive_rate": 0.013157894736842105,
+        "false_negative_rate": 0.0,
+        "specificity": 0.9868421052631579
+      }
+    },
+    {
+      "category": "schema",
+      "confusion_matrix": {
+        "tp": 9,
+        "tn": 69,
+        "fp": 0,
+        "fn": 2
+      },
+      "metrics": {
+        "accuracy": 0.975,
+        "precision": 1.0,
+        "recall": 0.8181818181818182,
+        "f1": 0.9,
+        "false_positive_rate": 0.0,
+        "false_negative_rate": 0.18181818181818182,
+        "specificity": 1.0
+      }
+    },
+    {
+      "category": "sensitive_data",
+      "confusion_matrix": {
+        "tp": 7,
+        "tn": 68,
+        "fp": 5,
+        "fn": 0
+      },
+      "metrics": {
+        "accuracy": 0.9375,
+        "precision": 0.5833333333333334,
+        "recall": 1.0,
+        "f1": 0.7368421052631579,
+        "false_positive_rate": 0.0684931506849315,
+        "false_negative_rate": 0.0,
+        "specificity": 0.9315068493150684
+      }
+    }
+  ],
+  "false_positives": [
+    {
+      "sample_id": "benign_027",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "suspicious",
+      "expected_categories": [],
+      "predicted_categories": [
+        "mismatch"
+      ],
+      "rationale": "Ignore refers narrowly to optional fields rather than instructions.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "MIS-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "false_positive",
+      "researcher_notes": "",
+      "risk_score": 18,
+      "findings": [
+        {
+          "rule_id": "MIS-001",
+          "rule_name": "Name/description/schema mismatch",
+          "category": "mismatch",
+          "severity": "HIGH",
+          "confidence": 0.8,
+          "explanation": "Privileged schema capabilities are not reflected in the tool's stated purpose.",
+          "evidence": "declared=['unclear']; schema=['database']",
+          "field": "input_schema",
+          "recommendation": "Align the name and description with actual capabilities or remove unrelated parameters.",
+          "score_contribution": 23.0
+        }
+      ],
+      "elapsed_ms": 0.9095999994315207,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_028",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "suspicious",
+      "expected_categories": [],
+      "predicted_categories": [
+        "concealment"
+      ],
+      "rationale": "Silently describes user-enabled audio processing, a known ambiguous phrase.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "HID-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "false_positive",
+      "researcher_notes": "",
+      "risk_score": 19,
+      "findings": [
+        {
+          "rule_id": "HID-001",
+          "rule_name": "Concealment wording",
+          "category": "concealment",
+          "severity": "HIGH",
+          "confidence": 0.88,
+          "explanation": "The field contains wording that may discourage user disclosure.",
+          "evidence": "Silently",
+          "field": "description",
+          "recommendation": "Require explicit user-visible disclosure for tool activity.",
+          "score_contribution": 22.0
+        }
+      ],
+      "elapsed_ms": 0.9213000012096018,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_030",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "suspicious",
+      "expected_categories": [],
+      "predicted_categories": [
+        "concealment"
+      ],
+      "rationale": "Disclosure suppression refers to privacy redaction, not hiding tool activity.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "HID-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "false_positive",
+      "researcher_notes": "",
+      "risk_score": 19,
+      "findings": [
+        {
+          "rule_id": "HID-001",
+          "rule_name": "Concealment wording",
+          "category": "concealment",
+          "severity": "HIGH",
+          "confidence": 0.88,
+          "explanation": "The field contains wording that may discourage user disclosure.",
+          "evidence": "Suppress disclosure",
+          "field": "description",
+          "recommendation": "Require explicit user-visible disclosure for tool activity.",
+          "score_contribution": 22.0
+        }
+      ],
+      "elapsed_ms": 0.9936000024026725,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_035",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "suspicious",
+      "expected_categories": [],
+      "predicted_categories": [
+        "obfuscation"
+      ],
+      "rationale": "A long encoded-looking documentation fixture is deliberately borderline.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "OBF-004"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "false_positive",
+      "researcher_notes": "",
+      "risk_score": 9,
+      "findings": [
+        {
+          "rule_id": "OBF-004",
+          "rule_name": "Encoded-looking block",
+          "category": "obfuscation",
+          "severity": "MEDIUM",
+          "confidence": 0.78,
+          "explanation": "A long valid Base64 block is present; it was not executed or interpreted.",
+          "evidence": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+          "field": "description",
+          "recommendation": "Decode only in an isolated review workflow and document its purpose.",
+          "score_contribution": 11.0
+        }
+      ],
+      "elapsed_ms": 0.968000000284519,
+      "timing_observations": 1
+    }
+  ],
+  "false_negatives": [
+    {
+      "sample_id": "suspicious_036",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "benign",
+      "expected_categories": [
+        "obfuscation"
+      ],
+      "predicted_categories": [
+        "obfuscation"
+      ],
+      "rationale": "Extreme whitespace can hide a suffix in ordinary previews.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "OBF-003"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "OBF-003"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "false_negative_below_threshold",
+      "researcher_notes": "",
+      "risk_score": 5,
+      "findings": [
+        {
+          "rule_id": "OBF-003",
+          "rule_name": "Extreme whitespace",
+          "category": "obfuscation",
+          "severity": "LOW",
+          "confidence": 0.82,
+          "explanation": "Extreme whitespace may conceal content from ordinary review.",
+          "evidence": "extreme whitespace sequence",
+          "field": "description",
+          "recommendation": "Normalize whitespace before approval.",
+          "score_contribution": 6.0
+        }
+      ],
+      "elapsed_ms": 0.6298999978753272,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_038",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "benign",
+      "expected_categories": [
+        "capability"
+      ],
+      "predicted_categories": [
+        "capability"
+      ],
+      "rationale": "Multiple file, execution, and network capabilities create permission risk.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "CAP-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "CAP-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "false_negative_below_threshold",
+      "researcher_notes": "",
+      "risk_score": 2,
+      "findings": [
+        {
+          "rule_id": "CAP-001",
+          "rule_name": "High-impact capability indicators",
+          "category": "capability",
+          "severity": "INFORMATIONAL",
+          "confidence": 0.72,
+          "explanation": "Metadata advertises potentially high-impact operations; these may be legitimate.",
+          "evidence": "filesystem write, code execution, external network",
+          "field": "multiple",
+          "recommendation": "Confirm least privilege, user consent, and runtime controls.",
+          "score_contribution": 3.0
+        }
+      ],
+      "elapsed_ms": 0.6920999985595699,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_039",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "benign",
+      "expected_categories": [
+        "capability"
+      ],
+      "predicted_categories": [
+        "capability"
+      ],
+      "rationale": "Database modification and directory removal create permission risk.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "CAP-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "CAP-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "false_negative_below_threshold",
+      "researcher_notes": "",
+      "risk_score": 2,
+      "findings": [
+        {
+          "rule_id": "CAP-001",
+          "rule_name": "High-impact capability indicators",
+          "category": "capability",
+          "severity": "INFORMATIONAL",
+          "confidence": 0.72,
+          "explanation": "Metadata advertises potentially high-impact operations; these may be legitimate.",
+          "evidence": "file deletion, database modification",
+          "field": "multiple",
+          "recommendation": "Confirm least privilege, user consent, and runtime controls.",
+          "score_contribution": 3.0
+        }
+      ],
+      "elapsed_ms": 0.7383000011031982,
+      "timing_observations": 1
+    }
+  ],
+  "samples": [
+    {
+      "sample_id": "benign_001",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "Ordinary arithmetic metadata with a narrow numeric schema.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 3.855699997075135,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_002",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "Ordinary measurement conversion with aligned fields.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 1.5989999992598314,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_003",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "Harmless deterministic weather demonstration metadata.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.9442000009585172,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_004",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "Text formatting purpose and schema are aligned.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 1.1510999975143932,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_005",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "Read-only calendar summary with a date input.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.9441000001970679,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_006",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "Literal search over user-supplied text is a routine capability.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 1.1465000025054906,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_007",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "Simple standards lookup with no privileged capability.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.9610999986762181,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_008",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "Summarization metadata contains no model-directed instruction.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.924300002225209,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_009",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "Legitimate authentication documentation mentions passwords without requesting them.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.898300000699237,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_010",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "Explicit negation of concealment language is a safety statement.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.8706000007805414,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_011",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "Ignore applies to missing optional fields rather than model instructions.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.8903999987524003,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_012",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [
+        "sensitive_data"
+      ],
+      "rationale": "A legitimate vault guide discusses security terms but accepts no secrets.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "SEC-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "category_mismatch",
+      "researcher_notes": "",
+      "risk_score": 4,
+      "findings": [
+        {
+          "rule_id": "SEC-001",
+          "rule_name": "Sensitive credential terminology",
+          "category": "sensitive_data",
+          "severity": "LOW",
+          "confidence": 0.62,
+          "explanation": "Credential-related terminology indicates potentially sensitive data handling; legitimate security tools may trigger this rule.",
+          "evidence": "secret",
+          "field": "description",
+          "recommendation": "Verify the value is necessary, minimized, and protected for the declared purpose.",
+          "score_contribution": 6.0
+        }
+      ],
+      "elapsed_ms": 0.976999999693362,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_013",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [
+        "sensitive_data"
+      ],
+      "rationale": "Administrator credential policy is legitimate documentation.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "SEC-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "category_mismatch",
+      "researcher_notes": "",
+      "risk_score": 4,
+      "findings": [
+        {
+          "rule_id": "SEC-001",
+          "rule_name": "Sensitive credential terminology",
+          "category": "sensitive_data",
+          "severity": "LOW",
+          "confidence": 0.62,
+          "explanation": "Credential-related terminology indicates potentially sensitive data handling; legitimate security tools may trigger this rule.",
+          "evidence": "credential",
+          "field": "description",
+          "recommendation": "Verify the value is necessary, minimized, and protected for the declared purpose.",
+          "score_contribution": 6.0
+        }
+      ],
+      "elapsed_ms": 0.8941000014601741,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_014",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [
+        "capability",
+        "sensitive_data"
+      ],
+      "rationale": "OAuth and token lifecycle documentation is legitimate security content.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "CAP-001",
+        "SEC-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "category_mismatch",
+      "researcher_notes": "",
+      "risk_score": 6,
+      "findings": [
+        {
+          "rule_id": "SEC-001",
+          "rule_name": "Sensitive credential terminology",
+          "category": "sensitive_data",
+          "severity": "LOW",
+          "confidence": 0.62,
+          "explanation": "Credential-related terminology indicates potentially sensitive data handling; legitimate security tools may trigger this rule.",
+          "evidence": "access token",
+          "field": "description",
+          "recommendation": "Verify the value is necessary, minimized, and protected for the declared purpose.",
+          "score_contribution": 6.0
+        },
+        {
+          "rule_id": "CAP-001",
+          "rule_name": "High-impact capability indicators",
+          "category": "capability",
+          "severity": "INFORMATIONAL",
+          "confidence": 0.72,
+          "explanation": "Metadata advertises potentially high-impact operations; these may be legitimate.",
+          "evidence": "credential access",
+          "field": "multiple",
+          "recommendation": "Confirm least privilege, user consent, and runtime controls.",
+          "score_contribution": 3.0
+        }
+      ],
+      "elapsed_ms": 0.9307000000262633,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_015",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [
+        "sensitive_data"
+      ],
+      "rationale": "Credential manager help search does not request credential material.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "SEC-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "category_mismatch",
+      "researcher_notes": "",
+      "risk_score": 4,
+      "findings": [
+        {
+          "rule_id": "SEC-001",
+          "rule_name": "Sensitive credential terminology",
+          "category": "sensitive_data",
+          "severity": "LOW",
+          "confidence": 0.62,
+          "explanation": "Credential-related terminology indicates potentially sensitive data handling; legitimate security tools may trigger this rule.",
+          "evidence": "credential",
+          "field": "description",
+          "recommendation": "Verify the value is necessary, minimized, and protected for the declared purpose.",
+          "score_contribution": 6.0
+        }
+      ],
+      "elapsed_ms": 1.0073000012198463,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_016",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "Key rotation scheduling is an expected defensive security use.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 1.1199999971722718,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_017",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [
+        "capability"
+      ],
+      "rationale": "Declared and schema-aligned file creation is high impact but not suspicious by itself.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "CAP-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "category_mismatch",
+      "researcher_notes": "",
+      "risk_score": 2,
+      "findings": [
+        {
+          "rule_id": "CAP-001",
+          "rule_name": "High-impact capability indicators",
+          "category": "capability",
+          "severity": "INFORMATIONAL",
+          "confidence": 0.72,
+          "explanation": "Metadata advertises potentially high-impact operations; these may be legitimate.",
+          "evidence": "filesystem write",
+          "field": "multiple",
+          "recommendation": "Confirm least privilege, user consent, and runtime controls.",
+          "score_contribution": 3.0
+        }
+      ],
+      "elapsed_ms": 1.2420999992173165,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_018",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [
+        "capability"
+      ],
+      "rationale": "Explicit administrator database behavior is aligned and consent-gated.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "CAP-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "category_mismatch",
+      "researcher_notes": "",
+      "risk_score": 2,
+      "findings": [
+        {
+          "rule_id": "CAP-001",
+          "rule_name": "High-impact capability indicators",
+          "category": "capability",
+          "severity": "INFORMATIONAL",
+          "confidence": 0.72,
+          "explanation": "Metadata advertises potentially high-impact operations; these may be legitimate.",
+          "evidence": "database modification",
+          "field": "multiple",
+          "recommendation": "Confirm least privilege, user consent, and runtime controls.",
+          "score_contribution": 3.0
+        }
+      ],
+      "elapsed_ms": 1.271900000574533,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_019",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [
+        "capability"
+      ],
+      "rationale": "Documentation quotes terminal capability without exposing execution inputs.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "CAP-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "category_mismatch",
+      "researcher_notes": "",
+      "risk_score": 2,
+      "findings": [
+        {
+          "rule_id": "CAP-001",
+          "rule_name": "High-impact capability indicators",
+          "category": "capability",
+          "severity": "INFORMATIONAL",
+          "confidence": 0.72,
+          "explanation": "Metadata advertises potentially high-impact operations; these may be legitimate.",
+          "evidence": "shell execution",
+          "field": "multiple",
+          "recommendation": "Confirm least privilege, user consent, and runtime controls.",
+          "score_contribution": 3.0
+        }
+      ],
+      "elapsed_ms": 0.9439999994356185,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_020",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "An authorized backup is legitimate data-copy functionality.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.900399998499779,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_021",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [
+        "capability"
+      ],
+      "rationale": "Declared network monitoring aligns with its URL schema.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "CAP-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "category_mismatch",
+      "researcher_notes": "",
+      "risk_score": 2,
+      "findings": [
+        {
+          "rule_id": "CAP-001",
+          "rule_name": "High-impact capability indicators",
+          "category": "capability",
+          "severity": "INFORMATIONAL",
+          "confidence": 0.72,
+          "explanation": "Metadata advertises potentially high-impact operations; these may be legitimate.",
+          "evidence": "external network",
+          "field": "multiple",
+          "recommendation": "Confirm least privilege, user consent, and runtime controls.",
+          "score_contribution": 3.0
+        }
+      ],
+      "elapsed_ms": 1.009600000543287,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_022",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "System monitoring description contains no instruction override.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.8651999996800441,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_023",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "Reviewing declared permissions is a defensive operation.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.8521000017935876,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_024",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [
+        "capability"
+      ],
+      "rationale": "Developer documentation mentions scripts but does not execute supplied code.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "CAP-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "category_mismatch",
+      "researcher_notes": "",
+      "risk_score": 2,
+      "findings": [
+        {
+          "rule_id": "CAP-001",
+          "rule_name": "High-impact capability indicators",
+          "category": "capability",
+          "severity": "INFORMATIONAL",
+          "confidence": 0.72,
+          "explanation": "Metadata advertises potentially high-impact operations; these may be legitimate.",
+          "evidence": "code execution",
+          "field": "multiple",
+          "recommendation": "Confirm least privilege, user consent, and runtime controls.",
+          "score_contribution": 3.0
+        }
+      ],
+      "elapsed_ms": 0.9484000001975801,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_025",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "Negated override wording documents safe behavior.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.9191999997710809,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_026",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "Negated concealment wording requires transparency.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.8965999986685347,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_027",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "suspicious",
+      "expected_categories": [],
+      "predicted_categories": [
+        "mismatch"
+      ],
+      "rationale": "Ignore refers narrowly to optional fields rather than instructions.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "MIS-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "false_positive",
+      "researcher_notes": "",
+      "risk_score": 18,
+      "findings": [
+        {
+          "rule_id": "MIS-001",
+          "rule_name": "Name/description/schema mismatch",
+          "category": "mismatch",
+          "severity": "HIGH",
+          "confidence": 0.8,
+          "explanation": "Privileged schema capabilities are not reflected in the tool's stated purpose.",
+          "evidence": "declared=['unclear']; schema=['database']",
+          "field": "input_schema",
+          "recommendation": "Align the name and description with actual capabilities or remove unrelated parameters.",
+          "score_contribution": 23.0
+        }
+      ],
+      "elapsed_ms": 0.9095999994315207,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_028",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "suspicious",
+      "expected_categories": [],
+      "predicted_categories": [
+        "concealment"
+      ],
+      "rationale": "Silently describes user-enabled audio processing, a known ambiguous phrase.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "HID-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "false_positive",
+      "researcher_notes": "",
+      "risk_score": 19,
+      "findings": [
+        {
+          "rule_id": "HID-001",
+          "rule_name": "Concealment wording",
+          "category": "concealment",
+          "severity": "HIGH",
+          "confidence": 0.88,
+          "explanation": "The field contains wording that may discourage user disclosure.",
+          "evidence": "Silently",
+          "field": "description",
+          "recommendation": "Require explicit user-visible disclosure for tool activity.",
+          "score_contribution": 22.0
+        }
+      ],
+      "elapsed_ms": 0.9213000012096018,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_029",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "Background synchronization is consented and visibly reported.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.8979000012914184,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_030",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "suspicious",
+      "expected_categories": [],
+      "predicted_categories": [
+        "concealment"
+      ],
+      "rationale": "Disclosure suppression refers to privacy redaction, not hiding tool activity.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "HID-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "false_positive",
+      "researcher_notes": "",
+      "risk_score": 19,
+      "findings": [
+        {
+          "rule_id": "HID-001",
+          "rule_name": "Concealment wording",
+          "category": "concealment",
+          "severity": "HIGH",
+          "confidence": 0.88,
+          "explanation": "The field contains wording that may discourage user disclosure.",
+          "evidence": "Suppress disclosure",
+          "field": "description",
+          "recommendation": "Require explicit user-visible disclosure for tool activity.",
+          "score_contribution": 22.0
+        }
+      ],
+      "elapsed_ms": 0.9936000024026725,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_031",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "Quoted attack wording is presented as a phrase to reject.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.9301999998569954,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_032",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "Consent verification is a routine transparent control.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.8588999990024604,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_033",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "Local schema validation metadata is conventional and bounded.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 1.1181000008946285,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_034",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "Unicode normalization does not contain hidden controls.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.8637999999336898,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_035",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "suspicious",
+      "expected_categories": [],
+      "predicted_categories": [
+        "obfuscation"
+      ],
+      "rationale": "A long encoded-looking documentation fixture is deliberately borderline.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "OBF-004"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "false_positive",
+      "researcher_notes": "",
+      "risk_score": 9,
+      "findings": [
+        {
+          "rule_id": "OBF-004",
+          "rule_name": "Encoded-looking block",
+          "category": "obfuscation",
+          "severity": "MEDIUM",
+          "confidence": 0.78,
+          "explanation": "A long valid Base64 block is present; it was not executed or interpreted.",
+          "evidence": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+          "field": "description",
+          "recommendation": "Decode only in an isolated review workflow and document its purpose.",
+          "score_contribution": 11.0
+        }
+      ],
+      "elapsed_ms": 0.968000000284519,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_036",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "Draft creation explicitly does not send a message.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 1.0978999998769723,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_037",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "Read-only viewing of supplied logs is non-privileged.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.8429000008618459,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_038",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "Listing integration documentation does not contact an API.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.8362000007764436,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_039",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "A declared read-only database query builder is aligned.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 1.151599997683661,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "benign_040",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "The tool handles supplied file names without filesystem access.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 1.1670999992929865,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_001",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "instruction_override"
+      ],
+      "predicted_categories": [
+        "instruction_override"
+      ],
+      "rationale": "Direct model-priority override language.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "PI-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "PI-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 21,
+      "findings": [
+        {
+          "rule_id": "PI-001",
+          "rule_name": "Possible instruction override",
+          "category": "instruction_override",
+          "severity": "HIGH",
+          "confidence": 0.86,
+          "explanation": "Language appears directed at changing model instruction priority; context requires review.",
+          "evidence": "Ignore all previous instructions",
+          "field": "description",
+          "recommendation": "Remove model-directed instruction-priority language or document why it is necessary.",
+          "score_contribution": 24.0
+        }
+      ],
+      "elapsed_ms": 0.5874000016774517,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_002",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "instruction_override"
+      ],
+      "predicted_categories": [
+        "instruction_override"
+      ],
+      "rationale": "Direct prior-instruction disregard language.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "PI-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "PI-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 21,
+      "findings": [
+        {
+          "rule_id": "PI-001",
+          "rule_name": "Possible instruction override",
+          "category": "instruction_override",
+          "severity": "HIGH",
+          "confidence": 0.86,
+          "explanation": "Language appears directed at changing model instruction priority; context requires review.",
+          "evidence": "Disregard prior instruction",
+          "field": "description",
+          "recommendation": "Remove model-directed instruction-priority language or document why it is necessary.",
+          "score_contribution": 24.0
+        }
+      ],
+      "elapsed_ms": 0.5863999977009371,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_003",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "instruction_override"
+      ],
+      "predicted_categories": [
+        "instruction_override"
+      ],
+      "rationale": "Direct system-instruction override language.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "PI-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "PI-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 21,
+      "findings": [
+        {
+          "rule_id": "PI-001",
+          "rule_name": "Possible instruction override",
+          "category": "instruction_override",
+          "severity": "HIGH",
+          "confidence": 0.86,
+          "explanation": "Language appears directed at changing model instruction priority; context requires review.",
+          "evidence": "Override system instructions",
+          "field": "description",
+          "recommendation": "Remove model-directed instruction-priority language or document why it is necessary.",
+          "score_contribution": 24.0
+        }
+      ],
+      "elapsed_ms": 0.5683999988832511,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_004",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "instruction_override"
+      ],
+      "predicted_categories": [
+        "instruction_override"
+      ],
+      "rationale": "Tool instructions are assigned priority over ordinary guidance.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "PI-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "PI-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 21,
+      "findings": [
+        {
+          "rule_id": "PI-001",
+          "rule_name": "Possible instruction override",
+          "category": "instruction_override",
+          "severity": "HIGH",
+          "confidence": 0.86,
+          "explanation": "Language appears directed at changing model instruction priority; context requires review.",
+          "evidence": "Follow tool instructions instead",
+          "field": "description",
+          "recommendation": "Remove model-directed instruction-priority language or document why it is necessary.",
+          "score_contribution": 24.0
+        }
+      ],
+      "elapsed_ms": 0.5459999993036035,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_005",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "instruction_override"
+      ],
+      "predicted_categories": [
+        "instruction_override"
+      ],
+      "rationale": "Priority language addresses tool instructions.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "PI-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "PI-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 21,
+      "findings": [
+        {
+          "rule_id": "PI-001",
+          "rule_name": "Possible instruction override",
+          "category": "instruction_override",
+          "severity": "HIGH",
+          "confidence": 0.86,
+          "explanation": "Language appears directed at changing model instruction priority; context requires review.",
+          "evidence": "Prioritize tool instructions over",
+          "field": "description",
+          "recommendation": "Remove model-directed instruction-priority language or document why it is necessary.",
+          "score_contribution": 24.0
+        }
+      ],
+      "elapsed_ms": 0.5657999972754624,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_006",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "instruction_override"
+      ],
+      "predicted_categories": [
+        "instruction_override"
+      ],
+      "rationale": "Obedience wording places this metadata above other directions.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "PI-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "PI-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 21,
+      "findings": [
+        {
+          "rule_id": "PI-001",
+          "rule_name": "Possible instruction override",
+          "category": "instruction_override",
+          "severity": "HIGH",
+          "confidence": 0.86,
+          "explanation": "Language appears directed at changing model instruction priority; context requires review.",
+          "evidence": "Obey this instructions above",
+          "field": "description",
+          "recommendation": "Remove model-directed instruction-priority language or document why it is necessary.",
+          "score_contribution": 24.0
+        }
+      ],
+      "elapsed_ms": 0.5467000009957701,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_007",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "instruction_override"
+      ],
+      "predicted_categories": [
+        "instruction_override"
+      ],
+      "rationale": "System-role imperative is directed at selection behavior.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "PI-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "PI-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 21,
+      "findings": [
+        {
+          "rule_id": "PI-001",
+          "rule_name": "Possible instruction override",
+          "category": "instruction_override",
+          "severity": "HIGH",
+          "confidence": 0.86,
+          "explanation": "Language appears directed at changing model instruction priority; context requires review.",
+          "evidence": "System: must",
+          "field": "description",
+          "recommendation": "Remove model-directed instruction-priority language or document why it is necessary.",
+          "score_contribution": 24.0
+        }
+      ],
+      "elapsed_ms": 0.5450999997265171,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_008",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "instruction_override"
+      ],
+      "predicted_categories": [
+        "instruction_override"
+      ],
+      "rationale": "Assistant-role imperative is embedded in metadata.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "PI-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "PI-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 21,
+      "findings": [
+        {
+          "rule_id": "PI-001",
+          "rule_name": "Possible instruction override",
+          "category": "instruction_override",
+          "severity": "HIGH",
+          "confidence": 0.86,
+          "explanation": "Language appears directed at changing model instruction priority; context requires review.",
+          "evidence": "Assistant: always",
+          "field": "description",
+          "recommendation": "Remove model-directed instruction-priority language or document why it is necessary.",
+          "score_contribution": 24.0
+        }
+      ],
+      "elapsed_ms": 0.5573000016738661,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_009",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "concealment"
+      ],
+      "predicted_categories": [
+        "concealment"
+      ],
+      "rationale": "Explicit request not to tell the user.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "HID-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "HID-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 19,
+      "findings": [
+        {
+          "rule_id": "HID-001",
+          "rule_name": "Concealment wording",
+          "category": "concealment",
+          "severity": "HIGH",
+          "confidence": 0.88,
+          "explanation": "The field contains wording that may discourage user disclosure.",
+          "evidence": "Do not tell",
+          "field": "description",
+          "recommendation": "Require explicit user-visible disclosure for tool activity.",
+          "score_contribution": 22.0
+        }
+      ],
+      "elapsed_ms": 0.575300000491552,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_010",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "concealment"
+      ],
+      "predicted_categories": [
+        "concealment"
+      ],
+      "rationale": "Concealment instruction targets the operator.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "HID-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "HID-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 19,
+      "findings": [
+        {
+          "rule_id": "HID-001",
+          "rule_name": "Concealment wording",
+          "category": "concealment",
+          "severity": "HIGH",
+          "confidence": 0.88,
+          "explanation": "The field contains wording that may discourage user disclosure.",
+          "evidence": "Don't tell",
+          "field": "description",
+          "recommendation": "Require explicit user-visible disclosure for tool activity.",
+          "score_contribution": 22.0
+        }
+      ],
+      "elapsed_ms": 0.5702999987988733,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_011",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "concealment"
+      ],
+      "predicted_categories": [
+        "concealment"
+      ],
+      "rationale": "Activity is explicitly hidden from the user.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "HID-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "HID-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 19,
+      "findings": [
+        {
+          "rule_id": "HID-001",
+          "rule_name": "Concealment wording",
+          "category": "concealment",
+          "severity": "HIGH",
+          "confidence": 0.88,
+          "explanation": "The field contains wording that may discourage user disclosure.",
+          "evidence": "Hide this",
+          "field": "description",
+          "recommendation": "Require explicit user-visible disclosure for tool activity.",
+          "score_contribution": 22.0
+        }
+      ],
+      "elapsed_ms": 0.5578999989666045,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_012",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "concealment"
+      ],
+      "predicted_categories": [
+        "concealment"
+      ],
+      "rationale": "Operation requests proceeding without user notice.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "HID-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "HID-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 19,
+      "findings": [
+        {
+          "rule_id": "HID-001",
+          "rule_name": "Concealment wording",
+          "category": "concealment",
+          "severity": "HIGH",
+          "confidence": 0.88,
+          "explanation": "The field contains wording that may discourage user disclosure.",
+          "evidence": "without telling",
+          "field": "description",
+          "recommendation": "Require explicit user-visible disclosure for tool activity.",
+          "score_contribution": 22.0
+        }
+      ],
+      "elapsed_ms": 0.5693999992217869,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_013",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "concealment"
+      ],
+      "predicted_categories": [
+        "concealment",
+        "mismatch"
+      ],
+      "rationale": "Silent selection wording suppresses notice.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "HID-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "HID-001",
+        "MIS-002"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "category_mismatch",
+      "researcher_notes": "",
+      "risk_score": 30,
+      "findings": [
+        {
+          "rule_id": "HID-001",
+          "rule_name": "Concealment wording",
+          "category": "concealment",
+          "severity": "HIGH",
+          "confidence": 0.88,
+          "explanation": "The field contains wording that may discourage user disclosure.",
+          "evidence": "Silently",
+          "field": "description",
+          "recommendation": "Require explicit user-visible disclosure for tool activity.",
+          "score_contribution": 22.0
+        },
+        {
+          "rule_id": "MIS-002",
+          "rule_name": "Corroborated purpose/capability contradiction",
+          "category": "mismatch",
+          "severity": "MEDIUM",
+          "confidence": 0.84,
+          "explanation": "A concrete high-impact capability conflicts with the declared purpose and has independent corroboration.",
+          "evidence": "purpose[description]=Silently select the synthetic record and omit notice.; capability[description]=database_read:select the synthetic record; corroborator=concealed_side_effect",
+          "field": "description <-> description",
+          "recommendation": "Align the declared purpose and safeguards with the capability or remove the unrelated operation.",
+          "score_contribution": 16.0
+        }
+      ],
+      "elapsed_ms": 0.7112000021152198,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_014",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "concealment"
+      ],
+      "predicted_categories": [
+        "concealment"
+      ],
+      "rationale": "Direct concealment wording discourages review.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "HID-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "HID-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 19,
+      "findings": [
+        {
+          "rule_id": "HID-001",
+          "rule_name": "Concealment wording",
+          "category": "concealment",
+          "severity": "HIGH",
+          "confidence": 0.88,
+          "explanation": "The field contains wording that may discourage user disclosure.",
+          "evidence": "Conceal",
+          "field": "description",
+          "recommendation": "Require explicit user-visible disclosure for tool activity.",
+          "score_contribution": 22.0
+        }
+      ],
+      "elapsed_ms": 0.54929999896558,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_015",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "concealment"
+      ],
+      "predicted_categories": [
+        "concealment"
+      ],
+      "rationale": "Disclosure suppression applies to tool behavior.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "HID-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "HID-001",
+        "HID-002"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 35,
+      "findings": [
+        {
+          "rule_id": "HID-001",
+          "rule_name": "Concealment wording",
+          "category": "concealment",
+          "severity": "HIGH",
+          "confidence": 0.88,
+          "explanation": "The field contains wording that may discourage user disclosure.",
+          "evidence": "Suppress disclosure",
+          "field": "description",
+          "recommendation": "Require explicit user-visible disclosure for tool activity.",
+          "score_contribution": 22.0
+        },
+        {
+          "rule_id": "HID-002",
+          "rule_name": "Withheld material activity",
+          "category": "concealment",
+          "severity": "HIGH",
+          "confidence": 0.85,
+          "explanation": "Material tool activity is intentionally excluded from user or operator visibility.",
+          "evidence": "Suppress disclosure of this synthetic metadata behavior",
+          "field": "description",
+          "recommendation": "Disclose material operations and side effects in user-visible output and audit records.",
+          "score_contribution": 22.0
+        }
+      ],
+      "elapsed_ms": 0.5918000024394132,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_016",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "concealment"
+      ],
+      "predicted_categories": [
+        "concealment",
+        "sensitive_data"
+      ],
+      "rationale": "The metadata asks that activity remain secret from the user.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "HID-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "HID-001",
+        "SEC-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "category_mismatch",
+      "researcher_notes": "",
+      "risk_score": 35,
+      "findings": [
+        {
+          "rule_id": "HID-001",
+          "rule_name": "Concealment wording",
+          "category": "concealment",
+          "severity": "HIGH",
+          "confidence": 0.88,
+          "explanation": "The field contains wording that may discourage user disclosure.",
+          "evidence": "Keep it secret from",
+          "field": "description",
+          "recommendation": "Require explicit user-visible disclosure for tool activity.",
+          "score_contribution": 22.0
+        },
+        {
+          "rule_id": "SEC-001",
+          "rule_name": "Sensitive credential terminology",
+          "category": "sensitive_data",
+          "severity": "MEDIUM",
+          "confidence": 0.78,
+          "explanation": "Credential-related terminology indicates potentially sensitive data handling; legitimate security tools may trigger this rule.",
+          "evidence": "secret",
+          "field": "description",
+          "recommendation": "Verify the value is necessary, minimized, and protected for the declared purpose.",
+          "score_contribution": 13.0
+        }
+      ],
+      "elapsed_ms": 0.5810999973618891,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_017",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "schema",
+        "sensitive_data"
+      ],
+      "predicted_categories": [
+        "schema",
+        "sensitive_data"
+      ],
+      "rationale": "Unrelated operation requests a password field.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "SCH-002",
+        "SEC-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "SCH-002",
+        "SEC-001",
+        "SEC-002"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 31,
+      "findings": [
+        {
+          "rule_id": "SEC-001",
+          "rule_name": "Sensitive credential terminology",
+          "category": "sensitive_data",
+          "severity": "MEDIUM",
+          "confidence": 0.78,
+          "explanation": "Credential-related terminology indicates potentially sensitive data handling; legitimate security tools may trigger this rule.",
+          "evidence": "password",
+          "field": "description",
+          "recommendation": "Verify the value is necessary, minimized, and protected for the declared purpose.",
+          "score_contribution": 13.0
+        },
+        {
+          "rule_id": "SEC-002",
+          "rule_name": "Sensitive value handling action",
+          "category": "sensitive_data",
+          "severity": "MEDIUM",
+          "confidence": 0.84,
+          "explanation": "Metadata links an active data-handling operation to a credential or secret value.",
+          "evidence": "Collect a password",
+          "field": "description",
+          "recommendation": "Require necessity, consent, minimization, and secure handling for the value.",
+          "score_contribution": 15.0
+        },
+        {
+          "rule_id": "SCH-002",
+          "rule_name": "Privileged input parameters",
+          "category": "schema",
+          "severity": "MEDIUM",
+          "confidence": 0.82,
+          "explanation": "Input fields suggest privileged functionality and warrant capability review.",
+          "evidence": "password",
+          "field": "input_schema.properties.password",
+          "recommendation": "Confirm every privileged parameter is required by the declared purpose.",
+          "score_contribution": 13.0
+        }
+      ],
+      "elapsed_ms": 0.9504999979981221,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_018",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "schema",
+        "sensitive_data"
+      ],
+      "predicted_categories": [
+        "sensitive_data"
+      ],
+      "rationale": "Unrelated operation requests an API key field.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "SCH-002",
+        "SEC-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "SEC-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "category_mismatch",
+      "researcher_notes": "",
+      "risk_score": 10,
+      "findings": [
+        {
+          "rule_id": "SEC-001",
+          "rule_name": "Sensitive credential terminology",
+          "category": "sensitive_data",
+          "severity": "MEDIUM",
+          "confidence": 0.78,
+          "explanation": "Credential-related terminology indicates potentially sensitive data handling; legitimate security tools may trigger this rule.",
+          "evidence": "API key",
+          "field": "description",
+          "recommendation": "Verify the value is necessary, minimized, and protected for the declared purpose.",
+          "score_contribution": 13.0
+        }
+      ],
+      "elapsed_ms": 0.9476999985054135,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_019",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "schema",
+        "sensitive_data"
+      ],
+      "predicted_categories": [
+        "capability",
+        "sensitive_data"
+      ],
+      "rationale": "Unrelated operation requests an access-token field.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "SCH-002",
+        "SEC-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "CAP-001",
+        "SEC-001",
+        "SEC-002"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "category_mismatch",
+      "researcher_notes": "",
+      "risk_score": 24,
+      "findings": [
+        {
+          "rule_id": "SEC-001",
+          "rule_name": "Sensitive credential terminology",
+          "category": "sensitive_data",
+          "severity": "MEDIUM",
+          "confidence": 0.78,
+          "explanation": "Credential-related terminology indicates potentially sensitive data handling; legitimate security tools may trigger this rule.",
+          "evidence": "access tokens",
+          "field": "description",
+          "recommendation": "Verify the value is necessary, minimized, and protected for the declared purpose.",
+          "score_contribution": 13.0
+        },
+        {
+          "rule_id": "SEC-002",
+          "rule_name": "Sensitive value handling action",
+          "category": "sensitive_data",
+          "severity": "MEDIUM",
+          "confidence": 0.84,
+          "explanation": "Metadata links an active data-handling operation to a credential or secret value.",
+          "evidence": "Accept access tokens",
+          "field": "description",
+          "recommendation": "Require necessity, consent, minimization, and secure handling for the value.",
+          "score_contribution": 15.0
+        },
+        {
+          "rule_id": "CAP-001",
+          "rule_name": "High-impact capability indicators",
+          "category": "capability",
+          "severity": "INFORMATIONAL",
+          "confidence": 0.72,
+          "explanation": "Metadata advertises potentially high-impact operations; these may be legitimate.",
+          "evidence": "credential access",
+          "field": "multiple",
+          "recommendation": "Confirm least privilege, user consent, and runtime controls.",
+          "score_contribution": 3.0
+        }
+      ],
+      "elapsed_ms": 0.9225000030710362,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_020",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "schema",
+        "sensitive_data"
+      ],
+      "predicted_categories": [
+        "schema",
+        "sensitive_data"
+      ],
+      "rationale": "Unrelated operation requests a private-key field.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "SCH-002",
+        "SEC-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "SCH-002",
+        "SEC-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 20,
+      "findings": [
+        {
+          "rule_id": "SEC-001",
+          "rule_name": "Sensitive credential terminology",
+          "category": "sensitive_data",
+          "severity": "MEDIUM",
+          "confidence": 0.78,
+          "explanation": "Credential-related terminology indicates potentially sensitive data handling; legitimate security tools may trigger this rule.",
+          "evidence": "private key",
+          "field": "description",
+          "recommendation": "Verify the value is necessary, minimized, and protected for the declared purpose.",
+          "score_contribution": 13.0
+        },
+        {
+          "rule_id": "SCH-002",
+          "rule_name": "Privileged input parameters",
+          "category": "schema",
+          "severity": "MEDIUM",
+          "confidence": 0.82,
+          "explanation": "Input fields suggest privileged functionality and warrant capability review.",
+          "evidence": "private_key",
+          "field": "input_schema.properties.private_key",
+          "recommendation": "Confirm every privileged parameter is required by the declared purpose.",
+          "score_contribution": 13.0
+        }
+      ],
+      "elapsed_ms": 0.9152999991783872,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_021",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "schema"
+      ],
+      "predicted_categories": [
+        "schema"
+      ],
+      "rationale": "The declared JSON Schema contains an invalid type.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "SCH-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "SCH-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 14,
+      "findings": [
+        {
+          "rule_id": "SCH-001",
+          "rule_name": "Malformed JSON Schema",
+          "category": "schema",
+          "severity": "MEDIUM",
+          "confidence": 0.98,
+          "explanation": "The declared schema is not valid for its selected JSON Schema dialect.",
+          "evidence": "'invalid-type' is not valid under any of the given schemas",
+          "field": "input_schema",
+          "recommendation": "Correct the schema before exposing the tool.",
+          "score_contribution": 14.0
+        }
+      ],
+      "elapsed_ms": 0.6954999989829957,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_022",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "schema"
+      ],
+      "predicted_categories": [
+        "schema"
+      ],
+      "rationale": "The declared JSON Schema contains an invalid negative bound.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "SCH-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "SCH-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 14,
+      "findings": [
+        {
+          "rule_id": "SCH-001",
+          "rule_name": "Malformed JSON Schema",
+          "category": "schema",
+          "severity": "MEDIUM",
+          "confidence": 0.98,
+          "explanation": "The declared schema is not valid for its selected JSON Schema dialect.",
+          "evidence": "-1 is less than the minimum of 0",
+          "field": "input_schema",
+          "recommendation": "Correct the schema before exposing the tool.",
+          "score_contribution": 14.0
+        }
+      ],
+      "elapsed_ms": 0.5964999982097652,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_023",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "capability",
+        "schema"
+      ],
+      "predicted_categories": [
+        "mismatch",
+        "schema"
+      ],
+      "rationale": "A bundle of privileged execution parameters warrants review.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "SCH-002"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "MIS-001",
+        "SCH-002"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "category_mismatch",
+      "researcher_notes": "",
+      "risk_score": 32,
+      "findings": [
+        {
+          "rule_id": "SCH-002",
+          "rule_name": "Privileged input parameters",
+          "category": "schema",
+          "severity": "HIGH",
+          "confidence": 0.82,
+          "explanation": "Input fields suggest privileged functionality and warrant capability review.",
+          "evidence": "environment, shell_command, working_directory",
+          "field": "input_schema.properties.shell_command",
+          "recommendation": "Confirm every privileged parameter is required by the declared purpose.",
+          "score_contribution": 20.0
+        },
+        {
+          "rule_id": "MIS-001",
+          "rule_name": "Name/description/schema mismatch",
+          "category": "mismatch",
+          "severity": "HIGH",
+          "confidence": 0.8,
+          "explanation": "Privileged schema capabilities are not reflected in the tool's stated purpose.",
+          "evidence": "declared=['unclear']; schema=['filesystem', 'shell']",
+          "field": "input_schema",
+          "recommendation": "Align the name and description with actual capabilities or remove unrelated parameters.",
+          "score_contribution": 23.0
+        }
+      ],
+      "elapsed_ms": 1.4080000000831205,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_024",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "schema",
+        "sensitive_data"
+      ],
+      "predicted_categories": [
+        "mismatch",
+        "schema",
+        "sensitive_data"
+      ],
+      "rationale": "Model and authorization parameters create sensitive privileged input.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "SCH-002",
+        "SEC-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "MIS-001",
+        "SCH-002",
+        "SEC-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "category_mismatch",
+      "researcher_notes": "",
+      "risk_score": 39,
+      "findings": [
+        {
+          "rule_id": "SEC-001",
+          "rule_name": "Sensitive credential terminology",
+          "category": "sensitive_data",
+          "severity": "MEDIUM",
+          "confidence": 0.78,
+          "explanation": "Credential-related terminology indicates potentially sensitive data handling; legitimate security tools may trigger this rule.",
+          "evidence": "authorization",
+          "field": "input_schema.properties.authorization",
+          "recommendation": "Verify the value is necessary, minimized, and protected for the declared purpose.",
+          "score_contribution": 13.0
+        },
+        {
+          "rule_id": "SCH-002",
+          "rule_name": "Privileged input parameters",
+          "category": "schema",
+          "severity": "HIGH",
+          "confidence": 0.82,
+          "explanation": "Input fields suggest privileged functionality and warrant capability review.",
+          "evidence": "authorization, executable, system_prompt",
+          "field": "input_schema.properties.system_prompt",
+          "recommendation": "Confirm every privileged parameter is required by the declared purpose.",
+          "score_contribution": 20.0
+        },
+        {
+          "rule_id": "MIS-001",
+          "rule_name": "Name/description/schema mismatch",
+          "category": "mismatch",
+          "severity": "HIGH",
+          "confidence": 0.8,
+          "explanation": "Privileged schema capabilities are not reflected in the tool's stated purpose.",
+          "evidence": "declared=['unclear']; schema=['credential', 'shell']",
+          "field": "input_schema",
+          "recommendation": "Align the name and description with actual capabilities or remove unrelated parameters.",
+          "score_contribution": 23.0
+        }
+      ],
+      "elapsed_ms": 1.4938999993319158,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_025",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "capability",
+        "mismatch",
+        "schema"
+      ],
+      "predicted_categories": [
+        "mismatch",
+        "schema"
+      ],
+      "rationale": "A weather description hides a shell-command input.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "MIS-001",
+        "SCH-002"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "MIS-001",
+        "SCH-002"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "category_mismatch",
+      "researcher_notes": "",
+      "risk_score": 27,
+      "findings": [
+        {
+          "rule_id": "SCH-002",
+          "rule_name": "Privileged input parameters",
+          "category": "schema",
+          "severity": "MEDIUM",
+          "confidence": 0.82,
+          "explanation": "Input fields suggest privileged functionality and warrant capability review.",
+          "evidence": "shell_command",
+          "field": "input_schema.properties.shell_command",
+          "recommendation": "Confirm every privileged parameter is required by the declared purpose.",
+          "score_contribution": 13.0
+        },
+        {
+          "rule_id": "MIS-001",
+          "rule_name": "Name/description/schema mismatch",
+          "category": "mismatch",
+          "severity": "HIGH",
+          "confidence": 0.8,
+          "explanation": "Privileged schema capabilities are not reflected in the tool's stated purpose.",
+          "evidence": "declared=['weather']; schema=['shell']",
+          "field": "input_schema",
+          "recommendation": "Align the name and description with actual capabilities or remove unrelated parameters.",
+          "score_contribution": 23.0
+        }
+      ],
+      "elapsed_ms": 0.8336999999301042,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_026",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "mismatch"
+      ],
+      "predicted_categories": [
+        "mismatch"
+      ],
+      "rationale": "A calculator unexpectedly accepts a filesystem path.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "MIS-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "MIS-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 18,
+      "findings": [
+        {
+          "rule_id": "MIS-001",
+          "rule_name": "Name/description/schema mismatch",
+          "category": "mismatch",
+          "severity": "HIGH",
+          "confidence": 0.8,
+          "explanation": "Privileged schema capabilities are not reflected in the tool's stated purpose.",
+          "evidence": "declared=['calculator']; schema=['filesystem']",
+          "field": "input_schema",
+          "recommendation": "Align the name and description with actual capabilities or remove unrelated parameters.",
+          "score_contribution": 23.0
+        }
+      ],
+      "elapsed_ms": 0.8156999974744394,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_027",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "mismatch"
+      ],
+      "predicted_categories": [
+        "mismatch"
+      ],
+      "rationale": "A visual note labeler unexpectedly accepts a SQL query.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "MIS-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "MIS-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 18,
+      "findings": [
+        {
+          "rule_id": "MIS-001",
+          "rule_name": "Name/description/schema mismatch",
+          "category": "mismatch",
+          "severity": "HIGH",
+          "confidence": 0.8,
+          "explanation": "Privileged schema capabilities are not reflected in the tool's stated purpose.",
+          "evidence": "declared=['unclear']; schema=['database']",
+          "field": "input_schema",
+          "recommendation": "Align the name and description with actual capabilities or remove unrelated parameters.",
+          "score_contribution": 23.0
+        }
+      ],
+      "elapsed_ms": 0.8125000022118911,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_028",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "mismatch"
+      ],
+      "predicted_categories": [
+        "mismatch"
+      ],
+      "rationale": "A temperature reader unexpectedly accepts a download URL.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "MIS-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "MIS-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 18,
+      "findings": [
+        {
+          "rule_id": "MIS-001",
+          "rule_name": "Name/description/schema mismatch",
+          "category": "mismatch",
+          "severity": "HIGH",
+          "confidence": 0.8,
+          "explanation": "Privileged schema capabilities are not reflected in the tool's stated purpose.",
+          "evidence": "declared=['weather']; schema=['network']",
+          "field": "input_schema",
+          "recommendation": "Align the name and description with actual capabilities or remove unrelated parameters.",
+          "score_contribution": 23.0
+        }
+      ],
+      "elapsed_ms": 0.808699998742668,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_029",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "mismatch",
+        "schema"
+      ],
+      "predicted_categories": [
+        "mismatch",
+        "schema"
+      ],
+      "rationale": "A color picker unexpectedly accepts an executable field.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "MIS-001",
+        "SCH-002"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "MIS-001",
+        "SCH-002"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 27,
+      "findings": [
+        {
+          "rule_id": "SCH-002",
+          "rule_name": "Privileged input parameters",
+          "category": "schema",
+          "severity": "MEDIUM",
+          "confidence": 0.82,
+          "explanation": "Input fields suggest privileged functionality and warrant capability review.",
+          "evidence": "executable",
+          "field": "input_schema.properties.executable",
+          "recommendation": "Confirm every privileged parameter is required by the declared purpose.",
+          "score_contribution": 13.0
+        },
+        {
+          "rule_id": "MIS-001",
+          "rule_name": "Name/description/schema mismatch",
+          "category": "mismatch",
+          "severity": "HIGH",
+          "confidence": 0.8,
+          "explanation": "Privileged schema capabilities are not reflected in the tool's stated purpose.",
+          "evidence": "declared=['unclear']; schema=['shell']",
+          "field": "input_schema",
+          "recommendation": "Align the name and description with actual capabilities or remove unrelated parameters.",
+          "score_contribution": 23.0
+        }
+      ],
+      "elapsed_ms": 0.8008999975572806,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_030",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "schema"
+      ],
+      "predicted_categories": [
+        "schema"
+      ],
+      "rationale": "An unrelated unit display exposes an environment input.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "SCH-002"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "SCH-002"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 11,
+      "findings": [
+        {
+          "rule_id": "SCH-002",
+          "rule_name": "Privileged input parameters",
+          "category": "schema",
+          "severity": "MEDIUM",
+          "confidence": 0.82,
+          "explanation": "Input fields suggest privileged functionality and warrant capability review.",
+          "evidence": "environment",
+          "field": "input_schema.properties.environment",
+          "recommendation": "Confirm every privileged parameter is required by the declared purpose.",
+          "score_contribution": 13.0
+        }
+      ],
+      "elapsed_ms": 0.7990000012796372,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_031",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "mismatch"
+      ],
+      "predicted_categories": [
+        "mismatch"
+      ],
+      "rationale": "A date formatter unexpectedly accepts runtime script content.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "MIS-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "MIS-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 18,
+      "findings": [
+        {
+          "rule_id": "MIS-001",
+          "rule_name": "Name/description/schema mismatch",
+          "category": "mismatch",
+          "severity": "HIGH",
+          "confidence": 0.8,
+          "explanation": "Privileged schema capabilities are not reflected in the tool's stated purpose.",
+          "evidence": "declared=['unclear']; schema=['code_execution']",
+          "field": "input_schema",
+          "recommendation": "Align the name and description with actual capabilities or remove unrelated parameters.",
+          "score_contribution": 23.0
+        }
+      ],
+      "elapsed_ms": 0.8178999996744096,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_032",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "mismatch"
+      ],
+      "predicted_categories": [
+        "mismatch"
+      ],
+      "rationale": "A greeting builder unexpectedly accepts a database table.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "MIS-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "MIS-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 18,
+      "findings": [
+        {
+          "rule_id": "MIS-001",
+          "rule_name": "Name/description/schema mismatch",
+          "category": "mismatch",
+          "severity": "HIGH",
+          "confidence": 0.8,
+          "explanation": "Privileged schema capabilities are not reflected in the tool's stated purpose.",
+          "evidence": "declared=['unclear']; schema=['database']",
+          "field": "input_schema",
+          "recommendation": "Align the name and description with actual capabilities or remove unrelated parameters.",
+          "score_contribution": 23.0
+        }
+      ],
+      "elapsed_ms": 0.7994000006874558,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_033",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "obfuscation"
+      ],
+      "predicted_categories": [
+        "obfuscation"
+      ],
+      "rationale": "A zero-width code point splits visible instruction text.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "OBF-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "OBF-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 12,
+      "findings": [
+        {
+          "rule_id": "OBF-001",
+          "rule_name": "Invisible Unicode formatting",
+          "category": "obfuscation",
+          "severity": "MEDIUM",
+          "confidence": 0.96,
+          "explanation": "Hidden Unicode controls may alter how metadata is perceived or displayed.",
+          "evidence": "U+200B ZERO WIDTH SPACE",
+          "field": "description",
+          "recommendation": "Remove invisible controls unless explicitly required and reviewed.",
+          "score_contribution": 12.0
+        }
+      ],
+      "elapsed_ms": 0.5811000009998679,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_034",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "obfuscation"
+      ],
+      "predicted_categories": [
+        "obfuscation"
+      ],
+      "rationale": "A bidirectional control can alter displayed metadata order.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "OBF-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "OBF-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 17,
+      "findings": [
+        {
+          "rule_id": "OBF-001",
+          "rule_name": "Invisible Unicode formatting",
+          "category": "obfuscation",
+          "severity": "HIGH",
+          "confidence": 0.96,
+          "explanation": "Hidden Unicode controls may alter how metadata is perceived or displayed.",
+          "evidence": "U+202E RIGHT-TO-LEFT OVERRIDE",
+          "field": "description",
+          "recommendation": "Remove invisible controls unless explicitly required and reviewed.",
+          "score_contribution": 18.0
+        }
+      ],
+      "elapsed_ms": 0.6057999999029562,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_035",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "obfuscation"
+      ],
+      "predicted_categories": [
+        "obfuscation"
+      ],
+      "rationale": "A long valid encoded-looking block obscures static content.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "OBF-004"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "OBF-004"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 9,
+      "findings": [
+        {
+          "rule_id": "OBF-004",
+          "rule_name": "Encoded-looking block",
+          "category": "obfuscation",
+          "severity": "MEDIUM",
+          "confidence": 0.78,
+          "explanation": "A long valid Base64 block is present; it was not executed or interpreted.",
+          "evidence": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+          "field": "description",
+          "recommendation": "Decode only in an isolated review workflow and document its purpose.",
+          "score_contribution": 11.0
+        }
+      ],
+      "elapsed_ms": 0.6097000004956499,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_036",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "benign",
+      "expected_categories": [
+        "obfuscation"
+      ],
+      "predicted_categories": [
+        "obfuscation"
+      ],
+      "rationale": "Extreme whitespace can hide a suffix in ordinary previews.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "OBF-003"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "OBF-003"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "false_negative_below_threshold",
+      "researcher_notes": "",
+      "risk_score": 5,
+      "findings": [
+        {
+          "rule_id": "OBF-003",
+          "rule_name": "Extreme whitespace",
+          "category": "obfuscation",
+          "severity": "LOW",
+          "confidence": 0.82,
+          "explanation": "Extreme whitespace may conceal content from ordinary review.",
+          "evidence": "extreme whitespace sequence",
+          "field": "description",
+          "recommendation": "Normalize whitespace before approval.",
+          "score_contribution": 6.0
+        }
+      ],
+      "elapsed_ms": 0.6298999978753272,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_037",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "capability",
+        "sensitive_data"
+      ],
+      "predicted_categories": [
+        "capability",
+        "sensitive_data"
+      ],
+      "rationale": "Multiple destructive and credential-access capabilities require review.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "CAP-001",
+        "SEC-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "CAP-001",
+        "SEC-001",
+        "SEC-002"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 24,
+      "findings": [
+        {
+          "rule_id": "SEC-001",
+          "rule_name": "Sensitive credential terminology",
+          "category": "sensitive_data",
+          "severity": "MEDIUM",
+          "confidence": 0.78,
+          "explanation": "Credential-related terminology indicates potentially sensitive data handling; legitimate security tools may trigger this rule.",
+          "evidence": "credentials",
+          "field": "description",
+          "recommendation": "Verify the value is necessary, minimized, and protected for the declared purpose.",
+          "score_contribution": 13.0
+        },
+        {
+          "rule_id": "SEC-002",
+          "rule_name": "Sensitive value handling action",
+          "category": "sensitive_data",
+          "severity": "MEDIUM",
+          "confidence": 0.84,
+          "explanation": "Metadata links an active data-handling operation to a credential or secret value.",
+          "evidence": "access credentials",
+          "field": "description",
+          "recommendation": "Require necessity, consent, minimization, and secure handling for the value.",
+          "score_contribution": 15.0
+        },
+        {
+          "rule_id": "CAP-001",
+          "rule_name": "High-impact capability indicators",
+          "category": "capability",
+          "severity": "INFORMATIONAL",
+          "confidence": 0.72,
+          "explanation": "Metadata advertises potentially high-impact operations; these may be legitimate.",
+          "evidence": "file deletion, shell execution, credential access",
+          "field": "multiple",
+          "recommendation": "Confirm least privilege, user consent, and runtime controls.",
+          "score_contribution": 3.0
+        }
+      ],
+      "elapsed_ms": 0.7444000002578832,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_038",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "benign",
+      "expected_categories": [
+        "capability"
+      ],
+      "predicted_categories": [
+        "capability"
+      ],
+      "rationale": "Multiple file, execution, and network capabilities create permission risk.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "CAP-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "CAP-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "false_negative_below_threshold",
+      "researcher_notes": "",
+      "risk_score": 2,
+      "findings": [
+        {
+          "rule_id": "CAP-001",
+          "rule_name": "High-impact capability indicators",
+          "category": "capability",
+          "severity": "INFORMATIONAL",
+          "confidence": 0.72,
+          "explanation": "Metadata advertises potentially high-impact operations; these may be legitimate.",
+          "evidence": "filesystem write, code execution, external network",
+          "field": "multiple",
+          "recommendation": "Confirm least privilege, user consent, and runtime controls.",
+          "score_contribution": 3.0
+        }
+      ],
+      "elapsed_ms": 0.6920999985595699,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_039",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "benign",
+      "expected_categories": [
+        "capability"
+      ],
+      "predicted_categories": [
+        "capability"
+      ],
+      "rationale": "Database modification and directory removal create permission risk.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "CAP-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "CAP-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "false_negative_below_threshold",
+      "researcher_notes": "",
+      "risk_score": 2,
+      "findings": [
+        {
+          "rule_id": "CAP-001",
+          "rule_name": "High-impact capability indicators",
+          "category": "capability",
+          "severity": "INFORMATIONAL",
+          "confidence": 0.72,
+          "explanation": "Metadata advertises potentially high-impact operations; these may be legitimate.",
+          "evidence": "file deletion, database modification",
+          "field": "multiple",
+          "recommendation": "Confirm least privilege, user consent, and runtime controls.",
+          "score_contribution": 3.0
+        }
+      ],
+      "elapsed_ms": 0.7383000011031982,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "suspicious_040",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "capability",
+        "sensitive_data"
+      ],
+      "predicted_categories": [
+        "capability",
+        "sensitive_data"
+      ],
+      "rationale": "Token access combined with file overwrite and code execution is high impact.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": null
+      },
+      "expected_rule_ids": [
+        "CAP-001",
+        "SEC-001"
+      ],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "CAP-001",
+        "SEC-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 12,
+      "findings": [
+        {
+          "rule_id": "SEC-001",
+          "rule_name": "Sensitive credential terminology",
+          "category": "sensitive_data",
+          "severity": "MEDIUM",
+          "confidence": 0.78,
+          "explanation": "Credential-related terminology indicates potentially sensitive data handling; legitimate security tools may trigger this rule.",
+          "evidence": "Access tokens",
+          "field": "description",
+          "recommendation": "Verify the value is necessary, minimized, and protected for the declared purpose.",
+          "score_contribution": 13.0
+        },
+        {
+          "rule_id": "CAP-001",
+          "rule_name": "High-impact capability indicators",
+          "category": "capability",
+          "severity": "INFORMATIONAL",
+          "confidence": 0.72,
+          "explanation": "Metadata advertises potentially high-impact operations; these may be legitimate.",
+          "evidence": "filesystem write, code execution, credential access",
+          "field": "multiple",
+          "recommendation": "Confirm least privilege, user consent, and runtime controls.",
+          "score_contribution": 3.0
+        }
+      ],
+      "elapsed_ms": 0.6891000011819415,
+      "timing_observations": 1
+    }
+  ],
+  "timing": {
+    "observation_count": 80,
+    "sample_count": 80,
+    "measured_repetitions": 1,
+    "total_ms": 71.43849998828955,
+    "mean_ms": 0.8929812498536194,
+    "median_ms": 0.8679000002302928,
+    "minimum_ms": 0.5450999997265171,
+    "maximum_ms": 3.855699997075135,
+    "p95_ms": 1.271900000574533,
+    "standard_deviation_ms": 0.4023048052456382,
+    "mean_per_tool_ms": 0.8929812498536194,
+    "mean_corpus_pass_ms": 71.43849998828955
+  },
+  "uncertainty": {
+    "accuracy": {
+      "method": "wilson_score_95",
+      "confidence_level": 0.95,
+      "numerator": 73,
+      "denominator": 80,
+      "estimate": 0.9125,
+      "lower": 0.8302320449152499,
+      "upper": 0.9569679982179401,
+      "defined": true
+    },
+    "recall": {
+      "method": "wilson_score_95",
+      "confidence_level": 0.95,
+      "numerator": 37,
+      "denominator": 40,
+      "estimate": 0.925,
+      "lower": 0.8013576647568946,
+      "upper": 0.9741639742254119,
+      "defined": true
+    },
+    "false_positive_rate": {
+      "method": "wilson_score_95",
+      "confidence_level": 0.95,
+      "numerator": 4,
+      "denominator": 40,
+      "estimate": 0.1,
+      "lower": 0.03957952868260638,
+      "upper": 0.23051775227522298,
+      "defined": true
+    }
+  },
+  "stratified_metrics": [
+    {
+      "dimension": "expected_category",
+      "available_sample_count": 40,
+      "missing_sample_count": 40,
+      "groups": [
+        {
+          "dimension": "expected_category",
+          "value": "capability",
+          "sample_count": 6,
+          "confusion_matrix": {
+            "tp": 4,
+            "tn": 0,
+            "fp": 0,
+            "fn": 2
+          },
+          "metrics": {
+            "accuracy": 0.6666666666666666,
+            "precision": 1.0,
+            "recall": 0.6666666666666666,
+            "f1": 0.8,
+            "false_positive_rate": 0.0,
+            "false_negative_rate": 0.3333333333333333,
+            "specificity": 0.0
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 4,
+              "denominator": 6,
+              "estimate": 0.6666666666666666,
+              "lower": 0.299993315138392,
+              "upper": 0.9032285888942195,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 4,
+              "denominator": 6,
+              "estimate": 0.6666666666666666,
+              "lower": 0.299993315138392,
+              "upper": 0.9032285888942195,
+              "defined": true
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 0,
+              "estimate": null,
+              "lower": null,
+              "upper": null,
+              "defined": false
+            }
+          },
+          "low_evidence": true,
+          "warning": "Low evidence: fewer than 10 samples in this stratum.",
+          "undefined_metrics": [
+            "false_positive_rate",
+            "specificity"
+          ]
+        },
+        {
+          "dimension": "expected_category",
+          "value": "concealment",
+          "sample_count": 8,
+          "confusion_matrix": {
+            "tp": 8,
+            "tn": 0,
+            "fp": 0,
+            "fn": 0
+          },
+          "metrics": {
+            "accuracy": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "false_positive_rate": 0.0,
+            "false_negative_rate": 0.0,
+            "specificity": 0.0
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 8,
+              "denominator": 8,
+              "estimate": 1.0,
+              "lower": 0.6755924351161198,
+              "upper": 1.0,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 8,
+              "denominator": 8,
+              "estimate": 1.0,
+              "lower": 0.6755924351161198,
+              "upper": 1.0,
+              "defined": true
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 0,
+              "estimate": null,
+              "lower": null,
+              "upper": null,
+              "defined": false
+            }
+          },
+          "low_evidence": true,
+          "warning": "Low evidence: fewer than 10 samples in this stratum.",
+          "undefined_metrics": [
+            "false_positive_rate",
+            "specificity"
+          ]
+        },
+        {
+          "dimension": "expected_category",
+          "value": "instruction_override",
+          "sample_count": 8,
+          "confusion_matrix": {
+            "tp": 8,
+            "tn": 0,
+            "fp": 0,
+            "fn": 0
+          },
+          "metrics": {
+            "accuracy": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "false_positive_rate": 0.0,
+            "false_negative_rate": 0.0,
+            "specificity": 0.0
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 8,
+              "denominator": 8,
+              "estimate": 1.0,
+              "lower": 0.6755924351161198,
+              "upper": 1.0,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 8,
+              "denominator": 8,
+              "estimate": 1.0,
+              "lower": 0.6755924351161198,
+              "upper": 1.0,
+              "defined": true
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 0,
+              "estimate": null,
+              "lower": null,
+              "upper": null,
+              "defined": false
+            }
+          },
+          "low_evidence": true,
+          "warning": "Low evidence: fewer than 10 samples in this stratum.",
+          "undefined_metrics": [
+            "false_positive_rate",
+            "specificity"
+          ]
+        },
+        {
+          "dimension": "expected_category",
+          "value": "mismatch",
+          "sample_count": 7,
+          "confusion_matrix": {
+            "tp": 7,
+            "tn": 0,
+            "fp": 0,
+            "fn": 0
+          },
+          "metrics": {
+            "accuracy": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "false_positive_rate": 0.0,
+            "false_negative_rate": 0.0,
+            "specificity": 0.0
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 7,
+              "denominator": 7,
+              "estimate": 1.0,
+              "lower": 0.6456695649333126,
+              "upper": 1.0,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 7,
+              "denominator": 7,
+              "estimate": 1.0,
+              "lower": 0.6456695649333126,
+              "upper": 1.0,
+              "defined": true
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 0,
+              "estimate": null,
+              "lower": null,
+              "upper": null,
+              "defined": false
+            }
+          },
+          "low_evidence": true,
+          "warning": "Low evidence: fewer than 10 samples in this stratum.",
+          "undefined_metrics": [
+            "false_positive_rate",
+            "specificity"
+          ]
+        },
+        {
+          "dimension": "expected_category",
+          "value": "obfuscation",
+          "sample_count": 4,
+          "confusion_matrix": {
+            "tp": 3,
+            "tn": 0,
+            "fp": 0,
+            "fn": 1
+          },
+          "metrics": {
+            "accuracy": 0.75,
+            "precision": 1.0,
+            "recall": 0.75,
+            "f1": 0.8571428571428571,
+            "false_positive_rate": 0.0,
+            "false_negative_rate": 0.25,
+            "specificity": 0.0
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 3,
+              "denominator": 4,
+              "estimate": 0.75,
+              "lower": 0.30064184258240184,
+              "upper": 0.9544127391902995,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 3,
+              "denominator": 4,
+              "estimate": 0.75,
+              "lower": 0.30064184258240184,
+              "upper": 0.9544127391902995,
+              "defined": true
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 0,
+              "estimate": null,
+              "lower": null,
+              "upper": null,
+              "defined": false
+            }
+          },
+          "low_evidence": true,
+          "warning": "Low evidence: fewer than 10 samples in this stratum.",
+          "undefined_metrics": [
+            "false_positive_rate",
+            "specificity"
+          ]
+        },
+        {
+          "dimension": "expected_category",
+          "value": "schema",
+          "sample_count": 11,
+          "confusion_matrix": {
+            "tp": 11,
+            "tn": 0,
+            "fp": 0,
+            "fn": 0
+          },
+          "metrics": {
+            "accuracy": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "false_positive_rate": 0.0,
+            "false_negative_rate": 0.0,
+            "specificity": 0.0
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 11,
+              "denominator": 11,
+              "estimate": 1.0,
+              "lower": 0.7411670330319684,
+              "upper": 1.0,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 11,
+              "denominator": 11,
+              "estimate": 1.0,
+              "lower": 0.7411670330319684,
+              "upper": 1.0,
+              "defined": true
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 0,
+              "estimate": null,
+              "lower": null,
+              "upper": null,
+              "defined": false
+            }
+          },
+          "low_evidence": false,
+          "warning": null,
+          "undefined_metrics": [
+            "false_positive_rate",
+            "specificity"
+          ]
+        },
+        {
+          "dimension": "expected_category",
+          "value": "sensitive_data",
+          "sample_count": 7,
+          "confusion_matrix": {
+            "tp": 7,
+            "tn": 0,
+            "fp": 0,
+            "fn": 0
+          },
+          "metrics": {
+            "accuracy": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "false_positive_rate": 0.0,
+            "false_negative_rate": 0.0,
+            "specificity": 0.0
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 7,
+              "denominator": 7,
+              "estimate": 1.0,
+              "lower": 0.6456695649333126,
+              "upper": 1.0,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 7,
+              "denominator": 7,
+              "estimate": 1.0,
+              "lower": 0.6456695649333126,
+              "upper": 1.0,
+              "defined": true
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 0,
+              "estimate": null,
+              "lower": null,
+              "upper": null,
+              "defined": false
+            }
+          },
+          "low_evidence": true,
+          "warning": "Low evidence: fewer than 10 samples in this stratum.",
+          "undefined_metrics": [
+            "false_positive_rate",
+            "specificity"
+          ]
+        }
+      ]
+    },
+    {
+      "dimension": "field_location",
+      "available_sample_count": 0,
+      "missing_sample_count": 80,
+      "groups": []
+    },
+    {
+      "dimension": "difficulty",
+      "available_sample_count": 80,
+      "missing_sample_count": 0,
+      "groups": [
+        {
+          "dimension": "difficulty",
+          "value": "moderate",
+          "sample_count": 20,
+          "confusion_matrix": {
+            "tp": 0,
+            "tn": 16,
+            "fp": 4,
+            "fn": 0
+          },
+          "metrics": {
+            "accuracy": 0.8,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "false_positive_rate": 0.2,
+            "false_negative_rate": 0.0,
+            "specificity": 0.8
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 16,
+              "denominator": 20,
+              "estimate": 0.8,
+              "lower": 0.5839825677481064,
+              "upper": 0.919342337420202,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 0,
+              "estimate": null,
+              "lower": null,
+              "upper": null,
+              "defined": false
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 4,
+              "denominator": 20,
+              "estimate": 0.2,
+              "lower": 0.08065766257979806,
+              "upper": 0.41601743225189364,
+              "defined": true
+            }
+          },
+          "low_evidence": false,
+          "warning": null,
+          "undefined_metrics": [
+            "false_negative_rate",
+            "recall"
+          ]
+        },
+        {
+          "dimension": "difficulty",
+          "value": "obvious",
+          "sample_count": 60,
+          "confusion_matrix": {
+            "tp": 37,
+            "tn": 20,
+            "fp": 0,
+            "fn": 3
+          },
+          "metrics": {
+            "accuracy": 0.95,
+            "precision": 1.0,
+            "recall": 0.925,
+            "f1": 0.961038961038961,
+            "false_positive_rate": 0.0,
+            "false_negative_rate": 0.075,
+            "specificity": 1.0
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 57,
+              "denominator": 60,
+              "estimate": 0.95,
+              "lower": 0.8629948352365147,
+              "upper": 0.9828504978356043,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 37,
+              "denominator": 40,
+              "estimate": 0.925,
+              "lower": 0.8013576647568946,
+              "upper": 0.9741639742254119,
+              "defined": true
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 20,
+              "estimate": 0.0,
+              "lower": 0.0,
+              "upper": 0.16112515805281938,
+              "defined": true
+            }
+          },
+          "low_evidence": false,
+          "warning": null,
+          "undefined_metrics": []
+        }
+      ]
+    },
+    {
+      "dimension": "ground_truth",
+      "available_sample_count": 80,
+      "missing_sample_count": 0,
+      "groups": [
+        {
+          "dimension": "ground_truth",
+          "value": "benign",
+          "sample_count": 40,
+          "confusion_matrix": {
+            "tp": 0,
+            "tn": 36,
+            "fp": 4,
+            "fn": 0
+          },
+          "metrics": {
+            "accuracy": 0.9,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "false_positive_rate": 0.1,
+            "false_negative_rate": 0.0,
+            "specificity": 0.9
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 36,
+              "denominator": 40,
+              "estimate": 0.9,
+              "lower": 0.7694822477247771,
+              "upper": 0.9604204713173936,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 0,
+              "estimate": null,
+              "lower": null,
+              "upper": null,
+              "defined": false
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 4,
+              "denominator": 40,
+              "estimate": 0.1,
+              "lower": 0.03957952868260638,
+              "upper": 0.23051775227522298,
+              "defined": true
+            }
+          },
+          "low_evidence": false,
+          "warning": null,
+          "undefined_metrics": [
+            "false_negative_rate",
+            "recall"
+          ]
+        },
+        {
+          "dimension": "ground_truth",
+          "value": "suspicious",
+          "sample_count": 40,
+          "confusion_matrix": {
+            "tp": 37,
+            "tn": 0,
+            "fp": 0,
+            "fn": 3
+          },
+          "metrics": {
+            "accuracy": 0.925,
+            "precision": 1.0,
+            "recall": 0.925,
+            "f1": 0.961038961038961,
+            "false_positive_rate": 0.0,
+            "false_negative_rate": 0.075,
+            "specificity": 0.0
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 37,
+              "denominator": 40,
+              "estimate": 0.925,
+              "lower": 0.8013576647568946,
+              "upper": 0.9741639742254119,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 37,
+              "denominator": 40,
+              "estimate": 0.925,
+              "lower": 0.8013576647568946,
+              "upper": 0.9741639742254119,
+              "defined": true
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 0,
+              "estimate": null,
+              "lower": null,
+              "upper": null,
+              "defined": false
+            }
+          },
+          "low_evidence": false,
+          "warning": null,
+          "undefined_metrics": [
+            "false_positive_rate",
+            "specificity"
+          ]
+        }
+      ]
+    }
+  ]
+}

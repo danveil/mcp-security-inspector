@@ -1,0 +1,3441 @@
+{
+  "metadata": {
+    "output_schema_version": "3.0.0",
+    "experiment_id": "exp-20260827T103344763587Z-4209b937-4e890381",
+    "application": "MCP Tool Security Inspector",
+    "application_version": "0.2.0",
+    "rule_pack_name": "builtin",
+    "rule_pack_version": "1.0.0",
+    "corpus_name": "mcpsec-v0.3-construct-exploratory-development",
+    "corpus_version": "1.0.0",
+    "corpus_split": "development",
+    "corpus_methodology_version": "1.0.0",
+    "corpus_methodology_note": "Post-unblinding exploratory development fixtures authored from frozen Day 4A security constructs; this set is neither the original holdout nor a new confirmatory holdout.",
+    "label_review_status": "single_reviewer",
+    "source_license_policy": "Repository-authored synthetic fixtures distributed under the project MIT license; no third-party or private metadata is included.",
+    "corpus_sha256": "4209b93750ac4fd1a6445af13d891fa49954e0ba5e1b939d6c52b955060fbba4",
+    "configuration": {
+      "suspicious_threshold": "MEDIUM",
+      "corpus_split": "development",
+      "enabled_builtin_detector_ids": [
+        "mcpsec.detectors.injection.InjectionDetector",
+        "mcpsec.detectors.mismatch.MismatchDetector",
+        "mcpsec.detectors.obfuscation.ObfuscationDetector",
+        "mcpsec.detectors.permissions.PermissionsDetector",
+        "mcpsec.detectors.schema.SchemaDetector",
+        "mcpsec.detectors.secrecy.SecrecyDetector",
+        "mcpsec.detectors.sensitive_data.SensitiveDataDetector"
+      ],
+      "disabled_builtin_detector_ids": [],
+      "enabled_builtin_family_ids": [
+        "capability",
+        "concealment",
+        "injection",
+        "mismatch",
+        "obfuscation",
+        "schema",
+        "sensitive-data"
+      ],
+      "disabled_builtin_family_ids": [],
+      "enabled_builtin_rule_ids": [
+        "CAP-001",
+        "HID-001",
+        "HID-002",
+        "MIS-001",
+        "MIS-002",
+        "OBF-001",
+        "OBF-002",
+        "OBF-003",
+        "OBF-004",
+        "OBF-005",
+        "PI-001",
+        "SCH-001",
+        "SCH-002",
+        "SEC-001",
+        "SEC-002"
+      ],
+      "disabled_builtin_rule_ids": [
+        "PI-002"
+      ],
+      "ablation_preset": "full",
+      "timing": {
+        "mode": "analysis-core",
+        "warmup_repetitions": 0,
+        "measured_repetitions": 1,
+        "definition": "Per-tool analyze_tools wall-clock time after loading and normalization; detector execution, custom rules, suppressions, risk calculation, and result construction included.",
+        "includes_loading": false,
+        "includes_normalization": false,
+        "sample_ordering": "sample_id_ascending"
+      },
+      "custom_rule_pack_name": null,
+      "custom_rule_pack_version": null,
+      "custom_rule_ids": [],
+      "custom_rule_configuration_sha256": null,
+      "custom_rule_file_sha256": null,
+      "suppressions": [],
+      "suppression_file_sha256": null,
+      "options": {
+        "evidence_redacted": false,
+        "static_analysis_only": true
+      }
+    },
+    "configuration_sha256": "4e8903813618db07ca9e9379a85469a39f2bdb886e947f23fe88039d21917bd9",
+    "git": {
+      "commit": "a4abee4661522ac13edb37e1b075186a2ccd7a03",
+      "dirty": true
+    },
+    "environment": {
+      "python_version": "3.12.13",
+      "platform_system": "Windows",
+      "platform_release": "11",
+      "machine": "",
+      "processor": null,
+      "dependency_versions": {
+        "httpx2": "2.12.0",
+        "jsonschema": "4.26.0",
+        "mcp": "2.1.1",
+        "pydantic": "2.13.4",
+        "PyYAML": "6.0.3",
+        "rich": "14.3.4",
+        "typer": "0.27.1"
+      }
+    },
+    "python_version": "3.12.13",
+    "timestamp_utc": "2026-08-27T10:33:44.763587+00:00",
+    "invocation": [
+      "mcpsec",
+      "evaluate",
+      "manifest.json",
+      "--format",
+      "json",
+      "--threshold",
+      "medium",
+      "--timing-mode",
+      "analysis-core",
+      "--timing-warmups",
+      "0",
+      "--timing-repetitions",
+      "1",
+      "--ablation",
+      "full",
+      "--output",
+      "exploratory-fixtures-without-pi-002.json",
+      "--disable-rule",
+      "PI-002"
+    ],
+    "timing_methodology": "analysis-core; warm-ups excluded; Per-tool analyze_tools wall-clock time after loading and normalization; detector execution, custom rules, suppressions, risk calculation, and result construction included.",
+    "sample_count": 36,
+    "suppressions_applied": false,
+    "suspicious_threshold": "MEDIUM"
+  },
+  "confusion_matrix": {
+    "tp": 14,
+    "tn": 18,
+    "fp": 0,
+    "fn": 4
+  },
+  "metrics": {
+    "accuracy": 0.8888888888888888,
+    "precision": 1.0,
+    "recall": 0.7777777777777778,
+    "f1": 0.8750000000000001,
+    "false_positive_rate": 0.0,
+    "false_negative_rate": 0.2222222222222222,
+    "specificity": 1.0
+  },
+  "category_metrics": [
+    {
+      "category": "capability",
+      "confusion_matrix": {
+        "tp": 0,
+        "tn": 32,
+        "fp": 4,
+        "fn": 0
+      },
+      "metrics": {
+        "accuracy": 0.8888888888888888,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "false_positive_rate": 0.1111111111111111,
+        "false_negative_rate": 0.0,
+        "specificity": 0.8888888888888888
+      }
+    },
+    {
+      "category": "concealment",
+      "confusion_matrix": {
+        "tp": 3,
+        "tn": 33,
+        "fp": 0,
+        "fn": 0
+      },
+      "metrics": {
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "false_positive_rate": 0.0,
+        "false_negative_rate": 0.0,
+        "specificity": 1.0
+      }
+    },
+    {
+      "category": "instruction_override",
+      "confusion_matrix": {
+        "tp": 0,
+        "tn": 32,
+        "fp": 0,
+        "fn": 4
+      },
+      "metrics": {
+        "accuracy": 0.8888888888888888,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "false_positive_rate": 0.0,
+        "false_negative_rate": 1.0,
+        "specificity": 1.0
+      }
+    },
+    {
+      "category": "mismatch",
+      "confusion_matrix": {
+        "tp": 3,
+        "tn": 32,
+        "fp": 1,
+        "fn": 0
+      },
+      "metrics": {
+        "accuracy": 0.9722222222222222,
+        "precision": 0.75,
+        "recall": 1.0,
+        "f1": 0.8571428571428571,
+        "false_positive_rate": 0.030303030303030304,
+        "false_negative_rate": 0.0,
+        "specificity": 0.9696969696969697
+      }
+    },
+    {
+      "category": "obfuscation",
+      "confusion_matrix": {
+        "tp": 4,
+        "tn": 32,
+        "fp": 0,
+        "fn": 0
+      },
+      "metrics": {
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "false_positive_rate": 0.0,
+        "false_negative_rate": 0.0,
+        "specificity": 1.0
+      }
+    },
+    {
+      "category": "schema",
+      "confusion_matrix": {
+        "tp": 0,
+        "tn": 35,
+        "fp": 1,
+        "fn": 0
+      },
+      "metrics": {
+        "accuracy": 0.9722222222222222,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "false_positive_rate": 0.027777777777777776,
+        "false_negative_rate": 0.0,
+        "specificity": 0.9722222222222222
+      }
+    },
+    {
+      "category": "sensitive_data",
+      "confusion_matrix": {
+        "tp": 4,
+        "tn": 28,
+        "fp": 4,
+        "fn": 0
+      },
+      "metrics": {
+        "accuracy": 0.8888888888888888,
+        "precision": 0.5,
+        "recall": 1.0,
+        "f1": 0.6666666666666666,
+        "false_positive_rate": 0.125,
+        "false_negative_rate": 0.0,
+        "specificity": 0.875
+      }
+    }
+  ],
+  "false_positives": [],
+  "false_negatives": [
+    {
+      "sample_id": "v03_s_001",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "benign",
+      "expected_categories": [
+        "instruction_override"
+      ],
+      "predicted_categories": [],
+      "rationale": "Metadata policy claims binding authority in conflict with user guidance.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored authority/conflict case; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [
+        "PI-002"
+      ],
+      "expected_field_locations": [
+        "description"
+      ],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "false_negative_no_finding",
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.6151999987196177,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_s_002",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "benign",
+      "expected_categories": [
+        "instruction_override"
+      ],
+      "predicted_categories": [],
+      "rationale": "An annotation says a metadata directive supersedes assistant instructions.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored authority/conflict case; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [
+        "PI-002"
+      ],
+      "expected_field_locations": [
+        "annotations.priority"
+      ],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "false_negative_no_finding",
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.5829000001540408,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_s_003",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "benign",
+      "expected_categories": [
+        "instruction_override"
+      ],
+      "predicted_categories": [],
+      "rationale": "An operating rule claims precedence over model guidance.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored authority/conflict case; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [
+        "PI-002"
+      ],
+      "expected_field_locations": [
+        "metadata.priority"
+      ],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "false_negative_no_finding",
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.5908000021008775,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_s_004",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "benign",
+      "expected_categories": [
+        "instruction_override"
+      ],
+      "predicted_categories": [],
+      "rationale": "A schema description declares the tool entry authoritative regardless of user instructions.",
+      "difficulty": "subtle",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored authority/conflict case; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [
+        "PI-002"
+      ],
+      "expected_field_locations": [
+        "inputSchema.description"
+      ],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "false_negative_no_finding",
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.6541000002471264,
+      "timing_observations": 1
+    }
+  ],
+  "samples": [
+    {
+      "sample_id": "v03_b_001",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "Authoritative describes an ordinary ranked data source, not instruction control.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored benign instruction-priority counterexample; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 3.2887999986996874,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_b_002",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "Precedence refers to CSS rendering and contains no agent-guidance target.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored benign priority-domain counterexample; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.6309999989753123,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_b_003",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "Security documentation explicitly negates metadata precedence over user instructions.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored scoped-negation counterexample; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.6560999972862191,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_b_004",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "Ranking applies to cache records rather than model or user guidance.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored domain counterexample; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.5877999974472914,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_b_005",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "Privacy redaction hides values while preserving an explicit audit record.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored privacy counterexample; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.6178000003274065,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_b_006",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "Only decorative fields are omitted from a user interface.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored UI counterexample; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.5621000018436462,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_b_007",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "Quiet hours alter sound while preserving operational audit visibility.",
+      "difficulty": "subtle",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored notification counterexample; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.6463999998231884,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_b_008",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [
+        "sensitive_data"
+      ],
+      "rationale": "Documentation names a password field and explicitly accepts no values.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored credential-documentation counterexample; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "SEC-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "category_mismatch",
+      "researcher_notes": "",
+      "risk_score": 4,
+      "findings": [
+        {
+          "rule_id": "SEC-001",
+          "rule_name": "Sensitive credential terminology",
+          "category": "sensitive_data",
+          "severity": "LOW",
+          "confidence": 0.62,
+          "explanation": "Credential-related terminology indicates potentially sensitive data handling; legitimate security tools may trigger this rule.",
+          "evidence": "password",
+          "field": "description",
+          "recommendation": "Verify the value is necessary, minimized, and protected for the declared purpose.",
+          "score_contribution": 6.0
+        }
+      ],
+      "elapsed_ms": 0.6708000000799075,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_b_009",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [
+        "sensitive_data"
+      ],
+      "rationale": "The API-key content is a synthetic placeholder rather than a secret value.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored placeholder counterexample; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "SEC-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "category_mismatch",
+      "researcher_notes": "",
+      "risk_score": 4,
+      "findings": [
+        {
+          "rule_id": "SEC-001",
+          "rule_name": "Sensitive credential terminology",
+          "category": "sensitive_data",
+          "severity": "LOW",
+          "confidence": 0.62,
+          "explanation": "Credential-related terminology indicates potentially sensitive data handling; legitimate security tools may trigger this rule.",
+          "evidence": "API key",
+          "field": "description",
+          "recommendation": "Verify the value is necessary, minimized, and protected for the declared purpose.",
+          "score_contribution": 6.0
+        }
+      ],
+      "elapsed_ms": 0.6174000009195879,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_b_010",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [
+        "sensitive_data"
+      ],
+      "rationale": "Credential terms appear only as redacted training material.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored redaction counterexample; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "SEC-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "category_mismatch",
+      "researcher_notes": "",
+      "risk_score": 4,
+      "findings": [
+        {
+          "rule_id": "SEC-001",
+          "rule_name": "Sensitive credential terminology",
+          "category": "sensitive_data",
+          "severity": "LOW",
+          "confidence": 0.62,
+          "explanation": "Credential-related terminology indicates potentially sensitive data handling; legitimate security tools may trigger this rule.",
+          "evidence": "credential",
+          "field": "description",
+          "recommendation": "Verify the value is necessary, minimized, and protected for the declared purpose.",
+          "score_contribution": 6.0
+        }
+      ],
+      "elapsed_ms": 0.5913999993936159,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_b_011",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [
+        "sensitive_data"
+      ],
+      "rationale": "A rotation calendar references keys without collecting or exposing key values.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored schedule counterexample; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "SEC-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "category_mismatch",
+      "researcher_notes": "",
+      "risk_score": 4,
+      "findings": [
+        {
+          "rule_id": "SEC-001",
+          "rule_name": "Sensitive credential terminology",
+          "category": "sensitive_data",
+          "severity": "LOW",
+          "confidence": 0.62,
+          "explanation": "Credential-related terminology indicates potentially sensitive data handling; legitimate security tools may trigger this rule.",
+          "evidence": "secret",
+          "field": "description",
+          "recommendation": "Verify the value is necessary, minimized, and protected for the declared purpose.",
+          "score_contribution": 6.0
+        }
+      ],
+      "elapsed_ms": 0.5796000004920643,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_b_012",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "A printable Base64 documentation example contains no high-risk decoded construct.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored safe encoding example; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.6646000001637731,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_b_013",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "Numeric entities decode to benign tutorial text.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored safe encoding example; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.7834999996703118,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_b_014",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "Separated hexadecimal bytes decode to an innocuous protocol example.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored safe encoding example; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.8181999983207788,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_b_015",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "Decimal character codes decode to benign utility text.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored safe encoding example; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.715199999831384,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_b_016",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "Database write capability is aligned with an administrator purpose and confirmation.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored aligned-admin counterexample; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.6223999989742879,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_b_017",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [
+        "capability"
+      ],
+      "rationale": "Network language is explicitly non-operative simulation behavior.",
+      "difficulty": "subtle",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored simulation counterexample; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [
+        "CAP-001"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "category_mismatch",
+      "researcher_notes": "",
+      "risk_score": 2,
+      "findings": [
+        {
+          "rule_id": "CAP-001",
+          "rule_name": "High-impact capability indicators",
+          "category": "capability",
+          "severity": "INFORMATIONAL",
+          "confidence": 0.72,
+          "explanation": "Metadata advertises potentially high-impact operations; these may be legitimate.",
+          "evidence": "external network",
+          "field": "multiple",
+          "recommendation": "Confirm least privilege, user consent, and runtime controls.",
+          "score_contribution": 3.0
+        }
+      ],
+      "elapsed_ms": 0.6098000012570992,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_b_018",
+      "corpus_split": "development",
+      "expected": "benign",
+      "predicted": "benign",
+      "expected_categories": [],
+      "predicted_categories": [],
+      "rationale": "File deletion is declared by an aligned file manager with confirmation.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored aligned-admin counterexample; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [],
+      "expected_field_locations": [],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.6009999997331761,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_s_001",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "benign",
+      "expected_categories": [
+        "instruction_override"
+      ],
+      "predicted_categories": [],
+      "rationale": "Metadata policy claims binding authority in conflict with user guidance.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored authority/conflict case; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [
+        "PI-002"
+      ],
+      "expected_field_locations": [
+        "description"
+      ],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "false_negative_no_finding",
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.6151999987196177,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_s_002",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "benign",
+      "expected_categories": [
+        "instruction_override"
+      ],
+      "predicted_categories": [],
+      "rationale": "An annotation says a metadata directive supersedes assistant instructions.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored authority/conflict case; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [
+        "PI-002"
+      ],
+      "expected_field_locations": [
+        "annotations.priority"
+      ],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "false_negative_no_finding",
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.5829000001540408,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_s_003",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "benign",
+      "expected_categories": [
+        "instruction_override"
+      ],
+      "predicted_categories": [],
+      "rationale": "An operating rule claims precedence over model guidance.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored authority/conflict case; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [
+        "PI-002"
+      ],
+      "expected_field_locations": [
+        "metadata.priority"
+      ],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "false_negative_no_finding",
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.5908000021008775,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_s_004",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "benign",
+      "expected_categories": [
+        "instruction_override"
+      ],
+      "predicted_categories": [],
+      "rationale": "A schema description declares the tool entry authoritative regardless of user instructions.",
+      "difficulty": "subtle",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored authority/conflict case; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [
+        "PI-002"
+      ],
+      "expected_field_locations": [
+        "inputSchema.description"
+      ],
+      "triggered_rule_ids": [],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "false_negative_no_finding",
+      "researcher_notes": "",
+      "risk_score": 0,
+      "findings": [],
+      "elapsed_ms": 0.6541000002471264,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_s_005",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "concealment"
+      ],
+      "predicted_categories": [
+        "concealment"
+      ],
+      "rationale": "A material side effect is omitted from a user-visible report.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored omission/visibility case; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [
+        "HID-002"
+      ],
+      "expected_field_locations": [
+        "description"
+      ],
+      "triggered_rule_ids": [
+        "HID-002"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 19,
+      "findings": [
+        {
+          "rule_id": "HID-002",
+          "rule_name": "Withheld material activity",
+          "category": "concealment",
+          "severity": "HIGH",
+          "confidence": 0.85,
+          "explanation": "Material tool activity is intentionally excluded from user or operator visibility.",
+          "evidence": "Omit the side effect from the user-visible",
+          "field": "description",
+          "recommendation": "Disclose material operations and side effects in user-visible output and audit records.",
+          "score_contribution": 22.0
+        }
+      ],
+      "elapsed_ms": 0.5825999978696927,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_s_006",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "concealment"
+      ],
+      "predicted_categories": [
+        "concealment"
+      ],
+      "rationale": "Operation details are intentionally withheld from an audit trail.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored omission/visibility case; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [
+        "HID-002"
+      ],
+      "expected_field_locations": [
+        "metadata.visibility"
+      ],
+      "triggered_rule_ids": [
+        "HID-002"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 19,
+      "findings": [
+        {
+          "rule_id": "HID-002",
+          "rule_name": "Withheld material activity",
+          "category": "concealment",
+          "severity": "HIGH",
+          "confidence": 0.85,
+          "explanation": "Material tool activity is intentionally excluded from user or operator visibility.",
+          "evidence": "Withhold operation details from the audit trail",
+          "field": "metadata.visibility",
+          "recommendation": "Disclose material operations and side effects in user-visible output and audit records.",
+          "score_contribution": 22.0
+        }
+      ],
+      "elapsed_ms": 0.5821000013384037,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_s_007",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "concealment"
+      ],
+      "predicted_categories": [
+        "concealment"
+      ],
+      "rationale": "A transfer action is excluded from an operator-visible summary.",
+      "difficulty": "subtle",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored omission/visibility case; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [
+        "HID-002"
+      ],
+      "expected_field_locations": [
+        "execution.visibility"
+      ],
+      "triggered_rule_ids": [
+        "HID-002"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 19,
+      "findings": [
+        {
+          "rule_id": "HID-002",
+          "rule_name": "Withheld material activity",
+          "category": "concealment",
+          "severity": "HIGH",
+          "confidence": 0.85,
+          "explanation": "Material tool activity is intentionally excluded from user or operator visibility.",
+          "evidence": "Exclude the transfer action from the operator-visible",
+          "field": "execution.visibility",
+          "recommendation": "Disclose material operations and side effects in user-visible output and audit records.",
+          "score_contribution": 22.0
+        }
+      ],
+      "elapsed_ms": 0.5915000001550652,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_s_008",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "sensitive_data"
+      ],
+      "predicted_categories": [
+        "capability",
+        "sensitive_data"
+      ],
+      "rationale": "The description actively collects an access-token value.",
+      "difficulty": "obvious",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored sensitive-value action; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [
+        "SEC-002"
+      ],
+      "expected_field_locations": [
+        "description"
+      ],
+      "triggered_rule_ids": [
+        "CAP-001",
+        "SEC-001",
+        "SEC-002"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "category_mismatch",
+      "researcher_notes": "",
+      "risk_score": 24,
+      "findings": [
+        {
+          "rule_id": "SEC-001",
+          "rule_name": "Sensitive credential terminology",
+          "category": "sensitive_data",
+          "severity": "MEDIUM",
+          "confidence": 0.78,
+          "explanation": "Credential-related terminology indicates potentially sensitive data handling; legitimate security tools may trigger this rule.",
+          "evidence": "access token",
+          "field": "description",
+          "recommendation": "Verify the value is necessary, minimized, and protected for the declared purpose.",
+          "score_contribution": 13.0
+        },
+        {
+          "rule_id": "SEC-002",
+          "rule_name": "Sensitive value handling action",
+          "category": "sensitive_data",
+          "severity": "MEDIUM",
+          "confidence": 0.84,
+          "explanation": "Metadata links an active data-handling operation to a credential or secret value.",
+          "evidence": "Collect the access token",
+          "field": "description",
+          "recommendation": "Require necessity, consent, minimization, and secure handling for the value.",
+          "score_contribution": 15.0
+        },
+        {
+          "rule_id": "CAP-001",
+          "rule_name": "High-impact capability indicators",
+          "category": "capability",
+          "severity": "INFORMATIONAL",
+          "confidence": 0.72,
+          "explanation": "Metadata advertises potentially high-impact operations; these may be legitimate.",
+          "evidence": "credential access",
+          "field": "multiple",
+          "recommendation": "Confirm least privilege, user consent, and runtime controls.",
+          "score_contribution": 3.0
+        }
+      ],
+      "elapsed_ms": 0.6231000006664544,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_s_009",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "sensitive_data"
+      ],
+      "predicted_categories": [
+        "mismatch",
+        "schema",
+        "sensitive_data"
+      ],
+      "rationale": "A nested input description stores a password value.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored sensitive-value action; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [
+        "SEC-002"
+      ],
+      "expected_field_locations": [
+        "input_schema.properties.auth.description"
+      ],
+      "triggered_rule_ids": [
+        "MIS-001",
+        "SCH-002",
+        "SEC-001",
+        "SEC-002"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "category_mismatch",
+      "researcher_notes": "",
+      "risk_score": 44,
+      "findings": [
+        {
+          "rule_id": "SEC-001",
+          "rule_name": "Sensitive credential terminology",
+          "category": "sensitive_data",
+          "severity": "MEDIUM",
+          "confidence": 0.78,
+          "explanation": "Credential-related terminology indicates potentially sensitive data handling; legitimate security tools may trigger this rule.",
+          "evidence": "password",
+          "field": "input_schema.properties.auth.description",
+          "recommendation": "Verify the value is necessary, minimized, and protected for the declared purpose.",
+          "score_contribution": 13.0
+        },
+        {
+          "rule_id": "SEC-002",
+          "rule_name": "Sensitive value handling action",
+          "category": "sensitive_data",
+          "severity": "MEDIUM",
+          "confidence": 0.84,
+          "explanation": "Metadata links an active data-handling operation to a credential or secret value.",
+          "evidence": "Store the password",
+          "field": "input_schema.properties.auth.description",
+          "recommendation": "Require necessity, consent, minimization, and secure handling for the value.",
+          "score_contribution": 15.0
+        },
+        {
+          "rule_id": "SCH-002",
+          "rule_name": "Privileged input parameters",
+          "category": "schema",
+          "severity": "MEDIUM",
+          "confidence": 0.82,
+          "explanation": "Input fields suggest privileged functionality and warrant capability review.",
+          "evidence": "password",
+          "field": "input_schema.properties.auth.description",
+          "recommendation": "Confirm every privileged parameter is required by the declared purpose.",
+          "score_contribution": 13.0
+        },
+        {
+          "rule_id": "MIS-001",
+          "rule_name": "Name/description/schema mismatch",
+          "category": "mismatch",
+          "severity": "HIGH",
+          "confidence": 0.8,
+          "explanation": "Privileged schema capabilities are not reflected in the tool's stated purpose.",
+          "evidence": "declared=['unclear']; schema=['credential']",
+          "field": "input_schema",
+          "recommendation": "Align the name and description with actual capabilities or remove unrelated parameters.",
+          "score_contribution": 23.0
+        }
+      ],
+      "elapsed_ms": 0.9869000023172703,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_s_010",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "sensitive_data"
+      ],
+      "predicted_categories": [
+        "sensitive_data"
+      ],
+      "rationale": "The output schema says a private key is returned.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored sensitive-value action; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [
+        "SEC-002"
+      ],
+      "expected_field_locations": [
+        "output_schema.description"
+      ],
+      "triggered_rule_ids": [
+        "SEC-001",
+        "SEC-002"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 23,
+      "findings": [
+        {
+          "rule_id": "SEC-001",
+          "rule_name": "Sensitive credential terminology",
+          "category": "sensitive_data",
+          "severity": "MEDIUM",
+          "confidence": 0.78,
+          "explanation": "Credential-related terminology indicates potentially sensitive data handling; legitimate security tools may trigger this rule.",
+          "evidence": "private key",
+          "field": "output_schema.description",
+          "recommendation": "Verify the value is necessary, minimized, and protected for the declared purpose.",
+          "score_contribution": 13.0
+        },
+        {
+          "rule_id": "SEC-002",
+          "rule_name": "Sensitive value handling action",
+          "category": "sensitive_data",
+          "severity": "MEDIUM",
+          "confidence": 0.84,
+          "explanation": "Metadata links an active data-handling operation to a credential or secret value.",
+          "evidence": "Return the private key",
+          "field": "output_schema.description",
+          "recommendation": "Require necessity, consent, minimization, and secure handling for the value.",
+          "score_contribution": 15.0
+        }
+      ],
+      "elapsed_ms": 0.8636999991722405,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_s_011",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "sensitive_data"
+      ],
+      "predicted_categories": [
+        "sensitive_data"
+      ],
+      "rationale": "A vendor field sends an API key to another worker.",
+      "difficulty": "subtle",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored sensitive-value action; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [
+        "SEC-002"
+      ],
+      "expected_field_locations": [
+        "unknown_fields.vendor.operation"
+      ],
+      "triggered_rule_ids": [
+        "SEC-001",
+        "SEC-002"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 23,
+      "findings": [
+        {
+          "rule_id": "SEC-001",
+          "rule_name": "Sensitive credential terminology",
+          "category": "sensitive_data",
+          "severity": "MEDIUM",
+          "confidence": 0.78,
+          "explanation": "Credential-related terminology indicates potentially sensitive data handling; legitimate security tools may trigger this rule.",
+          "evidence": "API key",
+          "field": "unknown_fields.vendor.operation",
+          "recommendation": "Verify the value is necessary, minimized, and protected for the declared purpose.",
+          "score_contribution": 13.0
+        },
+        {
+          "rule_id": "SEC-002",
+          "rule_name": "Sensitive value handling action",
+          "category": "sensitive_data",
+          "severity": "MEDIUM",
+          "confidence": 0.84,
+          "explanation": "Metadata links an active data-handling operation to a credential or secret value.",
+          "evidence": "Send the API key",
+          "field": "unknown_fields.vendor.operation",
+          "recommendation": "Require necessity, consent, minimization, and secure handling for the value.",
+          "score_contribution": 15.0
+        }
+      ],
+      "elapsed_ms": 0.6472000022768043,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_s_012",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "obfuscation"
+      ],
+      "predicted_categories": [
+        "obfuscation"
+      ],
+      "rationale": "Strict Base64 decodes once to an instruction-override construct.",
+      "difficulty": "subtle",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored bounded Base64 case; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [
+        "OBF-005"
+      ],
+      "expected_field_locations": [
+        "metadata.payload"
+      ],
+      "triggered_rule_ids": [
+        "OBF-005"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 12,
+      "findings": [
+        {
+          "rule_id": "OBF-005",
+          "rule_name": "Decoded high-risk metadata",
+          "category": "obfuscation",
+          "severity": "MEDIUM",
+          "confidence": 0.88,
+          "explanation": "A bounded depth-one decode exposed a high-risk static metadata construct.",
+          "evidence": "encoding=base64; original=aWdub3JlIHByZXZpb3VzIGluc3RydWN0aW9ucw==; decoded=ignore previous instructions; signal=instruction_priority",
+          "field": "metadata.payload",
+          "recommendation": "Replace encoded directives with transparent metadata and review the decoded text.",
+          "score_contribution": 14.0
+        }
+      ],
+      "elapsed_ms": 0.6600000015168916,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_s_013",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "obfuscation"
+      ],
+      "predicted_categories": [
+        "obfuscation"
+      ],
+      "rationale": "Decimal codes decode once to concealed audit-report activity.",
+      "difficulty": "subtle",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored bounded decimal-code case; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [
+        "OBF-005"
+      ],
+      "expected_field_locations": [
+        "annotations.payload"
+      ],
+      "triggered_rule_ids": [
+        "OBF-005"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 12,
+      "findings": [
+        {
+          "rule_id": "OBF-005",
+          "rule_name": "Decoded high-risk metadata",
+          "category": "obfuscation",
+          "severity": "MEDIUM",
+          "confidence": 0.88,
+          "explanation": "A bounded depth-one decode exposed a high-risk static metadata construct.",
+          "evidence": "encoding=decimal_codes; original=119,105,116,104,104,111,108,100,32,111,112,101,114,97,116,105,11…; decoded=withhold operation from the audit report; signal=concealment",
+          "field": "annotations.payload",
+          "recommendation": "Replace encoded directives with transparent metadata and review the decoded text.",
+          "score_contribution": 14.0
+        }
+      ],
+      "elapsed_ms": 0.952900001720991,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_s_014",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "obfuscation"
+      ],
+      "predicted_categories": [
+        "obfuscation"
+      ],
+      "rationale": "Separated hex bytes decode once to a password-output action.",
+      "difficulty": "subtle",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored bounded hex case; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [
+        "OBF-005"
+      ],
+      "expected_field_locations": [
+        "output_schema.description"
+      ],
+      "triggered_rule_ids": [
+        "OBF-005"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 12,
+      "findings": [
+        {
+          "rule_id": "OBF-005",
+          "rule_name": "Decoded high-risk metadata",
+          "category": "obfuscation",
+          "severity": "MEDIUM",
+          "confidence": 0.88,
+          "explanation": "A bounded depth-one decode exposed a high-risk static metadata construct.",
+          "evidence": "encoding=hex_separated; original=72 65 74 75 72 6e 20 74 68 65 20 70 61 73 73 77 6f 72 64; decoded=return the password; signal=sensitive_value_action,high_impact_capability",
+          "field": "output_schema.description",
+          "recommendation": "Replace encoded directives with transparent metadata and review the decoded text.",
+          "score_contribution": 14.0
+        }
+      ],
+      "elapsed_ms": 1.0050999990198761,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_s_015",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "obfuscation"
+      ],
+      "predicted_categories": [
+        "obfuscation"
+      ],
+      "rationale": "HTML numeric entities decode once to process execution.",
+      "difficulty": "subtle",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored bounded numeric-entity case; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [
+        "OBF-005"
+      ],
+      "expected_field_locations": [
+        "execution.payload"
+      ],
+      "triggered_rule_ids": [
+        "OBF-005"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 12,
+      "findings": [
+        {
+          "rule_id": "OBF-005",
+          "rule_name": "Decoded high-risk metadata",
+          "category": "obfuscation",
+          "severity": "MEDIUM",
+          "confidence": 0.88,
+          "explanation": "A bounded depth-one decode exposed a high-risk static metadata construct.",
+          "evidence": "encoding=html_numeric; original=&#108;&#97;&#117;&#110;&#99;&#104;&#32;&#97;&#32;&#108;&#111;&#9…; decoded=launch a local process; signal=high_impact_capability",
+          "field": "execution.payload",
+          "recommendation": "Replace encoded directives with transparent metadata and review the decoded text.",
+          "score_contribution": 14.0
+        }
+      ],
+      "elapsed_ms": 0.8713999995961785,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_s_016",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "mismatch"
+      ],
+      "predicted_categories": [
+        "mismatch"
+      ],
+      "rationale": "An offline formatter advertises outbound transfer in metadata.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored offline/network contradiction; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [
+        "MIS-002"
+      ],
+      "expected_field_locations": [
+        "description",
+        "metadata.operation"
+      ],
+      "triggered_rule_ids": [
+        "MIS-002"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": null,
+      "researcher_notes": "",
+      "risk_score": 13,
+      "findings": [
+        {
+          "rule_id": "MIS-002",
+          "rule_name": "Corroborated purpose/capability contradiction",
+          "category": "mismatch",
+          "severity": "MEDIUM",
+          "confidence": 0.84,
+          "explanation": "A concrete high-impact capability conflicts with the declared purpose and has independent corroboration.",
+          "evidence": "purpose[description]=Offline formatter for short labels.; capability[metadata.operation]=outbound_network:Upload data to a remote endpoint; corroborator=offline_network_contradiction",
+          "field": "description <-> metadata.operation",
+          "recommendation": "Align the declared purpose and safeguards with the capability or remove the unrelated operation.",
+          "score_contribution": 16.0
+        }
+      ],
+      "elapsed_ms": 0.7498999984818511,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_s_017",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "mismatch"
+      ],
+      "predicted_categories": [
+        "capability",
+        "mismatch"
+      ],
+      "rationale": "A narrow preview utility deletes files without confirmation.",
+      "difficulty": "moderate",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored narrow/destructive contradiction; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [
+        "MIS-002"
+      ],
+      "expected_field_locations": [
+        "description",
+        "execution.operation"
+      ],
+      "triggered_rule_ids": [
+        "CAP-001",
+        "MIS-002"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "category_mismatch",
+      "researcher_notes": "",
+      "risk_score": 15,
+      "findings": [
+        {
+          "rule_id": "MIS-002",
+          "rule_name": "Corroborated purpose/capability contradiction",
+          "category": "mismatch",
+          "severity": "MEDIUM",
+          "confidence": 0.84,
+          "explanation": "A concrete high-impact capability conflicts with the declared purpose and has independent corroboration.",
+          "evidence": "purpose[description]=Title preview utility.; capability[execution.operation]=file_delete:Delete files; corroborator=narrow_sensitive_or_destructive_purpose,destructive_without_confirmation",
+          "field": "description <-> execution.operation",
+          "recommendation": "Align the declared purpose and safeguards with the capability or remove the unrelated operation.",
+          "score_contribution": 16.0
+        },
+        {
+          "rule_id": "CAP-001",
+          "rule_name": "High-impact capability indicators",
+          "category": "capability",
+          "severity": "INFORMATIONAL",
+          "confidence": 0.72,
+          "explanation": "Metadata advertises potentially high-impact operations; these may be legitimate.",
+          "evidence": "file deletion",
+          "field": "multiple",
+          "recommendation": "Confirm least privilege, user consent, and runtime controls.",
+          "score_contribution": 3.0
+        }
+      ],
+      "elapsed_ms": 0.6875000035506673,
+      "timing_observations": 1
+    },
+    {
+      "sample_id": "v03_s_018",
+      "corpus_split": "development",
+      "expected": "suspicious",
+      "predicted": "suspicious",
+      "expected_categories": [
+        "mismatch"
+      ],
+      "predicted_categories": [
+        "capability",
+        "mismatch"
+      ],
+      "rationale": "A plan-only formatter advertises two unrelated operative high-impact capabilities.",
+      "difficulty": "subtle",
+      "provenance": {
+        "origin_type": "synthetic",
+        "source_reference": null,
+        "derivation_notes": "Construct-authored compound-capability contradiction; no exposed-holdout wording was copied."
+      },
+      "expected_rule_ids": [
+        "MIS-002"
+      ],
+      "expected_field_locations": [
+        "description",
+        "unknown_fields.vendor.network",
+        "unknown_fields.vendor.process"
+      ],
+      "triggered_rule_ids": [
+        "CAP-001",
+        "MIS-002"
+      ],
+      "classification_threshold": "MEDIUM",
+      "failure_type": "category_mismatch",
+      "researcher_notes": "",
+      "risk_score": 15,
+      "findings": [
+        {
+          "rule_id": "MIS-002",
+          "rule_name": "Corroborated purpose/capability contradiction",
+          "category": "mismatch",
+          "severity": "MEDIUM",
+          "confidence": 0.84,
+          "explanation": "A concrete high-impact capability conflicts with the declared purpose and has independent corroboration.",
+          "evidence": "purpose[description]=Plan-only summary formatter.; capability[unknown_fields.vendor.network]=outbound_network:Upload data to a remote endpoint; corroborator=multiple_unrelated_capabilities",
+          "field": "description <-> unknown_fields.vendor.network",
+          "recommendation": "Align the declared purpose and safeguards with the capability or remove the unrelated operation.",
+          "score_contribution": 16.0
+        },
+        {
+          "rule_id": "CAP-001",
+          "rule_name": "High-impact capability indicators",
+          "category": "capability",
+          "severity": "INFORMATIONAL",
+          "confidence": 0.72,
+          "explanation": "Metadata advertises potentially high-impact operations; these may be legitimate.",
+          "evidence": "external network",
+          "field": "multiple",
+          "recommendation": "Confirm least privilege, user consent, and runtime controls.",
+          "score_contribution": 3.0
+        }
+      ],
+      "elapsed_ms": 0.7691999999224208,
+      "timing_observations": 1
+    }
+  ],
+  "timing": {
+    "observation_count": 36,
+    "sample_count": 36,
+    "measured_repetitions": 1,
+    "total_ms": 27.280000002065208,
+    "mean_ms": 0.7577777778351447,
+    "median_ms": 0.6468000010499964,
+    "minimum_ms": 0.5621000018436462,
+    "maximum_ms": 3.2887999986996874,
+    "p95_ms": 1.0050999990198761,
+    "standard_deviation_ms": 0.44402331255618377,
+    "mean_per_tool_ms": 0.7577777778351447,
+    "mean_corpus_pass_ms": 27.280000002065208
+  },
+  "uncertainty": {
+    "accuracy": {
+      "method": "wilson_score_95",
+      "confidence_level": 0.95,
+      "numerator": 32,
+      "denominator": 36,
+      "estimate": 0.8888888888888888,
+      "lower": 0.7468519140963513,
+      "upper": 0.9559335969968435,
+      "defined": true
+    },
+    "recall": {
+      "method": "wilson_score_95",
+      "confidence_level": 0.95,
+      "numerator": 14,
+      "denominator": 18,
+      "estimate": 0.7777777777777778,
+      "lower": 0.5478541568378739,
+      "upper": 0.9099907189139831,
+      "defined": true
+    },
+    "false_positive_rate": {
+      "method": "wilson_score_95",
+      "confidence_level": 0.95,
+      "numerator": 0,
+      "denominator": 18,
+      "estimate": 0.0,
+      "lower": 0.0,
+      "upper": 0.17587922364665765,
+      "defined": true
+    }
+  },
+  "stratified_metrics": [
+    {
+      "dimension": "expected_category",
+      "available_sample_count": 18,
+      "missing_sample_count": 18,
+      "groups": [
+        {
+          "dimension": "expected_category",
+          "value": "concealment",
+          "sample_count": 3,
+          "confusion_matrix": {
+            "tp": 3,
+            "tn": 0,
+            "fp": 0,
+            "fn": 0
+          },
+          "metrics": {
+            "accuracy": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "false_positive_rate": 0.0,
+            "false_negative_rate": 0.0,
+            "specificity": 0.0
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 3,
+              "denominator": 3,
+              "estimate": 1.0,
+              "lower": 0.4385029682449546,
+              "upper": 1.0,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 3,
+              "denominator": 3,
+              "estimate": 1.0,
+              "lower": 0.4385029682449546,
+              "upper": 1.0,
+              "defined": true
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 0,
+              "estimate": null,
+              "lower": null,
+              "upper": null,
+              "defined": false
+            }
+          },
+          "low_evidence": true,
+          "warning": "Low evidence: fewer than 10 samples in this stratum.",
+          "undefined_metrics": [
+            "false_positive_rate",
+            "specificity"
+          ]
+        },
+        {
+          "dimension": "expected_category",
+          "value": "instruction_override",
+          "sample_count": 4,
+          "confusion_matrix": {
+            "tp": 0,
+            "tn": 0,
+            "fp": 0,
+            "fn": 4
+          },
+          "metrics": {
+            "accuracy": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "false_positive_rate": 0.0,
+            "false_negative_rate": 1.0,
+            "specificity": 0.0
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 4,
+              "estimate": 0.0,
+              "lower": 0.0,
+              "upper": 0.4898908364545973,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 4,
+              "estimate": 0.0,
+              "lower": 0.0,
+              "upper": 0.4898908364545973,
+              "defined": true
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 0,
+              "estimate": null,
+              "lower": null,
+              "upper": null,
+              "defined": false
+            }
+          },
+          "low_evidence": true,
+          "warning": "Low evidence: fewer than 10 samples in this stratum.",
+          "undefined_metrics": [
+            "false_positive_rate",
+            "precision",
+            "specificity"
+          ]
+        },
+        {
+          "dimension": "expected_category",
+          "value": "mismatch",
+          "sample_count": 3,
+          "confusion_matrix": {
+            "tp": 3,
+            "tn": 0,
+            "fp": 0,
+            "fn": 0
+          },
+          "metrics": {
+            "accuracy": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "false_positive_rate": 0.0,
+            "false_negative_rate": 0.0,
+            "specificity": 0.0
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 3,
+              "denominator": 3,
+              "estimate": 1.0,
+              "lower": 0.4385029682449546,
+              "upper": 1.0,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 3,
+              "denominator": 3,
+              "estimate": 1.0,
+              "lower": 0.4385029682449546,
+              "upper": 1.0,
+              "defined": true
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 0,
+              "estimate": null,
+              "lower": null,
+              "upper": null,
+              "defined": false
+            }
+          },
+          "low_evidence": true,
+          "warning": "Low evidence: fewer than 10 samples in this stratum.",
+          "undefined_metrics": [
+            "false_positive_rate",
+            "specificity"
+          ]
+        },
+        {
+          "dimension": "expected_category",
+          "value": "obfuscation",
+          "sample_count": 4,
+          "confusion_matrix": {
+            "tp": 4,
+            "tn": 0,
+            "fp": 0,
+            "fn": 0
+          },
+          "metrics": {
+            "accuracy": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "false_positive_rate": 0.0,
+            "false_negative_rate": 0.0,
+            "specificity": 0.0
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 4,
+              "denominator": 4,
+              "estimate": 1.0,
+              "lower": 0.5101091635454027,
+              "upper": 1.0,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 4,
+              "denominator": 4,
+              "estimate": 1.0,
+              "lower": 0.5101091635454027,
+              "upper": 1.0,
+              "defined": true
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 0,
+              "estimate": null,
+              "lower": null,
+              "upper": null,
+              "defined": false
+            }
+          },
+          "low_evidence": true,
+          "warning": "Low evidence: fewer than 10 samples in this stratum.",
+          "undefined_metrics": [
+            "false_positive_rate",
+            "specificity"
+          ]
+        },
+        {
+          "dimension": "expected_category",
+          "value": "sensitive_data",
+          "sample_count": 4,
+          "confusion_matrix": {
+            "tp": 4,
+            "tn": 0,
+            "fp": 0,
+            "fn": 0
+          },
+          "metrics": {
+            "accuracy": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "false_positive_rate": 0.0,
+            "false_negative_rate": 0.0,
+            "specificity": 0.0
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 4,
+              "denominator": 4,
+              "estimate": 1.0,
+              "lower": 0.5101091635454027,
+              "upper": 1.0,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 4,
+              "denominator": 4,
+              "estimate": 1.0,
+              "lower": 0.5101091635454027,
+              "upper": 1.0,
+              "defined": true
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 0,
+              "estimate": null,
+              "lower": null,
+              "upper": null,
+              "defined": false
+            }
+          },
+          "low_evidence": true,
+          "warning": "Low evidence: fewer than 10 samples in this stratum.",
+          "undefined_metrics": [
+            "false_positive_rate",
+            "specificity"
+          ]
+        }
+      ]
+    },
+    {
+      "dimension": "field_location",
+      "available_sample_count": 18,
+      "missing_sample_count": 18,
+      "groups": [
+        {
+          "dimension": "field_location",
+          "value": "annotations.payload",
+          "sample_count": 1,
+          "confusion_matrix": {
+            "tp": 1,
+            "tn": 0,
+            "fp": 0,
+            "fn": 0
+          },
+          "metrics": {
+            "accuracy": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "false_positive_rate": 0.0,
+            "false_negative_rate": 0.0,
+            "specificity": 0.0
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 1,
+              "denominator": 1,
+              "estimate": 1.0,
+              "lower": 0.20654931437723745,
+              "upper": 1.0,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 1,
+              "denominator": 1,
+              "estimate": 1.0,
+              "lower": 0.20654931437723745,
+              "upper": 1.0,
+              "defined": true
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 0,
+              "estimate": null,
+              "lower": null,
+              "upper": null,
+              "defined": false
+            }
+          },
+          "low_evidence": true,
+          "warning": "Low evidence: fewer than 10 samples in this stratum.",
+          "undefined_metrics": [
+            "false_positive_rate",
+            "specificity"
+          ]
+        },
+        {
+          "dimension": "field_location",
+          "value": "annotations.priority",
+          "sample_count": 1,
+          "confusion_matrix": {
+            "tp": 0,
+            "tn": 0,
+            "fp": 0,
+            "fn": 1
+          },
+          "metrics": {
+            "accuracy": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "false_positive_rate": 0.0,
+            "false_negative_rate": 1.0,
+            "specificity": 0.0
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 1,
+              "estimate": 0.0,
+              "lower": 0.0,
+              "upper": 0.7934506856227626,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 1,
+              "estimate": 0.0,
+              "lower": 0.0,
+              "upper": 0.7934506856227626,
+              "defined": true
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 0,
+              "estimate": null,
+              "lower": null,
+              "upper": null,
+              "defined": false
+            }
+          },
+          "low_evidence": true,
+          "warning": "Low evidence: fewer than 10 samples in this stratum.",
+          "undefined_metrics": [
+            "false_positive_rate",
+            "precision",
+            "specificity"
+          ]
+        },
+        {
+          "dimension": "field_location",
+          "value": "description",
+          "sample_count": 6,
+          "confusion_matrix": {
+            "tp": 5,
+            "tn": 0,
+            "fp": 0,
+            "fn": 1
+          },
+          "metrics": {
+            "accuracy": 0.8333333333333334,
+            "precision": 1.0,
+            "recall": 0.8333333333333334,
+            "f1": 0.9090909090909091,
+            "false_positive_rate": 0.0,
+            "false_negative_rate": 0.16666666666666666,
+            "specificity": 0.0
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 5,
+              "denominator": 6,
+              "estimate": 0.8333333333333334,
+              "lower": 0.43649717781352987,
+              "upper": 0.9699466302516935,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 5,
+              "denominator": 6,
+              "estimate": 0.8333333333333334,
+              "lower": 0.43649717781352987,
+              "upper": 0.9699466302516935,
+              "defined": true
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 0,
+              "estimate": null,
+              "lower": null,
+              "upper": null,
+              "defined": false
+            }
+          },
+          "low_evidence": true,
+          "warning": "Low evidence: fewer than 10 samples in this stratum.",
+          "undefined_metrics": [
+            "false_positive_rate",
+            "specificity"
+          ]
+        },
+        {
+          "dimension": "field_location",
+          "value": "execution.operation",
+          "sample_count": 1,
+          "confusion_matrix": {
+            "tp": 1,
+            "tn": 0,
+            "fp": 0,
+            "fn": 0
+          },
+          "metrics": {
+            "accuracy": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "false_positive_rate": 0.0,
+            "false_negative_rate": 0.0,
+            "specificity": 0.0
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 1,
+              "denominator": 1,
+              "estimate": 1.0,
+              "lower": 0.20654931437723745,
+              "upper": 1.0,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 1,
+              "denominator": 1,
+              "estimate": 1.0,
+              "lower": 0.20654931437723745,
+              "upper": 1.0,
+              "defined": true
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 0,
+              "estimate": null,
+              "lower": null,
+              "upper": null,
+              "defined": false
+            }
+          },
+          "low_evidence": true,
+          "warning": "Low evidence: fewer than 10 samples in this stratum.",
+          "undefined_metrics": [
+            "false_positive_rate",
+            "specificity"
+          ]
+        },
+        {
+          "dimension": "field_location",
+          "value": "execution.payload",
+          "sample_count": 1,
+          "confusion_matrix": {
+            "tp": 1,
+            "tn": 0,
+            "fp": 0,
+            "fn": 0
+          },
+          "metrics": {
+            "accuracy": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "false_positive_rate": 0.0,
+            "false_negative_rate": 0.0,
+            "specificity": 0.0
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 1,
+              "denominator": 1,
+              "estimate": 1.0,
+              "lower": 0.20654931437723745,
+              "upper": 1.0,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 1,
+              "denominator": 1,
+              "estimate": 1.0,
+              "lower": 0.20654931437723745,
+              "upper": 1.0,
+              "defined": true
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 0,
+              "estimate": null,
+              "lower": null,
+              "upper": null,
+              "defined": false
+            }
+          },
+          "low_evidence": true,
+          "warning": "Low evidence: fewer than 10 samples in this stratum.",
+          "undefined_metrics": [
+            "false_positive_rate",
+            "specificity"
+          ]
+        },
+        {
+          "dimension": "field_location",
+          "value": "execution.visibility",
+          "sample_count": 1,
+          "confusion_matrix": {
+            "tp": 1,
+            "tn": 0,
+            "fp": 0,
+            "fn": 0
+          },
+          "metrics": {
+            "accuracy": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "false_positive_rate": 0.0,
+            "false_negative_rate": 0.0,
+            "specificity": 0.0
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 1,
+              "denominator": 1,
+              "estimate": 1.0,
+              "lower": 0.20654931437723745,
+              "upper": 1.0,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 1,
+              "denominator": 1,
+              "estimate": 1.0,
+              "lower": 0.20654931437723745,
+              "upper": 1.0,
+              "defined": true
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 0,
+              "estimate": null,
+              "lower": null,
+              "upper": null,
+              "defined": false
+            }
+          },
+          "low_evidence": true,
+          "warning": "Low evidence: fewer than 10 samples in this stratum.",
+          "undefined_metrics": [
+            "false_positive_rate",
+            "specificity"
+          ]
+        },
+        {
+          "dimension": "field_location",
+          "value": "inputSchema.description",
+          "sample_count": 1,
+          "confusion_matrix": {
+            "tp": 0,
+            "tn": 0,
+            "fp": 0,
+            "fn": 1
+          },
+          "metrics": {
+            "accuracy": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "false_positive_rate": 0.0,
+            "false_negative_rate": 1.0,
+            "specificity": 0.0
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 1,
+              "estimate": 0.0,
+              "lower": 0.0,
+              "upper": 0.7934506856227626,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 1,
+              "estimate": 0.0,
+              "lower": 0.0,
+              "upper": 0.7934506856227626,
+              "defined": true
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 0,
+              "estimate": null,
+              "lower": null,
+              "upper": null,
+              "defined": false
+            }
+          },
+          "low_evidence": true,
+          "warning": "Low evidence: fewer than 10 samples in this stratum.",
+          "undefined_metrics": [
+            "false_positive_rate",
+            "precision",
+            "specificity"
+          ]
+        },
+        {
+          "dimension": "field_location",
+          "value": "input_schema.properties.auth.description",
+          "sample_count": 1,
+          "confusion_matrix": {
+            "tp": 1,
+            "tn": 0,
+            "fp": 0,
+            "fn": 0
+          },
+          "metrics": {
+            "accuracy": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "false_positive_rate": 0.0,
+            "false_negative_rate": 0.0,
+            "specificity": 0.0
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 1,
+              "denominator": 1,
+              "estimate": 1.0,
+              "lower": 0.20654931437723745,
+              "upper": 1.0,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 1,
+              "denominator": 1,
+              "estimate": 1.0,
+              "lower": 0.20654931437723745,
+              "upper": 1.0,
+              "defined": true
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 0,
+              "estimate": null,
+              "lower": null,
+              "upper": null,
+              "defined": false
+            }
+          },
+          "low_evidence": true,
+          "warning": "Low evidence: fewer than 10 samples in this stratum.",
+          "undefined_metrics": [
+            "false_positive_rate",
+            "specificity"
+          ]
+        },
+        {
+          "dimension": "field_location",
+          "value": "metadata.operation",
+          "sample_count": 1,
+          "confusion_matrix": {
+            "tp": 1,
+            "tn": 0,
+            "fp": 0,
+            "fn": 0
+          },
+          "metrics": {
+            "accuracy": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "false_positive_rate": 0.0,
+            "false_negative_rate": 0.0,
+            "specificity": 0.0
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 1,
+              "denominator": 1,
+              "estimate": 1.0,
+              "lower": 0.20654931437723745,
+              "upper": 1.0,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 1,
+              "denominator": 1,
+              "estimate": 1.0,
+              "lower": 0.20654931437723745,
+              "upper": 1.0,
+              "defined": true
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 0,
+              "estimate": null,
+              "lower": null,
+              "upper": null,
+              "defined": false
+            }
+          },
+          "low_evidence": true,
+          "warning": "Low evidence: fewer than 10 samples in this stratum.",
+          "undefined_metrics": [
+            "false_positive_rate",
+            "specificity"
+          ]
+        },
+        {
+          "dimension": "field_location",
+          "value": "metadata.payload",
+          "sample_count": 1,
+          "confusion_matrix": {
+            "tp": 1,
+            "tn": 0,
+            "fp": 0,
+            "fn": 0
+          },
+          "metrics": {
+            "accuracy": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "false_positive_rate": 0.0,
+            "false_negative_rate": 0.0,
+            "specificity": 0.0
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 1,
+              "denominator": 1,
+              "estimate": 1.0,
+              "lower": 0.20654931437723745,
+              "upper": 1.0,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 1,
+              "denominator": 1,
+              "estimate": 1.0,
+              "lower": 0.20654931437723745,
+              "upper": 1.0,
+              "defined": true
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 0,
+              "estimate": null,
+              "lower": null,
+              "upper": null,
+              "defined": false
+            }
+          },
+          "low_evidence": true,
+          "warning": "Low evidence: fewer than 10 samples in this stratum.",
+          "undefined_metrics": [
+            "false_positive_rate",
+            "specificity"
+          ]
+        },
+        {
+          "dimension": "field_location",
+          "value": "metadata.priority",
+          "sample_count": 1,
+          "confusion_matrix": {
+            "tp": 0,
+            "tn": 0,
+            "fp": 0,
+            "fn": 1
+          },
+          "metrics": {
+            "accuracy": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "false_positive_rate": 0.0,
+            "false_negative_rate": 1.0,
+            "specificity": 0.0
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 1,
+              "estimate": 0.0,
+              "lower": 0.0,
+              "upper": 0.7934506856227626,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 1,
+              "estimate": 0.0,
+              "lower": 0.0,
+              "upper": 0.7934506856227626,
+              "defined": true
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 0,
+              "estimate": null,
+              "lower": null,
+              "upper": null,
+              "defined": false
+            }
+          },
+          "low_evidence": true,
+          "warning": "Low evidence: fewer than 10 samples in this stratum.",
+          "undefined_metrics": [
+            "false_positive_rate",
+            "precision",
+            "specificity"
+          ]
+        },
+        {
+          "dimension": "field_location",
+          "value": "metadata.visibility",
+          "sample_count": 1,
+          "confusion_matrix": {
+            "tp": 1,
+            "tn": 0,
+            "fp": 0,
+            "fn": 0
+          },
+          "metrics": {
+            "accuracy": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "false_positive_rate": 0.0,
+            "false_negative_rate": 0.0,
+            "specificity": 0.0
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 1,
+              "denominator": 1,
+              "estimate": 1.0,
+              "lower": 0.20654931437723745,
+              "upper": 1.0,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 1,
+              "denominator": 1,
+              "estimate": 1.0,
+              "lower": 0.20654931437723745,
+              "upper": 1.0,
+              "defined": true
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 0,
+              "estimate": null,
+              "lower": null,
+              "upper": null,
+              "defined": false
+            }
+          },
+          "low_evidence": true,
+          "warning": "Low evidence: fewer than 10 samples in this stratum.",
+          "undefined_metrics": [
+            "false_positive_rate",
+            "specificity"
+          ]
+        },
+        {
+          "dimension": "field_location",
+          "value": "output_schema.description",
+          "sample_count": 2,
+          "confusion_matrix": {
+            "tp": 2,
+            "tn": 0,
+            "fp": 0,
+            "fn": 0
+          },
+          "metrics": {
+            "accuracy": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "false_positive_rate": 0.0,
+            "false_negative_rate": 0.0,
+            "specificity": 0.0
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 2,
+              "denominator": 2,
+              "estimate": 1.0,
+              "lower": 0.34238022750665303,
+              "upper": 1.0,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 2,
+              "denominator": 2,
+              "estimate": 1.0,
+              "lower": 0.34238022750665303,
+              "upper": 1.0,
+              "defined": true
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 0,
+              "estimate": null,
+              "lower": null,
+              "upper": null,
+              "defined": false
+            }
+          },
+          "low_evidence": true,
+          "warning": "Low evidence: fewer than 10 samples in this stratum.",
+          "undefined_metrics": [
+            "false_positive_rate",
+            "specificity"
+          ]
+        },
+        {
+          "dimension": "field_location",
+          "value": "unknown_fields.vendor.network",
+          "sample_count": 1,
+          "confusion_matrix": {
+            "tp": 1,
+            "tn": 0,
+            "fp": 0,
+            "fn": 0
+          },
+          "metrics": {
+            "accuracy": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "false_positive_rate": 0.0,
+            "false_negative_rate": 0.0,
+            "specificity": 0.0
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 1,
+              "denominator": 1,
+              "estimate": 1.0,
+              "lower": 0.20654931437723745,
+              "upper": 1.0,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 1,
+              "denominator": 1,
+              "estimate": 1.0,
+              "lower": 0.20654931437723745,
+              "upper": 1.0,
+              "defined": true
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 0,
+              "estimate": null,
+              "lower": null,
+              "upper": null,
+              "defined": false
+            }
+          },
+          "low_evidence": true,
+          "warning": "Low evidence: fewer than 10 samples in this stratum.",
+          "undefined_metrics": [
+            "false_positive_rate",
+            "specificity"
+          ]
+        },
+        {
+          "dimension": "field_location",
+          "value": "unknown_fields.vendor.operation",
+          "sample_count": 1,
+          "confusion_matrix": {
+            "tp": 1,
+            "tn": 0,
+            "fp": 0,
+            "fn": 0
+          },
+          "metrics": {
+            "accuracy": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "false_positive_rate": 0.0,
+            "false_negative_rate": 0.0,
+            "specificity": 0.0
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 1,
+              "denominator": 1,
+              "estimate": 1.0,
+              "lower": 0.20654931437723745,
+              "upper": 1.0,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 1,
+              "denominator": 1,
+              "estimate": 1.0,
+              "lower": 0.20654931437723745,
+              "upper": 1.0,
+              "defined": true
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 0,
+              "estimate": null,
+              "lower": null,
+              "upper": null,
+              "defined": false
+            }
+          },
+          "low_evidence": true,
+          "warning": "Low evidence: fewer than 10 samples in this stratum.",
+          "undefined_metrics": [
+            "false_positive_rate",
+            "specificity"
+          ]
+        },
+        {
+          "dimension": "field_location",
+          "value": "unknown_fields.vendor.process",
+          "sample_count": 1,
+          "confusion_matrix": {
+            "tp": 1,
+            "tn": 0,
+            "fp": 0,
+            "fn": 0
+          },
+          "metrics": {
+            "accuracy": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "false_positive_rate": 0.0,
+            "false_negative_rate": 0.0,
+            "specificity": 0.0
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 1,
+              "denominator": 1,
+              "estimate": 1.0,
+              "lower": 0.20654931437723745,
+              "upper": 1.0,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 1,
+              "denominator": 1,
+              "estimate": 1.0,
+              "lower": 0.20654931437723745,
+              "upper": 1.0,
+              "defined": true
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 0,
+              "estimate": null,
+              "lower": null,
+              "upper": null,
+              "defined": false
+            }
+          },
+          "low_evidence": true,
+          "warning": "Low evidence: fewer than 10 samples in this stratum.",
+          "undefined_metrics": [
+            "false_positive_rate",
+            "specificity"
+          ]
+        }
+      ]
+    },
+    {
+      "dimension": "difficulty",
+      "available_sample_count": 36,
+      "missing_sample_count": 0,
+      "groups": [
+        {
+          "dimension": "difficulty",
+          "value": "moderate",
+          "sample_count": 23,
+          "confusion_matrix": {
+            "tp": 6,
+            "tn": 14,
+            "fp": 0,
+            "fn": 3
+          },
+          "metrics": {
+            "accuracy": 0.8695652173913043,
+            "precision": 1.0,
+            "recall": 0.6666666666666666,
+            "f1": 0.8,
+            "false_positive_rate": 0.0,
+            "false_negative_rate": 0.3333333333333333,
+            "specificity": 1.0
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 20,
+              "denominator": 23,
+              "estimate": 0.8695652173913043,
+              "lower": 0.6787251772990404,
+              "upper": 0.9546234090636876,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 6,
+              "denominator": 9,
+              "estimate": 0.6666666666666666,
+              "lower": 0.3542021355803963,
+              "upper": 0.879416181613089,
+              "defined": true
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 14,
+              "estimate": 0.0,
+              "lower": 0.0,
+              "upper": 0.2153108027376358,
+              "defined": true
+            }
+          },
+          "low_evidence": false,
+          "warning": null,
+          "undefined_metrics": []
+        },
+        {
+          "dimension": "difficulty",
+          "value": "obvious",
+          "sample_count": 3,
+          "confusion_matrix": {
+            "tp": 1,
+            "tn": 2,
+            "fp": 0,
+            "fn": 0
+          },
+          "metrics": {
+            "accuracy": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "false_positive_rate": 0.0,
+            "false_negative_rate": 0.0,
+            "specificity": 1.0
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 3,
+              "denominator": 3,
+              "estimate": 1.0,
+              "lower": 0.4385029682449546,
+              "upper": 1.0,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 1,
+              "denominator": 1,
+              "estimate": 1.0,
+              "lower": 0.20654931437723745,
+              "upper": 1.0,
+              "defined": true
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 2,
+              "estimate": 0.0,
+              "lower": 0.0,
+              "upper": 0.6576197724933469,
+              "defined": true
+            }
+          },
+          "low_evidence": true,
+          "warning": "Low evidence: fewer than 10 samples in this stratum.",
+          "undefined_metrics": []
+        },
+        {
+          "dimension": "difficulty",
+          "value": "subtle",
+          "sample_count": 10,
+          "confusion_matrix": {
+            "tp": 7,
+            "tn": 2,
+            "fp": 0,
+            "fn": 1
+          },
+          "metrics": {
+            "accuracy": 0.9,
+            "precision": 1.0,
+            "recall": 0.875,
+            "f1": 0.9333333333333333,
+            "false_positive_rate": 0.0,
+            "false_negative_rate": 0.125,
+            "specificity": 1.0
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 9,
+              "denominator": 10,
+              "estimate": 0.9,
+              "lower": 0.5958499732047615,
+              "upper": 0.9821237869049271,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 7,
+              "denominator": 8,
+              "estimate": 0.875,
+              "lower": 0.5291118177871464,
+              "upper": 0.9775825085499433,
+              "defined": true
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 2,
+              "estimate": 0.0,
+              "lower": 0.0,
+              "upper": 0.6576197724933469,
+              "defined": true
+            }
+          },
+          "low_evidence": false,
+          "warning": null,
+          "undefined_metrics": []
+        }
+      ]
+    },
+    {
+      "dimension": "ground_truth",
+      "available_sample_count": 36,
+      "missing_sample_count": 0,
+      "groups": [
+        {
+          "dimension": "ground_truth",
+          "value": "benign",
+          "sample_count": 18,
+          "confusion_matrix": {
+            "tp": 0,
+            "tn": 18,
+            "fp": 0,
+            "fn": 0
+          },
+          "metrics": {
+            "accuracy": 1.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "false_positive_rate": 0.0,
+            "false_negative_rate": 0.0,
+            "specificity": 1.0
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 18,
+              "denominator": 18,
+              "estimate": 1.0,
+              "lower": 0.8241207763533425,
+              "upper": 1.0,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 0,
+              "estimate": null,
+              "lower": null,
+              "upper": null,
+              "defined": false
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 18,
+              "estimate": 0.0,
+              "lower": 0.0,
+              "upper": 0.17587922364665765,
+              "defined": true
+            }
+          },
+          "low_evidence": false,
+          "warning": null,
+          "undefined_metrics": [
+            "f1",
+            "false_negative_rate",
+            "precision",
+            "recall"
+          ]
+        },
+        {
+          "dimension": "ground_truth",
+          "value": "suspicious",
+          "sample_count": 18,
+          "confusion_matrix": {
+            "tp": 14,
+            "tn": 0,
+            "fp": 0,
+            "fn": 4
+          },
+          "metrics": {
+            "accuracy": 0.7777777777777778,
+            "precision": 1.0,
+            "recall": 0.7777777777777778,
+            "f1": 0.8750000000000001,
+            "false_positive_rate": 0.0,
+            "false_negative_rate": 0.2222222222222222,
+            "specificity": 0.0
+          },
+          "uncertainty": {
+            "accuracy": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 14,
+              "denominator": 18,
+              "estimate": 0.7777777777777778,
+              "lower": 0.5478541568378739,
+              "upper": 0.9099907189139831,
+              "defined": true
+            },
+            "recall": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 14,
+              "denominator": 18,
+              "estimate": 0.7777777777777778,
+              "lower": 0.5478541568378739,
+              "upper": 0.9099907189139831,
+              "defined": true
+            },
+            "false_positive_rate": {
+              "method": "wilson_score_95",
+              "confidence_level": 0.95,
+              "numerator": 0,
+              "denominator": 0,
+              "estimate": null,
+              "lower": null,
+              "upper": null,
+              "defined": false
+            }
+          },
+          "low_evidence": false,
+          "warning": null,
+          "undefined_metrics": [
+            "false_positive_rate",
+            "specificity"
+          ]
+        }
+      ]
+    }
+  ]
+}

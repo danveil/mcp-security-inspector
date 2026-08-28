@@ -1,0 +1,122 @@
+{
+  "mission": "Day 3B Primary Holdout Evaluation",
+  "unblinding_utc": "2026-08-27T06:00:54.1002799Z",
+  "detector_source_bundle_sha256": "197f13414a348ff527c27061aee481c2e3d11ca32198441dcfdb77b6ff8bd227",
+  "artifacts": [
+    {
+      "role": "H0",
+      "filename": "exp-20260827T060056391880Z-c514ba03-a660fd6d.json",
+      "artifact_sha256": "3307c28daca91132507abad116b771cbc4b505ab8c6e961e6ff33ed436871b80",
+      "experiment_id": "exp-20260827T060056391880Z-c514ba03-a660fd6d",
+      "corpus_sha256": "c514ba03ac2ca6a6f67ec1e6cc7bb24f0347ccf51a98b0083bdaa53234f5a2d8",
+      "configuration_sha256": "a660fd6dcccf01d691dbfca3683f97aa5f2224cff0f895da602e0c9b2a94f9a1",
+      "git_commit": "a4abee4661522ac13edb37e1b075186a2ccd7a03",
+      "timing_mode": "analysis-core",
+      "warmup_repetitions": 3,
+      "measured_repetitions": 10
+    },
+    {
+      "role": "H1",
+      "filename": "exp-20260827T060157485815Z-c514ba03-cde99024.json",
+      "artifact_sha256": "969b3fecea24f93e2fd5a578152f0e3620ba237a1088552443125c2916bff7af",
+      "experiment_id": "exp-20260827T060157485815Z-c514ba03-cde99024",
+      "corpus_sha256": "c514ba03ac2ca6a6f67ec1e6cc7bb24f0347ccf51a98b0083bdaa53234f5a2d8",
+      "configuration_sha256": "cde9902462055e26e70a7b1cd94f4f4a4532fcf73647a6801f7f0578539393e6",
+      "git_commit": "a4abee4661522ac13edb37e1b075186a2ccd7a03",
+      "timing_mode": "static-end-to-end",
+      "warmup_repetitions": 1,
+      "measured_repetitions": 5
+    },
+    {
+      "role": "ablation",
+      "ablation_preset": "without-injection",
+      "filename": "exp-20260827T060254063218Z-c514ba03-2fdd6d66.json",
+      "artifact_sha256": "b9829eb9f129894ad50fca458988f2a64b893885b233e3f29535d6dbe3184937",
+      "experiment_id": "exp-20260827T060254063218Z-c514ba03-2fdd6d66",
+      "corpus_sha256": "c514ba03ac2ca6a6f67ec1e6cc7bb24f0347ccf51a98b0083bdaa53234f5a2d8",
+      "configuration_sha256": "2fdd6d6621d21cdde16ad4fc27884a3bd5f09bae3ae4ceb9b54577b01354a4dd",
+      "git_commit": "a4abee4661522ac13edb37e1b075186a2ccd7a03",
+      "timing_mode": "analysis-core",
+      "warmup_repetitions": 0,
+      "measured_repetitions": 1
+    },
+    {
+      "role": "ablation",
+      "ablation_preset": "without-concealment",
+      "filename": "exp-20260827T060257853936Z-c514ba03-f02a443b.json",
+      "artifact_sha256": "7fe662dd5b208eae8685be1322c9a58a3f9e85042e3f8794dfc219b9d6a9353e",
+      "experiment_id": "exp-20260827T060257853936Z-c514ba03-f02a443b",
+      "corpus_sha256": "c514ba03ac2ca6a6f67ec1e6cc7bb24f0347ccf51a98b0083bdaa53234f5a2d8",
+      "configuration_sha256": "f02a443b6c5eb9df82f9f0e86e1091ef2c90cde8c8eae18f454bf68e9f51713b",
+      "git_commit": "a4abee4661522ac13edb37e1b075186a2ccd7a03",
+      "timing_mode": "analysis-core",
+      "warmup_repetitions": 0,
+      "measured_repetitions": 1
+    },
+    {
+      "role": "ablation",
+      "ablation_preset": "without-sensitive-data",
+      "filename": "exp-20260827T060259610698Z-c514ba03-8f81f058.json",
+      "artifact_sha256": "9953343f189ee66e8ff826c6d3b2303b047277b0ba0e23cccbe9f38edd6255c7",
+      "experiment_id": "exp-20260827T060259610698Z-c514ba03-8f81f058",
+      "corpus_sha256": "c514ba03ac2ca6a6f67ec1e6cc7bb24f0347ccf51a98b0083bdaa53234f5a2d8",
+      "configuration_sha256": "8f81f05829f8509ee945e614f9c2f7834688681969a13bbf541f4a000dc69ccb",
+      "git_commit": "a4abee4661522ac13edb37e1b075186a2ccd7a03",
+      "timing_mode": "analysis-core",
+      "warmup_repetitions": 0,
+      "measured_repetitions": 1
+    },
+    {
+      "role": "ablation",
+      "ablation_preset": "without-schema",
+      "filename": "exp-20260827T060302489565Z-c514ba03-1a982507.json",
+      "artifact_sha256": "7b5502777777cb0ad20bc0d0d011b58cab5e75a7bf7a4ad14f2e5c65228187ce",
+      "experiment_id": "exp-20260827T060302489565Z-c514ba03-1a982507",
+      "corpus_sha256": "c514ba03ac2ca6a6f67ec1e6cc7bb24f0347ccf51a98b0083bdaa53234f5a2d8",
+      "configuration_sha256": "1a9825071ab5c752f3a5a0617852ac2d1780541daa05f3194662c247e1cde942",
+      "git_commit": "a4abee4661522ac13edb37e1b075186a2ccd7a03",
+      "timing_mode": "analysis-core",
+      "warmup_repetitions": 0,
+      "measured_repetitions": 1
+    },
+    {
+      "role": "ablation",
+      "ablation_preset": "without-mismatch",
+      "filename": "exp-20260827T060305429500Z-c514ba03-7e77de9a.json",
+      "artifact_sha256": "99fdd5b8fd33ddae5ec0717f8eb174bbe8228a472e2b09bc00ed384734afd77e",
+      "experiment_id": "exp-20260827T060305429500Z-c514ba03-7e77de9a",
+      "corpus_sha256": "c514ba03ac2ca6a6f67ec1e6cc7bb24f0347ccf51a98b0083bdaa53234f5a2d8",
+      "configuration_sha256": "7e77de9afe328900b0bb4d056d585b8560a646f72c1e116b47018b2904a5a527",
+      "git_commit": "a4abee4661522ac13edb37e1b075186a2ccd7a03",
+      "timing_mode": "analysis-core",
+      "warmup_repetitions": 0,
+      "measured_repetitions": 1
+    },
+    {
+      "role": "ablation",
+      "ablation_preset": "without-obfuscation",
+      "filename": "exp-20260827T060308496807Z-c514ba03-fe437481.json",
+      "artifact_sha256": "0e3234ec56d031e3d7eac95d25d9ae0549f4e9f0e904c905b437808fe5814875",
+      "experiment_id": "exp-20260827T060308496807Z-c514ba03-fe437481",
+      "corpus_sha256": "c514ba03ac2ca6a6f67ec1e6cc7bb24f0347ccf51a98b0083bdaa53234f5a2d8",
+      "configuration_sha256": "fe4374818aacd8c3157d149c7d2564adc4e570f4bfbc68323dc8951eb4a94a5c",
+      "git_commit": "a4abee4661522ac13edb37e1b075186a2ccd7a03",
+      "timing_mode": "analysis-core",
+      "warmup_repetitions": 0,
+      "measured_repetitions": 1
+    },
+    {
+      "role": "ablation",
+      "ablation_preset": "without-capability",
+      "filename": "exp-20260827T060311632569Z-c514ba03-416700af.json",
+      "artifact_sha256": "e192b7e386b579336fb16886a01a7c6c5e3ac2db755e5f8f986d36e92efec091",
+      "experiment_id": "exp-20260827T060311632569Z-c514ba03-416700af",
+      "corpus_sha256": "c514ba03ac2ca6a6f67ec1e6cc7bb24f0347ccf51a98b0083bdaa53234f5a2d8",
+      "configuration_sha256": "416700afd089bf6607b23889c2cabd915bba26cf827e1e71b5f4cdea79a97c0a",
+      "git_commit": "a4abee4661522ac13edb37e1b075186a2ccd7a03",
+      "timing_mode": "analysis-core",
+      "warmup_repetitions": 0,
+      "measured_repetitions": 1
+    }
+  ]
+}

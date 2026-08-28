@@ -17,3 +17,16 @@ Generated artifacts are ignored by default because they can be numerous and envi
 The repository's `.gitattributes` marks all three evidence files as non-text so Git never changes their original line endings. The Day 4C artifact's metadata is authentic and intentionally unchanged: it reports application version `0.2.0`, commit `a4abee4661522ac13edb37e1b075186a2ccd7a03`, and `dirty=true`. It was produced from the uncommitted v0.3 exploratory implementation before the package-version and built-in-rule-pack-version corrections. Those provenance limitations mean it is exploratory evidence, not a cleanly reproducible confirmatory result. The current loader validates the artifact from its recorded schema/configuration and recorded rule sets rather than falsely treating it as a current-registry artifact.
 
 The holdout corpus remains under `evaluation/holdout/`; these files are results and analysis, not a new corpus. Future generated runs remain ignored unless a later research protocol explicitly selects and hashes them for preservation.
+
+## Day 6G secondary evidence package
+
+Day 6G reviewed and selected the previously ignored Day 3B/3D and Day 4A/4B/4C
+supporting files for versioned preservation. Their classifications, exact
+SHA-256 identities, provenance limitations, and scientific status are recorded
+in [`day6g-secondary-evidence-inventory.md`](day6g-secondary-evidence-inventory.md).
+
+These files preserve preregistered secondary timing/ablation evidence,
+post-unblinding interpretation, and exploratory v0.3 design/analysis. They do
+not replace H0, do not create a fresh holdout result, and must not be used to
+claim confirmed v0.3 generalization. New run artifacts remain ignored by
+default.

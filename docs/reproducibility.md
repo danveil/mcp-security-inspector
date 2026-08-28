@@ -19,6 +19,27 @@ Authoritative preserved evidence:
 
 These files are historical evidence. Do not regenerate, normalize, or overwrite them.
 
+## LF-safe clone and byte preservation
+
+On Windows, a global `core.autocrlf=true` setting was observed to convert
+unprotected research files to CRLF during an ordinary clone. The content looked
+equivalent, but the byte-sensitive reviewer identity and semantic corpus hashes
+changed. Use an LF-preserving clone for recovery and research verification:
+
+```powershell
+git clone -c core.autocrlf=false https://github.com/danveil/mcp-security-inspector.git
+Set-Location mcp-security-inspector
+git config --get core.autocrlf
+```
+
+The expected repository-local value in that recovery clone is `false`. The
+scoped `.gitattributes` rules also protect the known frozen corpus, reviewer,
+and selected historical-evidence paths from checkout conversion. They do not
+normalize or rewrite the preserved Git blobs. Do not run broad renormalization
+commands over historical research files. If a hash differs, first verify HEAD,
+Git status, attributes, and line-ending policy; do not update the expected hash
+to match a transformed checkout.
+
 ## Development evaluation
 
 Install the development environment, then evaluate only the development manifest:

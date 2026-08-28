@@ -158,6 +158,10 @@ The v0.3 comparison does not independently demonstrate improved generalization. 
 
 See the [research protocol](docs/research-protocol.md), [holdout experiment plan](docs/holdout-experiment-plan.md), [evaluation methodology](docs/evaluation-methodology.md), [experiment-plan template](docs/experiment-plan-template.md), and [false-positive analysis](docs/false-positive-analysis.md). The corpora are versioned separately; label and research-significant metadata changes must be recorded in `evaluation/CHANGELOG.md`.
 
+For consolidated research continuity, technical learning, adversarial review,
+formal-FYP planning, and recovery guidance, see the
+[research continuity and technical documentation index](docs/day6-index.md).
+
 ## Risk scoring
 
 Each finding's configured contribution is multiplied by confidence. Equivalent `(category, rule ID)` contributions are deduplicated using the strongest instance. Contributions are grouped and capped at 35 per category; category risks are combined using `100 × (1 − Π(1 − category/100))`. Two documented correlations add bounded synergy: instruction override + concealment adds 10, and concealment + sensitive-data language adds 7. The final value is rounded and capped at 100. See [risk scoring](docs/risk-scoring.md).

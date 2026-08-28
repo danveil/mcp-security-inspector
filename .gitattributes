@@ -1,3 +1,44 @@
 evaluation/runs/exp-20260827T060056391880Z-c514ba03-a660fd6d.json -text -diff
 evaluation/runs/day3c-deep-failure-analysis.md -text -diff
 evaluation/runs/day4c/post-unblinding-exploratory-holdout-full-analysis-core.json -text -diff
+
+# Preserve byte-sensitive frozen corpus and reviewer inputs on Windows.
+# These exact/scoped paths prevent core.autocrlf from changing research identities.
+evaluation/corpus/manifest.json -text
+evaluation/corpus/benign/*.json -text
+evaluation/corpus/suspicious/*.json -text
+evaluation/holdout/manifest.json -text
+evaluation/holdout/benign/*.json -text
+evaluation/holdout/suspicious/*.json -text
+evaluation/holdout/reviewer-source.md -text
+evaluation/exploratory/v0_3/manifest.json -text
+evaluation/exploratory/v0_3/benign/*.json -text
+evaluation/exploratory/v0_3/suspicious/*.json -text
+
+# Preserve the Day 6G knowledge-package identities recorded by the manifest.
+docs/captain-technical-map.md -text
+docs/captains-manual.md -text
+docs/fyp-handover.md -text
+docs/disaster-recovery.md -text
+docs/recovery-manifest.md -text
+docs/final-adversarial-review.md -text
+docs/formal-fyp-blueprint.md -text
+docs/day6-index.md -text
+evaluation/runs/day6g-secondary-evidence-inventory.md -text
+
+# Day 6G-selected historical secondary evidence: preserve original bytes.
+evaluation/runs/day3b-artifact-inventory.json -text -diff
+evaluation/runs/day3d/*.md -text
+evaluation/runs/day4a/*.md -text
+evaluation/runs/day4b/*.json -text -diff
+evaluation/runs/day4c/*.json -text -diff
+evaluation/runs/day4c/analysis_snapshot.py -text
+evaluation/runs/day4c/*.md -text
+evaluation/runs/exp-20260827T060157485815Z-c514ba03-cde99024.json -text -diff
+evaluation/runs/exp-20260827T060254063218Z-c514ba03-2fdd6d66.json -text -diff
+evaluation/runs/exp-20260827T060257853936Z-c514ba03-f02a443b.json -text -diff
+evaluation/runs/exp-20260827T060259610698Z-c514ba03-8f81f058.json -text -diff
+evaluation/runs/exp-20260827T060302489565Z-c514ba03-1a982507.json -text -diff
+evaluation/runs/exp-20260827T060305429500Z-c514ba03-7e77de9a.json -text -diff
+evaluation/runs/exp-20260827T060308496807Z-c514ba03-fe437481.json -text -diff
+evaluation/runs/exp-20260827T060311632569Z-c514ba03-416700af.json -text -diff
